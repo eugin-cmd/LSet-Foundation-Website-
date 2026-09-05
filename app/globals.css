@@ -1,0 +1,212 @@
+@import "./tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Lets the approach section's view timeline be referenced by elements outside
+   it — the overhanging photo belongs to that composition but is a child of the
+   pillars section, so it needs the name in scope here. */
+main {
+  timeline-scope: --approach-view;
+}
+
+body {
+  min-width: 320px;
+  background: var(--surface-white);
+  color: var(--ink-1);
+  font-family: var(--font-flex);
+  font-variation-settings: "GRAD" 0, "ROND" 0, "wdth" 100;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+  font-weight: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+img {
+  display: block;
+}
+
+/* Nothing may push the page sideways. */
+img,
+svg,
+video {
+  max-width: 100%;
+}
+
+/* An author `display` declaration outranks the UA's [hidden] rule, so any
+   component that sets display (e.g. the pillars panel) would stay visible
+   while hidden. Enforce it once, here. */
+[hidden] {
+  display: none !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Figma text styles (WF/*) as reusable utilities.
+   letterSpacing in Figma is a percentage of the font size; converted here.
+   --------------------------------------------------------------------------- */
+.wf-display-xl {
+  font: 400 clamp(28px, 3.61vw, 52px) / 1.12 var(--font-flex);
+  letter-spacing: 0.055em; /* 5.5%, so it tracks the fluid size */
+  text-transform: uppercase;
+}
+
+.wf-display-l {
+  font: 400 clamp(24px, 2.64vw, 38px) / 1.12 var(--font-flex);
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.wf-display-s {
+  font: 400 clamp(19px, 1.88vw, 27px) / 1.15 var(--font-flex);
+  letter-spacing: 0.05em;
+}
+
+.wf-subtitle {
+  font: 600 clamp(15px, 1.18vw, 17px) / 1.35 var(--font-flex);
+  letter-spacing: -0.005em;
+}
+
+.wf-nav {
+  font: 400 13px/1.3 var(--font-flex);
+}
+
+.wf-body-l {
+  font: 400 clamp(14.5px, 1.11vw, 16px) / 1.7 var(--font-flex);
+}
+
+.wf-body {
+  font: 400 14.5px/1.75 var(--font-flex);
+}
+
+.wf-small {
+  font: 400 12.5px/1.7 var(--font-flex);
+}
+
+/* Figma WF/Title — 30px, tracking -1% of the size. Distinct from
+   .wf-display-s, which is smaller and tracks positive. */
+.wf-title {
+  font: 400 clamp(24px, 2.08vw, 30px) / 1.15 var(--font-flex);
+  letter-spacing: -0.01em;
+}
+
+/* Figma WF/Meta — 11.5px medium, tracking 6%. */
+.wf-meta {
+  font: 500 11.5px/1.5 var(--font-flex);
+  letter-spacing: 0.06em;
+}
+
+.wf-label {
+  font: 500 10.5px/1.5 var(--font-flex);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------------------------
+   A utility rather than a copy inside each hero's module, so the palette and
+   the 529.62px shift have one definition and the two heroes cannot drift.
+
+   Safe to combine with a module class that sets `color`: whichever wins the
+   cascade, `-webkit-text-fill-color` is a separate property and still reveals
+   the clipped background. Nothing else collides — no hero heading sets its
+   own background.
+   --------------------------------------------------------------------------- */
+/* Holographic sheen for hero headings — the lede stays solid white, since a
+   shifting gradient under 16px running text would cost more legibility than it
+   buys. The palette is deliberately high-luminance pastels rather than
+   saturated hues, so contrast against the footage survives. Rose (#ffc8dc)
+   sits where a lilac did — it keeps a cool counterpoint to the peach without
+   reading as purple.
+   Guarded: without background-clip support the transparent fill would leave an
+   invisible headline, so whatever solid colour the heading already carries
+   stays in force instead. */
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .wf-iridescent {
+    /* repeating-linear-gradient with a fixed 480px period on a 115deg axis, so
+       the bands run diagonally across both lines of the heading. Each hue is
+       separated by a white pass, which is what keeps the effect a sheen rather
+       than a spectrum.
+       The animation shifts horizontally, so the distance is 480 / sin(115deg)
+       = 529.62px: that is what moves the pattern exactly one period *along its
+       own axis*, which a flat 480px shift would not on a tilted gradient.
+       Hues now meet each other with only two brief white passes, instead of
+       returning to white between every one: the white was diluting the effect.
+       Deeper stops too, but each still ≥158 on its lowest channel so the
+       heading keeps its contrast over the footage. */
+    background: repeating-linear-gradient(
+      115deg,
+      #ffffff 0px,
+      #bff3ff 60px,
+      #ffffff 120px,
+      #ffc8dc 180px,
+      #ffffff 240px,
+      #ffd9c2 300px,
+      #ffffff 360px,
+      #c8ffe4 420px,
+      #ffffff 480px
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    animation: titleIridescence 9s linear infinite;
+  }
+}
+
+@keyframes titleIridescence {
+  to {
+    background-position: 529.62px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wf-iridescent {
+    animation: none;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

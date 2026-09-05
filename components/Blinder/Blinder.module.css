@@ -1,0 +1,64 @@
+/* Sits above everything in the banner, so the whole thing is revealed at once
+   rather than the copy appearing through the gaps. Never interactive: the
+   slats stay in the DOM once open, edge-on and zero-height on screen. */
+.blinder {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  /* 12 slats across the banner's height puts each at ~65px on the 780px home
+     banner and ~71px on the 856px education one, either side of the
+     reference's fixed 72px. */
+  grid-template-rows: repeat(12, 1fr);
+  /* Without perspective the rotation is an orthographic squash; with it the
+     slats tilt away as they open, which is what reads as a blind. */
+  perspective: 1400px;
+  perspective-origin: center;
+  pointer-events: none;
+}
+
+.slat {
+  /* The page's own ground, so the banner reads as the page opening onto it. */
+  background: var(--scrim-base);
+  transform-origin: center bottom;
+  /* Closed. `both` below holds this until each slat's delay elapses, so the
+     banner starts covered instead of flashing before the animation begins. */
+  transform: rotateX(0deg);
+  backface-visibility: hidden;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .slat {
+    animation: blinderOpen 760ms cubic-bezier(0.33, 0, 0.2, 1) both;
+    /* Top slat first, so the blind lifts. */
+    animation-delay: calc(var(--i) * 55ms);
+  }
+}
+
+/* Reduced motion gets no reveal at all — the slats are simply already open. */
+@media (prefers-reduced-motion: reduce) {
+  .slat {
+    opacity: 0;
+    transform: rotateX(-90deg);
+  }
+}
+
+/* The fade in the last 15% is not decoration. A slat rotated to 90deg is
+   edge-on, but under perspective its far edge still projects a thin wedge —
+   measured, the open slats covered 10.69% of the banner. The reference hides
+   its overlay with JS, which the static export strips, so the slat has to
+   remove itself. By then it is within 13deg of edge-on, so the fade is not
+   perceptible as one. */
+@keyframes blinderOpen {
+  0% {
+    opacity: 1;
+    transform: rotateX(0deg);
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotateX(-90deg);
+  }
+}

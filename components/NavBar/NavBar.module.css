@@ -1,0 +1,509 @@
+/* Sticky positioner. Zero-height and in the flow at the very top, so the hero
+   still starts at y 0 and the bar overlays it. `top` puts the plate
+   --nav-offset below the banner's top edge, both at rest and once pinned. */
+.sticky {
+  position: sticky;
+  top: var(--nav-offset);
+  z-index: 50;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  height: 0;
+  pointer-events: none;
+
+  /* Declared here, not on .nav, so the drawer panel can size itself to the
+     plate from the same numbers instead of a second copy of them. */
+  --nav-row-h: 63px;
+  --nav-cta-h: 42px;
+  --nav-cta-inset: calc(
+    var(--nav-inset) + (var(--nav-row-h) - var(--nav-cta-h)) / 2
+  );
+  --plate-w: calc(1266px + var(--nav-inset) + var(--nav-cta-inset));
+}
+
+/* The plate and its drawer, stacked and centred. Zero-height like .sticky, so
+   an open drawer overlays the page rather than displacing it. */
+.stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* Figma WF/Nav bar — 1266x85. The row is vertically centred so the plate
+   carries an even ~12px frame above and below its tallest item (the logo),
+   instead of the logo sitting flush to the plate's bottom edge.
+   Figma sets a fixed 78px gap, but the enlarged logo overflows that; the groups
+   distribute across the same 1266px instead, so the row stays symmetric. */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+
+  /* The row's height is set by its tallest item, the logo, so the shorter CTA
+     pill is centred with more air above and below than --nav-inset alone.
+     --nav-cta-inset is that real vertical gap, applied on the right as well, so
+     the pill reads uniformly inset on all three of its free edges. The logo
+     fills the row height, so it keeps a plain --nav-inset. Both now live on
+     .sticky, which the drawer shares.
+
+     Wraps the 1266px row, capped to the page box so the plate can never sit
+     outside the banner. */
+  position: relative;
+  width: var(--plate-w);
+  max-width: calc(100% - var(--edge) * 2);
+  padding: var(--nav-inset);
+  padding-right: var(--nav-cta-inset);
+  border-radius: var(--radius-banner);
+  pointer-events: auto;
+}
+
+/* Once the page scrolls the bar leaves the dark banner and travels over white
+   sections, where its white logo and links would vanish. Fade in a dark ground
+   as that happens. Scroll-driven so it needs no listener and survives the
+   static export; browsers without scroll timelines get it applied outright,
+   which is plainer but never illegible. */
+@supports (animation-timeline: scroll()) {
+  .nav {
+    animation: navGround linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 160px;
+  }
+}
+
+@supports not (animation-timeline: scroll()) {
+  .nav {
+    background-color: rgb(5 21 12 / 55%);
+    backdrop-filter: blur(14px) saturate(115%);
+    box-shadow: 0 10px 30px -12px rgb(1 18 12 / 45%);
+  }
+}
+
+/* The plate keeps one size throughout; only its ground fades in, so nothing
+   in the bar moves as the page scrolls. */
+@keyframes navGround {
+  from {
+    background-color: rgb(5 21 12 / 0%);
+    backdrop-filter: blur(0px) saturate(100%);
+    box-shadow: 0 0 0 0 rgb(0 0 0 / 0%);
+  }
+  to {
+    /* 45% transparent — the blur comes with it, because a translucent plate
+       over busy footage or type is unreadable without it. */
+    background-color: rgb(5 21 12 / 55%);
+    backdrop-filter: blur(14px) saturate(115%);
+    box-shadow: 0 10px 30px -12px rgb(1 18 12 / 45%);
+  }
+}
+
+/* Figma frame is 139x50 with a 132.857x50.234 leaf; both scaled 1.25x. */
+.logo {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 173.75px;
+  height: 62.5px;
+}
+
+.logo img {
+  width: 166.071px;
+  height: 62.793px;
+}
+
+.brandSwitcher {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* Figma's 304px, as a floor rather than a cap. Three equal columns sized to
+     the widest label ("ANTZ SYSTEMS") come out wider than that, and a fixed
+     width would let them overflow silently. */
+  min-width: 304px;
+  height: 42px;
+}
+
+/* ---------------------------------------------------------------------------
+   Brand switcher. The highlight is a single element that travels, rather than
+   a background on whichever chip is current — that is the whole mechanic.
+
+   Equal columns are what make it possible without measuring anything: the
+   highlight is one column wide, so a step is a flat translateX(100%) whatever
+   the labels say. Measuring them in script would have put the chip in the
+   wrong place until the webfont loaded, and left it missing entirely from the
+   snapshot, where scripts are stripped. A `gap` would break the arithmetic, so
+   the columns are contiguous and the labels' own padding separates them.
+   --------------------------------------------------------------------------- */
+.brandRow {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  width: 100%;
+}
+
+.brandHighlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  width: calc(100% / 3);
+  height: 100%;
+  border-radius: var(--radius-chip);
+  /* At 75% transparent the chip is mostly whatever sits behind it, so the
+     label above it is white like its siblings — teal ink would all but vanish. */
+  background: rgb(255 255 255 / 25%);
+  transform: translateX(calc(var(--brand-index, 0) * 100%));
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .brandHighlight {
+    /* ease-in, as asked — ease-in-cubic. Custom properties do not interpolate,
+       but nothing here asks them to: --brand-index changes instantly and it is
+       `transform`, whose computed value changes with it, that transitions. */
+    transition: transform 420ms cubic-bezier(0.32, 0, 0.67, 0);
+  }
+}
+
+/* All three share one box now, so the highlight fits any of them exactly.
+   Only the ink weight distinguishes the current one. */
+.brandItem {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  color: var(--white);
+  white-space: nowrap;
+  opacity: 0.9;
+  transition: opacity 200ms ease;
+}
+
+.brandItem:hover {
+  opacity: 1;
+}
+
+.brandItemActive {
+  opacity: 1;
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 42px;
+  padding: 0 18px;
+  border-radius: var(--radius-pill);
+  color: var(--white);
+  white-space: nowrap;
+  transition: background-color 160ms ease;
+}
+
+.pill:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.caret {
+  font-size: 14.5px;
+  line-height: 1.5;
+  letter-spacing: 1.74px;
+}
+
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+
+/* Transparent to layout: the three groups stay direct flex children of .nav,
+   so the desktop space-between row is untouched. */
+.groups {
+  display: contents;
+}
+
+.toggle,
+.burger {
+  display: none;
+}
+
+/* Below the desktop row's natural width the four groups stop fitting, so the
+   menu collapses into a disclosure panel under the bar. */
+@media (max-width: 1180px) {
+  .nav {
+    justify-content: space-between;
+    gap: 16px;
+    /* The CTA sits inside the drawer here, so the bar reverts to an even frame. */
+    padding-right: var(--nav-inset);
+  }
+
+  .toggle {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    opacity: 0;
+  }
+
+  .burger {
+    display: grid;
+    gap: 5px;
+    padding: 10px;
+    border-radius: var(--radius-chip);
+    cursor: pointer;
+  }
+
+  .burgerBar {
+    width: 22px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--white);
+  }
+
+  .toggle:focus-visible + .burger {
+    outline: 2px solid var(--white);
+    outline-offset: 2px;
+  }
+
+  .groups {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    left: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+    padding: 22px;
+    border-radius: var(--radius-banner);
+    /* Fully opaque: at 96% the 4% of white heading bleeding through was
+       clearly legible against this near-black ground. */
+    background: var(--surface-darker);
+    box-shadow: 0 18px 40px -18px rgb(1 18 12 / 70%);
+  }
+
+  .toggle:checked ~ .groups {
+    display: flex;
+  }
+
+  .brandSwitcher,
+  .brandRow {
+    width: 100%;
+    min-width: 0;
+    height: auto;
+  }
+
+  /* One column inside the burger panel — three equal columns of "ANTZ SYSTEMS"
+     do not fit a phone. The highlight turns with the row: same index, same
+     100%-per-step arithmetic, just down instead of across. */
+  .brandRow {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: 1fr;
+  }
+
+  .brandHighlight {
+    width: 100%;
+    height: calc(100% / 3);
+    transform: translateY(calc(var(--brand-index, 0) * 100%));
+  }
+
+  .brandItem {
+    justify-content: flex-start;
+  }
+
+  .links {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+  }
+
+  .pill {
+    justify-content: space-between;
+    height: 44px;
+    padding-inline: 12px;
+  }
+}
+
+@media (max-width: 560px) {
+  .logo img {
+    width: 124.55px;
+    height: 47.09px;
+  }
+
+  .groups {
+    padding: 16px;
+  }
+}
+
+
+/* ---------------------------------------------------------------------------
+   Brand drawer — Figma node 1959:12496.
+
+   In Figma the header and the drawer are one white block, with the drawer
+   simply the part below the nav row. Here the nav is a floating rounded plate
+   over the banner, so the drawer is a panel of the same width hanging 8px
+   below it, fully rounded to match. Figma's border-top sat above the logo, at
+   the top of that white block, so it has no equivalent here; the plate/panel
+   boundary is carried by the colour change instead.
+   --------------------------------------------------------------------------- */
+.drawerToggle {
+  /* Hidden, but not display:none — that would take it out of the tab order and
+     the chip could only be opened by pointer. */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* The "What We Do" pill is the drawer's control, so it behaves like one. */
+.pillDrawer {
+  cursor: pointer;
+}
+
+.drawerToggle:focus-visible ~ .stack .pillDrawer {
+  outline: 2px solid var(--white);
+  outline-offset: 2px;
+}
+
+/* Catches the next click anywhere outside, which is the only way to close a
+   CSS-only disclosure. Inert until the drawer is open, and never painted.
+   `pointer-events: auto` is not optional: .sticky sets `none` for the whole
+   subtree so the zero-height bar does not swallow clicks on the hero, and
+   without this the scrim inherits it and never receives one. */
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  display: none;
+  pointer-events: auto;
+}
+
+.drawerToggle:checked ~ .scrim {
+  display: block;
+}
+
+.drawer {
+  width: var(--plate-w);
+  max-width: calc(100% - var(--edge) * 2);
+  /* Butts the plate's bottom edge, which is as close under the pill as the
+     panel can start: the plate's own 12px inset sits between them, and pulling
+     the panel up behind the plate would show white through it — the plate's
+     ground is fully transparent until the page scrolls. */
+  margin-top: 0;
+  /* Uniform, so the promo card — the tallest column, hence the one that sets
+     the panel's height — is inset equally on its top, right and bottom edges.
+     Figma's own 40px sides and bottom, with the top raised from 21px to match:
+     that 21px had been derived to land the node's 41px gap from the nav row,
+     which the plate's 12px inset now takes to 52px. Even margins won. */
+  padding: 40px;
+  overflow: hidden;
+  border-radius: var(--radius-banner);
+  /* Holographic wash. Same palette and 115deg axis as the hero headings'
+     .wf-iridescent, but painted as the panel's own background rather than
+     clipped to text — so it sits beneath the content automatically and needs
+     no pseudo-element or z-index juggling.
+
+     Diluted to 55%: at full strength these bands are legible behind 30px
+     headings but this panel carries 14px body copy, and the hues were
+     competing with it. The white stops of the original become fully
+     transparent white here, which is the same thing over the white ground
+     underneath and keeps the interpolation out of grey. */
+  background:
+    repeating-linear-gradient(
+      115deg,
+      rgb(255 255 255 / 0%) 0px,
+      rgb(191 243 255 / 55%) 60px,
+      rgb(255 255 255 / 0%) 120px,
+      rgb(255 200 220 / 55%) 180px,
+      rgb(255 255 255 / 0%) 240px,
+      rgb(255 217 194 / 55%) 300px,
+      rgb(255 255 255 / 0%) 360px,
+      rgb(200 255 228 / 55%) 420px,
+      rgb(255 255 255 / 0%) 480px
+    )
+    var(--surface-white);
+  box-shadow: 0 30px 70px -30px rgb(1 18 12 / 45%);
+
+  /* Both ends of the reveal are the "What We Do" pill, measured rather than
+     derived: its centre sits 68.0-68.2% across the panel across widths, and a
+     constant 43.3px ABOVE the panel's top edge — the plate's own bottom inset
+     lies between them. Hence the negative y: the origin is outside the box,
+     which clip-path allows. That 43.3px is a property of the plate, so it did
+     not move when the trigger changed from the FOUNDATION chip to this pill;
+     only the x did.
+
+     --drawer-hidden is not 0. With the centre 43.3px clear of the panel, any
+     radius below that reveals nothing, so starting from 0 would spend the first
+     stretch of the ease-in travelling invisibly. 38px is just inside the limit,
+     leaving 5px of margin. (46px was tried first, against a 51px offset
+     measured before the 8px gap was removed, and leaked by 2.7px.) */
+  /* Re-measure this if the nav's link list changes: the row is space-between,
+     so adding or removing an item moves the pill. Dropping "From the Field"
+     shifted it from 61% to 68%. */
+  --drawer-origin: 68% -43px;
+  --drawer-hidden: 38px;
+  clip-path: circle(var(--drawer-hidden) at var(--drawer-origin));
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.drawerToggle:checked ~ .stack .drawer {
+  clip-path: circle(150% at var(--drawer-origin));
+  visibility: visible;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The wash travels one full period ALONG the gradient's own axis, so the
+     bands move perpendicular to themselves and the loop closes seamlessly.
+     For a 115deg gradient that axis is (sin115, -cos115) = (0.9063, 0.4226),
+     so one 480px period is (435, 202.9) — a genuinely diagonal shift, where
+     the hero's pure-horizontal 529.62px happens to land on the same axis
+     distance but reads as sliding sideways.
+
+     14s, not the hero's 9s: this panel is 1305px wide against a text box, so
+     the same rate would have the bands hurrying across it. */
+  .drawer {
+    animation: drawerIridescence 14s linear infinite;
+  }
+
+  /* ease-in on the way open, as asked: the circle starts slowly and runs out
+     to the edges. visibility flips at the end of the close so the panel stays
+     visible while it shrinks, and leaves the tab order the moment it is gone. */
+  .drawer {
+    transition: clip-path 300ms ease-out, visibility 0s linear 300ms;
+  }
+
+  .drawerToggle:checked ~ .stack .drawer {
+    transition: clip-path 480ms ease-in, visibility 0s linear 0s;
+  }
+}
+
+@media (max-width: 1180px) {
+  /* The plate becomes a drawer of its own at this width, so the panel drops
+     the plate's width and fills the page box. The pill moves inside the burger
+     menu here, so the measured desktop origin no longer describes it: the
+     reveal falls back to the panel's own top-left. */
+  .drawer {
+    width: calc(100% - var(--edge) * 2);
+    padding: 20px;
+    --drawer-origin: 20% 0%;
+    --drawer-hidden: 0%;
+  }
+}
+
+@keyframes drawerIridescence {
+  to {
+    background-position: 435px 202.9px;
+  }
+}

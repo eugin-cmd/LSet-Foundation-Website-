@@ -1,0 +1,118 @@
+/* Figma Frame 1171276493 — 1440x1109; `option 3 3` bleeds 40px past each edge. */
+.cta {
+  position: relative;
+  /* Flex-centred rather than absolutely positioned at a percentage: the copy
+     block then needs no centring transform of its own, which leaves transform
+     free for the parallax below. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: clamp(620px, 77.01vw, 1109px);
+  overflow: hidden;
+  background-color: var(--scrim-base);
+  /* Named, and declared on the section itself: an anonymous view() on .bg
+     would be measured against this element's own overflow clip and would
+     never advance. */
+  view-timeline-name: --cta-view;
+}
+
+.bg {
+  position: absolute;
+  /* Grown by --cta-overscan on both edges so the drift below never pulls the
+     layer's edge into frame. Figma's 40px horizontal bleed is unchanged. */
+  top: calc(var(--cta-overscan) * -1);
+  right: -40px;
+  left: -40px;
+  height: calc(100% + var(--cta-overscan) * 2);
+  /* white-bellied heron.png from References, composited over --scrim-base (the
+     source is RGBA but only 0.03% of it is semi-transparent) and resized from
+     2880x2806 to 1920 wide — 8.2MB of PNG down to 424KB of JPEG.
+     Positioned above centre: the source is nearly square while this layer is
+     wider than tall, so `cover` trims top and bottom, and the drone operator
+     sits high in the frame. */
+  background: url("/assets/cta-heron.jpg") center 28% / cover no-repeat;
+}
+
+/* The heron photograph runs to near-white over the shingle and the river, where
+   white type measured 1.16:1 at its brightest and 2.15:1 across its worst 5% —
+   unreadable. A flat tint fixes it: at 30% the headline cleared 3:1 but the
+   subtext stalled at 4.21-4.38 against 4.5, so 35% (see the README). Band-sized and inset 0,
+   so it holds still while the photo drifts beneath it, as in Approach. */
+.bgTint {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 35%);
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(24px, 3.19vw, 46px);
+  width: min(1060.439px, 100% - var(--edge) * 2);
+}
+
+.title {
+  width: 100%;
+  color: var(--white);
+  text-align: center;
+}
+
+.sub {
+  width: min(651.388px, 100%);
+  color: var(--white);
+  text-align: center;
+}
+
+/* ---------------------------------------------------------------------------
+   Parallax: the copy rides up while the photo sinks, so they read as separate
+   planes. Driven by the section's own view() progress rather than a document
+   offset, so the motion stays tied to the band wherever it lands on the page.
+   Scroll-driven CSS, so it needs no listener and survives the static export.
+   --------------------------------------------------------------------------- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .bg,
+    .content {
+      animation-duration: 1ms; /* superseded by the timeline */
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --cta-view;
+      animation-range: cover 0% cover 100%;
+    }
+
+    .bg {
+      animation-name: ctaBackdropSink;
+    }
+
+    .content {
+      animation-name: ctaCopyRise;
+    }
+  }
+}
+
+/* Travels one full --cta-overscan, but centred on zero, so the layer keeps
+   half an overscan of coverage past the band at BOTH extremes. Swinging the
+   full +/- overscan instead would land its edge exactly on the band's edge and
+   leave nothing for sub-pixel rounding. */
+@keyframes ctaBackdropSink {
+  from {
+    transform: translateY(calc(var(--cta-overscan) / -2));
+  }
+  to {
+    transform: translateY(calc(var(--cta-overscan) / 2));
+  }
+}
+
+@keyframes ctaCopyRise {
+  from {
+    transform: translateY(calc(var(--cta-lift) * 0.85));
+  }
+  to {
+    transform: translateY(calc(var(--cta-lift) * -1));
+  }
+}

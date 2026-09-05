@@ -1,0 +1,362 @@
+/* Figma Frame 1984078027 on surface/darker. Laid out in flow rather than by
+   absolute offsets: the paddings and gap below reproduce Figma's 59 / 256 /
+   830 / 954 positions exactly at 1440, and stay correct as things reflow.
+
+   The base layer here IS the Figma rail, and it is what ships to browsers with
+   no scroll-driven animation, to narrow or short viewports, and to anyone who
+   asks for reduced motion. The scroll-driven arc is layered on at the bottom. */
+.proof {
+  position: relative;
+  width: 100%;
+  /* `clip`, not `hidden`: `hidden` would make this a scroll container and the
+     arc's sticky stage would have nothing to stick to. */
+  overflow: clip;
+  background: var(--surface-darker);
+  /* The nav plate floats over the page (87px tall: a 63px row plus its own 12px
+     padding), so a jump to #the-work would land the heading underneath it.
+     Reset inside the arc block below, where the pinned stage's own padding-top
+     already clears the plate and stopping short would leave the arc un-pinned. */
+  scroll-margin-top: calc(var(--nav-offset) + 87px + 16px);
+}
+
+.stage {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(48px, 7.01vw, 101px);
+  width: 100%;
+  padding: clamp(40px, 4.1vw, 59px) 0 clamp(64px, 8.61vw, 124px);
+}
+
+/* 1182px centred puts the left edge at Figma's x = 129 when the page is 1440. */
+.heading {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: min(1182px, 100% - var(--edge) * 2);
+  margin: 0 auto;
+}
+
+.kicker {
+  width: min(428px, 100%);
+  color: var(--white);
+}
+
+.titleWrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  border-radius: 14.688px;
+}
+
+/* Figma clips this frame at 465px but the 661px headline still reads in full,
+   so the type stays on one line and the frame is left un-clipped. */
+.titleClip {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  padding: 7.344px 0;
+  border-radius: 14.688px;
+}
+
+.title {
+  color: var(--white);
+  white-space: nowrap;
+}
+
+/* The rail deliberately runs off the right edge, as in Figma. Below the
+   design width it becomes a scroller so every card stays reachable. */
+.wheel {
+  display: flex;
+  align-items: stretch;
+  gap: 34px;
+  padding-left: max(var(--edge), calc(50% - 493.226px));
+  padding-right: var(--edge);
+  /* The scroller clips vertically too, which would cut the hover pop and its
+     shadow off. Padding makes room; the negative margin cancels it out again
+     so the rail sits exactly where Figma put it. */
+  margin-block: -30px;
+  padding-block: 30px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  /* Without this the mandatory snap fires on load and aligns card 1 to the
+     scrollport edge, eating the inset above. Insetting the snapport by the
+     same amount makes scrollLeft 0 the snap position. */
+  scroll-padding-left: max(var(--edge), calc(50% - 493.226px));
+  scrollbar-width: thin;
+}
+
+.pivot {
+  flex: none;
+  scroll-snap-align: start;
+}
+
+/* --- card --- */
+.card {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  width: min(457.183px, 82vw);
+  overflow: hidden;
+}
+
+/* .cardBg still resolves against .card: .cardHit is left static on purpose. */
+.cardHit {
+  display: flex;
+  flex-direction: column;
+  color: inherit;
+  text-decoration: none;
+}
+
+.cardHit:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: -3px;
+}
+
+.cardBg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.cardBg img {
+  position: absolute;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* Uncovered photo area above the body scrim. */
+.cardMedia {
+  width: 100%;
+  /* Figma's 457.183 x 304.789 uncovered area, as a ratio. */
+  aspect-ratio: 457.183 / 304.789;
+}
+
+.cardBody {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12.192px;
+  padding: clamp(20px, 1.9vw, 27.431px);
+  border-top: 1px solid var(--line-on-photo);
+  background: rgba(6, 20, 13, 0.58);
+  backdrop-filter: blur(3px);
+}
+
+.locationRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.locationRow svg {
+  flex: none;
+}
+
+.location {
+  width: auto;
+  color: var(--ink-on-dark-1);
+}
+
+.cardTitle {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  color: var(--ink-on-dark-1);
+}
+
+.cardDesc {
+  width: 100%;
+  color: var(--ink-on-dark-1);
+}
+
+.cardLink {
+  width: 100%;
+  color: var(--ink-on-dark-1);
+}
+
+.card:hover .cardLink,
+.card:focus-within .cardLink {
+  text-decoration: underline;
+}
+
+/* Pop on hover. Against surface/darker a drop shadow alone barely reads, so the
+   depth is carried by a faint rim light as well. */
+.card {
+  transition: box-shadow 220ms ease-out;
+}
+
+.card:hover,
+.card:focus-within {
+  box-shadow:
+    0 22px 46px -12px rgb(0 0 0 / 70%),
+    0 0 0 1px rgb(255 255 255 / 16%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .card {
+    /* Slight overshoot past 1, which is what makes it read as a pop rather
+       than a grow. */
+    transition:
+      transform 240ms cubic-bezier(0.34, 1.35, 0.64, 1),
+      box-shadow 220ms ease-out;
+  }
+
+  .card:hover,
+  .card:focus-within {
+    transform: scale(1.045);
+  }
+}
+
+@media (max-width: 560px) {
+  .title {
+    white-space: normal;
+  }
+}
+
+/* ------------------------------------------------------------------------
+   Scroll-driven arc.
+
+   Every card is mounted at the top of one shared circle and rotated about
+   that circle's centre, so it rides an arc: up from off-screen bottom-right,
+   level at the crest, then down to off-screen bottom-left. Each card runs the
+   same +30deg -> -30deg sweep on an ease-in-out-cubic; consecutive cards are
+   offset by 11.94% of that sweep. Measured off the reference implementation,
+   which at 1440x900 uses r = 2160px (1.5x the viewport width), a 384px card
+   (26.67%) and a 30deg limit — reproduced here as ratios of --pw-w.
+
+   Card i's window, as a share of the timeline's `cover` range, follows from
+   holding that 11.94% offset while pinning card 1 to 0% and card 5 to 100%:
+     w = 100 / (1 + 0.1194 * (n - 1)) = 67.68%   step = 8.081%
+   With the track at 2x the stage, all five crests then land inside the pin.
+   ------------------------------------------------------------------------ */
+@supports (animation-timeline: view()) {
+  /* Gated on width and height: below this the card would shrink past reading
+     size, and a two-viewport pin is the wrong trade on a small screen. */
+  @media (min-width: 1000px) and (min-height: 640px) and (prefers-reduced-motion: no-preference) {
+    .proof {
+      /* Negative, so an in-page jump to #the-work lands PAST this section's
+         top edge and part-way into the pin.
+
+         Landing on the top edge put the timeline at 20.8% — the point where
+         card one is 26% visible at the right margin and cards two to five are
+         still parked off-stage, so "The Work" arrived at an almost empty
+         stage. 38% is where cards one and two are both fully on screen and
+         three is just entering.
+
+         The figure is derived, not dialled in: offset = p*(H+V) - V, and with
+         H = 380svh = 3.8V that is V*(4.8p - 1), so p 0.38 gives 82.4svh. In
+         viewport units, so it holds at any viewport height — the track is
+         defined in svh too. */
+      scroll-margin-top: -82.4svh;
+
+      /* Geometry is locked to a 1600px design width so the composition stops
+         spreading on very wide monitors. */
+      --pw-w: min(100vw, 1600px);
+      --pw-radius: calc(var(--pw-w) * 1.5);
+      --pw-card-w: calc(var(--pw-w) * 0.26667);
+      /* Card centre inside the stage, clear of the pinned heading. */
+      --pw-card-cy: 55%;
+      --pw-swing: 30deg;
+      --pw-ease: cubic-bezier(0.65, 0, 0.35, 1); /* ease-in-out-cubic */
+    }
+
+    .track {
+      /* 380svh. The swing is unchanged at 60deg, so a longer track is what
+         makes the rotation slower rather than shallower — and the pin is also
+         where the scroll resistance comes from: the stage holds for
+         (380 - 100) = 280svh while the cards turn, against 100svh at the
+         original 200.
+
+         The slowdown is NOT the track ratio: `cover` spans the section plus a
+         viewport, so the timeline is (H + 100)svh. 200 -> 380 stretches it
+         300 -> 480, i.e. 1.60x. Measured at a 900px viewport, peak rotation at
+         mid-travel goes 9.26 -> 5.81 deg per 100px. (An intermediate pass at
+         260svh gave only 1.20x / 7.75deg, which read as barely changed.)
+
+         The education courses arc is set to match this per-card scroll
+         distance exactly; see the note there, since the two spans differ. */
+      height: 380svh;
+      view-timeline-name: --pw-track;
+    }
+
+    .stage {
+      position: sticky;
+      top: 0;
+      display: block;
+      height: 100svh;
+      /* Clears the sticky nav plate, which floats over the pinned heading. */
+      padding-top: calc(var(--nav-offset) + 63px + clamp(28px, 3.2vw, 46px));
+      padding-bottom: 0;
+      overflow: hidden;
+    }
+
+    .wheel {
+      position: absolute;
+      inset: 0;
+      display: block;
+      margin: 0;
+      padding: 0;
+      overflow: visible;
+      scroll-snap-type: none;
+    }
+
+    .pivot {
+      position: absolute;
+      /* The circle's centre: directly below the card's resting position. */
+      top: calc(var(--pw-card-cy) + var(--pw-radius));
+      left: 50%;
+      width: 0;
+      height: 0;
+      animation: pwSwing 1ms var(--pw-ease) both;
+      animation-timeline: --pw-track;
+      will-change: transform;
+    }
+
+    .pivot:nth-child(1) { animation-range: cover 0% cover 67.68%; }
+    .pivot:nth-child(2) { animation-range: cover 8.081% cover 75.761%; }
+    .pivot:nth-child(3) { animation-range: cover 16.162% cover 83.842%; }
+    .pivot:nth-child(4) { animation-range: cover 24.243% cover 91.923%; }
+    .pivot:nth-child(5) { animation-range: cover 32.324% cover 100%; }
+
+    .pivot .card {
+      position: absolute;
+      top: calc(var(--pw-radius) * -1);
+      left: 0;
+      width: var(--pw-card-w);
+      transform: translate(-50%, -50%);
+    }
+
+    /* Composed onto the centring translate, and scaled about the card's own
+       centre so a tilted card pops straight out of the arc. */
+    .pivot .card:hover,
+    .pivot .card:focus-within {
+      transform: translate(-50%, -50%) scale(1.045);
+    }
+
+    /* The arc card is 84% of the Figma card (384 vs 457.183), so the display
+       type and the body padding come down with it — at full size
+       "BROAD-TOOTHED" is 4px wider than the column and breaks at the hyphen.
+       Body copy keeps its designed size so it stays readable. */
+    .pivot .cardBody {
+      padding: clamp(18px, 1.6vw, 23px);
+    }
+
+    .pivot .cardTitle {
+      font-size: clamp(20px, 2.22vw, 32px);
+    }
+  }
+}
+
+@keyframes pwSwing {
+  from {
+    transform: rotate(var(--pw-swing));
+  }
+  to {
+    transform: rotate(calc(var(--pw-swing) * -1));
+  }
+}

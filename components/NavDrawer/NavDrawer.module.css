@@ -1,0 +1,222 @@
+/* Figma `drawer-inner` node 1959:12497 — three columns, 56px apart.
+   Every measurement here is the node's own; only the panel that carries it is
+   ours (see NavBar.module.css). */
+.inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 56px;
+  width: 100%;
+}
+
+/* --- col-label, 1959:12498 --- */
+.label {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 18px;
+  width: 234px;
+  color: var(--ink-2);
+}
+
+.labelHead,
+.labelBody {
+  width: 100%;
+}
+
+/* --- destinations, 1959:12501 --- */
+.destinations {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  /* Figma reserves a 46px `chip-row` frame below the last row (1959:12514).
+     It is empty in the design, so the space is kept and the element is not. */
+  padding-bottom: 46px;
+}
+
+/* A grid, not a flex row, so the description can share the title's row.
+
+   Aligning the paragraph to the title rather than to the index row above it
+   was previously a matter of pushing it down by the index row's height plus
+   the gap — measured, 23px at 1440 and 22px at 1200, so a constant would have
+   been 1px out across the fluid title range and would have drifted the moment
+   the icon, the number's size or the gap changed. Placing it in the same grid
+   row as the title makes the alignment structural: both start at row 2. */
+.row {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  align-content: start;
+  column-gap: 16px;
+  row-gap: 6px;
+  width: 100%;
+  padding: 18px 0;
+  color: inherit;
+}
+
+/* The whole row lifts on hover; there is no underline. The lift IS the
+   affordance now, which is why it is on the row rather than the title — a
+   3px rise on the title alone would slide it against a static number and
+   description and read as a glitch. */
+.row:hover,
+.row:focus-visible {
+  transform: translateY(-3px);
+}
+
+.row:focus-visible {
+  outline: 2px solid var(--ink-2);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .row {
+    transition: transform 200ms ease-out;
+  }
+}
+
+/* Same construction as the homepage accordion's .indexRow — icon and number
+   on one line, taking a single colour so one declaration moves both. Row 1 of
+   the grid, above both the title and the description. */
+.rowIndexRow {
+  grid-area: 1 / 1;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink-2);
+}
+
+.rowIndexRow svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  /* 2.0, not the homepage's 1.6. Stroke width is in viewBox units, so it
+     scales with the rendered size: 1.6 on a 32-unit box gives 1.0px at the
+     homepage's 20px but only 0.8px here at 16px, which reads noticeably
+     fainter. 2.0 at 16px is 1.0px again, matching. */
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rowIndex {
+  /* Tabular figures so "01" takes the same advance as "02" and "03". With the
+     number above the title this no longer shifts the titles — that was the
+     original reason — but it still keeps the three index rows identical. */
+  font-variant-numeric: tabular-nums;
+  color: currentColor;
+  white-space: nowrap;
+}
+
+.rowTitle {
+  grid-area: 2 / 1;
+  color: var(--brand-forest-800);
+}
+
+/* Row 2 alongside the title, which is what aligns their first lines. */
+.rowDesc {
+  grid-area: 2 / 2;
+  min-width: 0;
+  color: var(--ink-2);
+}
+
+/* --- promo, 1959:12517 --- */
+.promo {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 12px;
+  width: 320px;
+  padding: 20px;
+  overflow: hidden;
+  border: 1px solid var(--line-ph);
+  border-radius: 12px;
+  color: inherit;
+  transition: border-color 180ms ease, background-color 180ms ease;
+}
+
+.promo:hover {
+  border-color: var(--ink-2);
+  background: rgb(12 59 42 / 3%);
+}
+
+/* 130px tall by Figma, and 278px wide once the card's 20px padding and 1px
+   border are taken off its 320px. The box constrains the photo on both axes,
+   so the image fills it and crops rather than stretching. */
+.promoMedia {
+  display: block;
+  width: 100%;
+  height: 130px;
+  overflow: hidden;
+}
+
+.promoMedia img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* The source is a tall portrait; the heron's head is in its upper half. */
+  object-position: center 32%;
+}
+
+.promoKicker {
+  width: 100%;
+  color: var(--ink-2);
+}
+
+.promoTitle {
+  width: 100%;
+  color: var(--brand-forest-800);
+}
+
+.promoBody {
+  width: 100%;
+  color: var(--ink-2);
+}
+
+.promoCta {
+  width: 100%;
+  color: var(--brand-forest-800);
+}
+
+.promo:hover .promoCta {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Below the design width the three columns cannot hold their measures. */
+@media (max-width: 1120px) {
+  .inner {
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .label,
+  .promo {
+    width: 100%;
+  }
+
+  .destinations {
+    width: 100%;
+    padding-bottom: 0;
+  }
+
+  /* The panel is a single column here, so the title track stops being a fixed
+     measure and takes what is left beside the description. */
+  .row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  /* No room for two tracks: the description drops to its own row under the
+     title, so it can no longer align with it — nothing to align to. */
+  .row {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 6px;
+  }
+
+  .rowDesc {
+    grid-area: 3 / 1;
+  }
+}

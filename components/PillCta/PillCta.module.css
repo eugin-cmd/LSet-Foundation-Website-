@@ -1,0 +1,126 @@
+.pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 42px;
+  padding: 0 22px;
+  border: 1px solid var(--line-dark);
+  border-radius: var(--radius-pill);
+  background: var(--color-green-950);
+  color: var(--surface-white);
+  white-space: nowrap;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.pill:hover {
+  background: #2f6b4f;
+  border-color: #35533f;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* ---------------------------------------------------------------------------
+   Inverse: white pill that wipes to green on hover.
+
+   Measured off `a.btn-cta` on antzsystems.com and reversed — theirs is green
+   at rest wiping to white, so the two layers swap here. The mechanic is a
+   second copy of the label on an overlay that is clipped to a zero-width band
+   across the middle and scaled up 1.5x; on hover the clip opens to the full
+   pill while the scale settles to 1, so the fill rushes outward from the
+   centre and the label lands crisp rather than cross-fading.
+
+   `isolation: isolate` keeps the overlay's stacking inside the pill, and
+   `overflow: hidden` stops the 1.5x layer painting outside it.
+   --------------------------------------------------------------------------- */
+.inverse {
+  isolation: isolate;
+  overflow: hidden;
+  /* No border, and the 1px it gave up is added back to the padding, so the
+     outer box is identical to the solid variant. It has to go: the wipe's
+     `inset: 0` resolves against the padding box, so with a border in place the
+     pill's own white ground stayed visible as a 1px ring around the green. */
+  border: 0;
+  padding: 0 23px;
+  background: var(--surface-white);
+  color: var(--color-green-950);
+}
+
+/* `.pill:hover` would otherwise repaint this white pill mid-green. No
+   `transition: none` here: it outranks the transform transition set below and
+   would stop the pill's scale from animating on the way in. */
+.inverse,
+.inverse:hover {
+  background: var(--surface-white);
+}
+
+.inverse .label {
+  position: relative;
+  z-index: 2;
+}
+
+.wipe {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border-radius: inherit;
+  background: var(--color-green-950);
+  color: var(--surface-white);
+  /* 50% left and right meet in the middle, so this is a zero-width sliver. */
+  clip-path: inset(27.5% 50% round var(--radius-pill));
+}
+
+.inverse:hover .wipe,
+.inverse:focus-visible .wipe {
+  clip-path: inset(0 round var(--radius-pill));
+}
+
+/* The whole pill takes the "rush" instead of the overlay: scaling both layers
+   together preserves the label registration the effect depends on. */
+.inverse:hover,
+.inverse:focus-visible {
+  transform: scale(1.02);
+}
+
+.inverse:focus-visible {
+  outline: 2px solid var(--surface-white);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Two deliberate departures from the reference, both for the same reason.
+
+     The reference scales its overlay 1.5 -> 1 while clipping it. That scales the
+     overlay's copy of the label too, so through the whole reveal the two labels
+     are different sizes and never line up — rendered frame by frame it reads
+     "Get n touch", "Gt in tocch". It gets away with it because its clip curve,
+     `cubic-bezier(1, 0, 0, 1)`, sits still for half its 400ms and then crosses
+     the entire range in about 70ms: the mismatch is a blink. Slow that down at
+     all and the garbled text is plain.
+
+     So the scale moves to the pill, where it applies to both layers at once and
+     registration is preserved, and the clip gets an ordinary ease it can be seen
+     to travel. The labels now sit exactly on top of each other, so the text
+     changes colour along the wipe edge instead of cross-fading against itself. */
+  .wipe {
+    transition: clip-path 340ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .inverse {
+    transition: transform 420ms cubic-bezier(0.33, 0, 0.2, 1);
+  }
+
+  .inverse:hover .wipe,
+  .inverse:focus-visible .wipe {
+    transition: clip-path 460ms cubic-bezier(0.33, 0, 0.2, 1);
+  }
+}

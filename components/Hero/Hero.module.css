@@ -1,0 +1,285 @@
+/* Figma `option 3 1` — 1440x856, now carrying video instead of the still.
+
+   The banner is full-bleed: no gutter, no radius. Tried against an inset,
+   rounded variant and chosen deliberately — the page's three other dark
+   photographic bands run edge to edge, so framing only the hero treated like
+   objects unlike, and the floating nav plate already supplies the inset
+   character at the top. */
+.hero {
+  width: 100%;
+}
+
+.banner {
+  /* Vertical overscan on the video, so it can drift on scroll without ever
+     exposing an edge inside the banner. */
+  --video-overscan: 72px;
+
+  position: relative;
+  width: 100%;
+  height: var(--banner-height);
+  overflow: hidden;
+  background-color: var(--scrim-base);
+}
+
+.video {
+  position: absolute;
+  top: calc(var(--video-overscan) * -1);
+  left: 0;
+  width: 100%;
+  height: calc(100% + var(--video-overscan) * 2);
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Flat tint, sitting under the gradient scrims so those keep full strength. */
+.tint {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: rgb(0 0 0 / 24%);
+}
+
+/* Both stops taken from the Figma node's gradient fills. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, #01120c 3.381%, rgba(0, 0, 0, 0) 25.943%),
+    linear-gradient(0deg, #01120c 0%, rgba(0, 0, 0, 0) 58.071%);
+}
+
+/* Heading and lede centred in the banner as one block, then nudged down by
+   --headline-nudge. The nudge lives here rather than on .headlineInner so it
+   never collides with the parallax transform. The scroll cue has its own slot
+   (components/ScrollCue) and is no longer part of this block. */
+.headline {
+  --headline-nudge: 25px;
+
+  position: absolute;
+  inset: 0;
+  transform: translateY(var(--headline-nudge));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--edge);
+  pointer-events: none;
+}
+
+/* EXPERIMENT: oversized, right-aligned hero. The copy sits opposite the
+   subject, which stays on the left in the unaltered footage. Revert by
+   restoring align-items:center, the 100% width, and centred .title/.lede. */
+/* Centred copy block. Width is capped so the heading holds two lines rather
+   than spreading across the full frame. */
+.headlineInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  /* 1080px: "Technology Partner" measures 1047px at the 80px size, so a
+     narrower block spent a third line on a two-line heading. */
+  width: min(1080px, 100%);
+}
+
+/* Outlined tech marks above the heading — drone, field sensor, acoustic
+   recorder. Stroked rather than filled, taking their colour from the block. */
+.techIcons {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 2.08vw, 30px);
+  margin-bottom: 6px;
+  color: var(--white);
+}
+
+.techIcons svg {
+  flex: none;
+  width: clamp(26px, 2.36vw, 34px);
+  height: auto;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* Drops in once on load. `both` holds the first frame until the delay
+     elapses, so nothing flashes in place before its turn. The drone's 0.88
+     scale lives on an inner <g>, so this transform cannot collide with it. */
+  animation: iconDrop 940ms both;
+}
+
+/* Staggered so they land one after another rather than as a block. */
+.techIcons svg:nth-child(1) {
+  animation-delay: 220ms;
+}
+
+.techIcons svg:nth-child(2) {
+  animation-delay: 310ms;
+}
+
+.techIcons svg:nth-child(3) {
+  animation-delay: 400ms;
+}
+
+.techIcons svg:nth-child(4) {
+  animation-delay: 490ms;
+}
+
+/* Per-keyframe easing: the fall accelerates like gravity, then each rebound
+   decays. A single timing function across the whole animation would make the
+   drop and the bounces share one curve and read as mechanical. */
+@keyframes iconDrop {
+  0% {
+    opacity: 0;
+    transform: translateY(-120px);
+    animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.32);
+  }
+
+  38% {
+    opacity: 1;
+  }
+
+  52% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.25, 0.7, 0.35, 1);
+  }
+
+  68% {
+    transform: translateY(-13px);
+    animation-timing-function: cubic-bezier(0.6, 0, 0.85, 0.35);
+  }
+
+  82% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.25, 0.7, 0.35, 1);
+  }
+
+  91% {
+    transform: translateY(-4px);
+    animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.4);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .techIcons svg {
+    animation: none;
+  }
+}
+
+.title {
+  width: 100%;
+  /* Overrides WF/Display XL's size and weight for this one line only — the
+     same utility drives the approach, CTA, pillar and card headings, which
+     should not grow with it. Google Sans Flex is variable to 1000, so 900 is
+     the real face rather than a synthesised bold. */
+  font-size: clamp(36px, 5.56vw, 80px);
+  font-weight: 900;
+  color: var(--white);
+  text-align: center;
+  /* Centred display type wants even line lengths. */
+  text-wrap: balance;
+}
+
+/* Moved here from the old mint intro band. Figma set it 964px wide; narrowed
+   because a centred measure near 65-75 characters reads better than 120. */
+.lede {
+  width: min(680px, 100%);
+  color: var(--white);
+  text-align: center;
+  text-wrap: pretty;
+}
+
+/* Leaf flourish under the subtext. Scaled well down from the artwork's native
+   114x60 to keep it compact; height follows the viewBox so it cannot distort. */
+.leaves {
+  flex: none;
+  width: 68px;
+  height: auto;
+  margin-top: 2px;
+  color: var(--white);
+  opacity: 0.9;
+}
+
+
+/* ---------------------------------------------------------------------------
+   Parallax: the content rises faster than the footage sinks, so the two
+   separate as the page scrolls. Scroll-driven animations keep this in CSS —
+   no scroll listener, and it survives in the static export. Browsers without
+   `animation-timeline` simply get the static hero.
+   --------------------------------------------------------------------------- */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .video,
+    .headlineInner {
+      animation-duration: 1ms; /* overridden by the timeline; keeps Safari happy */
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(root block);
+      /* The hero is now exactly the banner's height — no gutters to add — so
+         the range spans precisely the section. */
+      animation-range: 0 var(--banner-height);
+    }
+
+    .video {
+      animation-name: heroFootageSink;
+    }
+
+    .headlineInner {
+      animation-name: heroContentRise;
+    }
+  }
+}
+
+@keyframes heroFootageSink {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(var(--video-overscan));
+  }
+}
+
+@keyframes heroContentRise {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-150px);
+  }
+}
+
+/* Hold the poster frame and drop the animation for viewers who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  .video {
+    display: none;
+  }
+
+  .banner {
+    background-image: url("/assets/hero-poster.jpg");
+    background-position: center;
+    background-size: cover;
+  }
+}
+
+
+@media (max-width: 700px) {
+  .headline {
+    --headline-nudge: 0px;
+    /* Centre the block in the space *below* the collapsed nav bar, not the
+       whole banner — otherwise it rides up under the logo. */
+    padding-top: 104px;
+  }
+
+  .headlineInner {
+    gap: 16px;
+  }
+
+  /* Purely decorative, and the phone block is already dense — icons, a
+     three-line heading and a six-line lede leave it 5px off the scroll cue. */
+  .leaves {
+    display: none;
+  }
+}

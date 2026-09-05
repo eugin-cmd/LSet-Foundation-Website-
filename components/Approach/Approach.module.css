@@ -1,0 +1,136 @@
+/* Figma Frame 1000004799 — 1440x1452: a 1050px photo block above a 402px deep-green block.
+   The overhanging field photo lives in <Pillars> because Figma parents it there. */
+.approach {
+  position: relative;
+  width: 100%;
+  background: var(--surface-deep);
+  /* Named so descendants inside the clipping .bgArea can still key off the
+     section's own passage through the viewport. A bare view() on .bg would be
+     measured against .bgArea, which clips it, and would never advance. */
+  view-timeline-name: --approach-view;
+}
+
+/* Holds Figma's 1050px-at-1440 proportion and clips the drifting layer. */
+.bgArea {
+  position: relative;
+  width: 100%;
+  /* Figma had 1050px at 1440; tightened to 860 so the section is shorter and
+     the parallax plays out over less scroll. */
+  height: clamp(320px, 59.72vw, 860px);
+  overflow: hidden;
+}
+
+.bg {
+  /* Defocused, so it reads as a far plane and the sharp heading and photo
+     separate from it more strongly than position alone achieves. */
+  --bg-blur: 3px;
+  /* A blurred layer fades out at its own edges, and .bgArea clips it. Without
+     slack the faded edge shows as a translucent band letting the section's
+     dark green through — so the layer is grown by 3x the radius on every side,
+     on top of the vertical --approach-overscan the drift consumes. */
+  --bg-bleed: calc(var(--bg-blur) * 3);
+  --bg-slack: calc(var(--approach-overscan) + var(--bg-bleed));
+
+  position: absolute;
+  top: calc(var(--bg-slack) * -1);
+  left: calc(var(--bg-bleed) * -1);
+  width: calc(100% + var(--bg-bleed) * 2);
+  height: calc(100% + var(--bg-slack) * 2);
+  background: url("/assets/approach-bg.jpg") center bottom / cover no-repeat;
+  filter: blur(var(--bg-blur));
+}
+
+/* Flat 25% black over the canopy only — the block below is already dark. Held
+   still while the image drifts beneath it. */
+.bgTint {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 25%);
+  pointer-events: none;
+}
+
+.deep {
+  width: 100%;
+  /* Figma's 402px was a wide green wash under the image; cut to 150. */
+  height: clamp(90px, 10.42vw, 150px);
+  background: var(--surface-deep);
+}
+
+.heading {
+  position: absolute;
+  /* The overhanging photo keeps its own height as the section shrinks, so the
+     heading sits higher to stay clear of it. */
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25.499px;
+  width: min(1078px, 100% - var(--edge) * 2);
+  text-align: center;
+}
+
+.kicker {
+  width: 100%;
+  color: var(--white);
+}
+
+.title {
+  width: 100%;
+  color: var(--white);
+}
+
+.accent {
+  color: var(--color-orange);
+}
+
+/* ---------------------------------------------------------------------------
+   Parallax: the heading and the overhanging photo ride up while the backdrop
+   sinks, so they read as separate planes. Driven by each element's own
+   `view()` progress rather than an absolute document offset, so the motion
+   stays tied to the section wherever it lands on the page. Scroll-driven CSS,
+   so it needs no listener and survives the static export.
+   --------------------------------------------------------------------------- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .bg,
+    .heading {
+      animation-duration: 1ms; /* superseded by the timeline */
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --approach-view;
+      /* Ease in and out of the range so the drift never starts or stops
+         abruptly at the section's edges. */
+      animation-range: cover 0% cover 100%;
+    }
+
+    .bg {
+      animation-name: approachBackdropSink;
+    }
+
+    .heading {
+      animation-name: approachHeadingRise;
+    }
+  }
+}
+
+@keyframes approachBackdropSink {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(var(--approach-overscan));
+  }
+}
+
+/* translateX(-50%) is repeated in both frames because the animation replaces
+   the base transform outright while it runs. */
+@keyframes approachHeadingRise {
+  from {
+    transform: translate(-50%, calc(var(--approach-lift) * 0.85));
+  }
+  to {
+    transform: translate(-50%, calc(var(--approach-lift) * -1));
+  }
+}

@@ -1,0 +1,887 @@
+/* ===========================================================================
+   Figma `Desktop - 5`, node 1962:12731 — the education page.
+
+   Every band's photograph is a node export with that node's scrim gradients
+   already composited in, the same arrangement the homepage uses for its
+   approach and CTA bands. Nothing is layered over them here.
+   =========================================================================== */
+
+/* --- hero, 1962:12732 + overlay 1962:13225 --- */
+.hero {
+  /* Raises the scroll cue. The Foundation hero keeps the default: measured,
+     the same lift there puts the mouse 23px into its leaf flourish, because
+     its copy column is the taller of the two (431.6px against 399). */
+  --cue-lift: 50px;
+  /* The Foundation banner's height, token and all, rather than Figma's 856 at
+     1440 — the two banners now match at every width, including the 640px the
+     token drops to on phones. Kept behind a local name so the parallax range
+     below stays the band's own height rather than a second copy of it. */
+  --edu-banner-h: var(--banner-height);
+  /* What the cue needs at the foot: its own slot offset, its 47px height, and
+     20px of air. Derived rather than typed, so raising --cue-lift moves this
+     with it. At 1440 that is 189px, which is just inside the 190.5px the copy
+     would leave anyway — so the reserve guards the cue without inflating the
+     band past --banner-height. */
+  --cue-reserve: calc(clamp(36px, 5vw, 72px) + var(--cue-lift) + 47px + 20px);
+
+  /* One layout at every width, rather than a fixed band that switches to a
+     content-driven one at a breakpoint. --banner-height is a floor and the
+     padding is symmetric, so above the crossover this centres the copy in a
+     band of exactly --banner-height — identical to absolutely centring it —
+     and below the crossover the band grows instead of the cue landing on the
+     paragraph. The two modes agreed at the boundary anyway, which is what made
+     the breakpoint redundant; chasing it was the bug, since it moved every
+     time the copy or the height curve changed. */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--edu-banner-h);
+  padding: var(--cue-reserve) var(--edge);
+  overflow: hidden;
+  background: url("/assets/edu-hero.jpg") center / cover no-repeat;
+  background-color: var(--scrim-base);
+}
+
+/* Figma puts the block at y 660 of 856 — low in the band. It is centred here
+   instead, in the Foundation hero's absolute wrapper.
+
+   No nudge, unlike that hero's +25px. Once this band came down to the shared
+   --banner-height, 780px at 1440, the 50px cue lift and the copy could not
+   both have their room: measured, the cue landed 6.2px inside the paragraph.
+   Pushing the copy down 25px for optical centring was the most expendable of
+   the three — it was mine, where the height and the lift were both asked for —
+   so it goes, and the copy is centred mathematically instead. That buys back
+   exactly the 25px, leaving 18.8px between the paragraph and the cue. */
+.heroTitle {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  /* The band's only interactive mark is the scroll cue, which sits in its own
+     slot outside this wrapper. */
+  pointer-events: none;
+}
+
+/* Figma's 1276 copy box. The gap is 16px, not Figma's 23: the enlarged heading
+   needed the height, and a tighter stack suits a heavier heading anyway. */
+.heroInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: min(1276px, 100%);
+  text-align: center;
+}
+
+/* Flat 25% black over the photograph, under the copy and under the blinder —
+   it is first in the DOM and nothing here raises a z-index. */
+.heroTint {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 25%);
+  pointer-events: none;
+}
+
+/* Paw print + open book: animal care and education, the two halves of the
+   heading. Same construction as the Foundation hero's icon row. Both drawings
+   are sized to the same ink extent, since this row centres the 34px boxes
+   rather than the artwork inside them. */
+.heroIcons {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 2.08vw, 30px);
+  margin-bottom: 6px;
+  color: var(--white);
+}
+
+.heroIcons svg {
+  flex: none;
+  width: clamp(26px, 2.36vw, 34px);
+  height: auto;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* Drops in once on load. `both` holds the first frame until the delay
+     elapses, so nothing sits in place before its turn. The delays wait out the
+     blinder — its last slat lands at 11 x 55ms + 760ms = 1365ms — so the drop
+     is actually seen rather than played behind a closed blind. */
+  animation: eduIconDrop 940ms both;
+}
+
+.heroIcons svg:nth-child(1) {
+  animation-delay: 1320ms;
+}
+
+.heroIcons svg:nth-child(2) {
+  animation-delay: 1410ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroIcons svg {
+    animation: none;
+  }
+}
+
+/* Drop, overshoot, settle. */
+@keyframes eduIconDrop {
+  0% {
+    opacity: 0;
+    transform: translateY(-120px);
+    animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.32);
+  }
+  38% {
+    opacity: 1;
+  }
+  52% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.25, 0.7, 0.35, 1);
+  }
+  68% {
+    transform: translateY(-13px);
+    animation-timing-function: cubic-bezier(0.6, 0, 0.85, 0.35);
+  }
+  82% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.25, 0.7, 0.35, 1);
+  }
+  91% {
+    transform: translateY(-4px);
+    animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.4);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.heroHeading {
+  width: 100%;
+  margin: 0;
+  /* 900, not WF/Display XL's 400 — Google Sans Flex is variable to 1000, so
+     this is the real face rather than a synthesised bold.
+
+     68px at 1440 (4.72vw), against the Foundation hero's 80px. That 80 is not
+     available: "ANIMAL CARE & MANAGEMENT" measures 1380px at 80/900 in a
+     1276px column, 104px over, so it would take a third line. 72px (1242px)
+     is the largest that fits, and it does now fit the 780px band — but on 34px
+     of line-width margin and 6.3px of column slack, so a small font-metric
+     shift would break the heading to three lines. 68px reads the same and has
+     103px and 15.2px instead. */
+  font-size: clamp(32px, 4.72vw, 68px);
+  font-weight: 900;
+  /* Fallback for no background-clip support; .wf-iridescent replaces it. */
+  color: var(--white);
+  text-wrap: balance;
+}
+
+/* The institute paragraph, moved up out of the band below. 800px, not the
+   Foundation lede's 680: at 680 it ran to five lines, and the fifth is what the
+   enlarged heading needed. Still narrower than Figma's own 964px for this copy.
+   Widening past 800 buys nothing — it is four lines from 800px on. */
+.heroLede {
+  width: min(800px, 100%);
+  color: var(--white);
+  text-wrap: pretty;
+}
+
+.heroLeaves {
+  flex: none;
+  width: 68px;
+  height: auto;
+  margin-top: 2px;
+  color: var(--white);
+  opacity: 0.9;
+}
+
+/* ---------------------------------------------------------------------------
+   Parallax: the copy column rises as the banner scrolls past, so it separates
+   from the photograph behind it. The icons and heading move with the rest of
+   their column — a column that tore itself apart mid-block would read as a
+   bug, not as depth.
+
+   The rise sits on .heroInner, not .heroTitle: .heroTitle already carries the
+   --headline-nudge transform and an animation on the same property would
+   replace it. Scroll-driven, so there is no listener and it survives the
+   static export; browsers without `animation-timeline` get the static banner.
+   Longhands throughout — the `animation` shorthand resets animation-timeline
+   to auto and would silently pin this to its first frame.
+   --------------------------------------------------------------------------- */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .heroInner {
+      animation-name: eduCopyRise;
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 var(--edu-banner-h);
+    }
+  }
+}
+
+@keyframes eduCopyRise {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-150px);
+  }
+}
+
+/* --- statement band, 1962:12736 (1440x1452) --- */
+.statement {
+  /* How far the statement travels either side of centre as the band passes. */
+  /* Raised from 80px, and the range below is narrowed to match: ±80px spread
+     across the band's whole pass moved the copy at about 8% of scroll speed,
+     which is present but hard to see. */
+  --statement-lift: clamp(40px, 7.64vw, 110px);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+  background: var(--surface-deep);
+  view-timeline-name: --edu-statement;
+}
+
+/* Figma's 1050 photo, cropped to 940 at 1440 (65.28vw).
+
+   940 is not a taste figure. The export's baked scrim fades to a flat floor of
+   rgb(1 18 12) — which is --surface-deep, rgb(2 19 12), to within a unit — and
+   it only reaches that floor at image row 1250 of 1400, i.e. box y 937. So the
+   band can end there and nowhere earlier. An earlier crop to 820 cut the scrim
+   mid-fade, at rgb(11 22 10), and left a measured 3.2-unit step against the
+   deep block below it. Ending at the floor instead means the band's bottom
+   edge IS the scrim's resting colour, so there is nothing to butt against and
+   the deep block is redundant — it is gone, along with Figma's 402px of it.
+
+   `top` rather than `center` in the position is what sends the crop to the
+   bottom, where the dead tail is; centred it would have eaten the subject.
+   Both the box and the cover scale are width-driven, so the box bottom lands
+   at 89.5% of the image height at every width, against the floor's 89.3%, and
+   the framing never shifts.
+
+   The 340px floor stops a phone rendering a photo too short to carry the copy. */
+.statementPhoto {
+  width: 100%;
+  height: clamp(340px, 65.28vw, 940px);
+  background: url("/assets/edu-statement.jpg") center top / cover no-repeat;
+}
+
+/* Centred in the band, rather than Figma's y 669 of 1452 (46.07%).
+
+   That figure did land within ~1px of centre from 800px up, but only because
+   the photo's then-72.92vw and the deep block's 27.92vw happened to sum such
+   that 46.07% of the pair was the middle — a coincidence of two clamps.
+   It broke wherever either clamp saturated: measured, the copy sat 39.2px
+   above centre at 700px and 20.3px below it at 390px. Centring it outright
+   holds at every width. */
+.statementCopy {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  /* Above .statement::after, the 25% tint, which paints after every child. */
+  z-index: 1;
+  width: min(1078px, 100% - var(--edge) * 2);
+  margin: 0 auto;
+  /* Half its own height back up. The parallax keyframes below animate
+     `transform`, which replaces this, so they carry the -50% themselves. */
+  transform: translateY(-50%);
+  color: var(--white);
+  text-align: center;
+  text-wrap: balance;
+}
+
+.statementAccent {
+  color: var(--color-orange);
+}
+
+/* Flat 25% black over the band, the same treatment as the hero's.
+
+   ::after paints after every child, including the absolutely-positioned copy,
+   so the copy is lifted above it — otherwise the tint would dim the type it is
+   meant to be helping. */
+.statement::after {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: rgb(0 0 0 / 25%);
+  pointer-events: none;
+  content: "";
+}
+
+/* ---------------------------------------------------------------------------
+   Parallax: the statement drifts up through the band as it passes, so it reads
+   as a plane over the photograph rather than fixed to it. Driven by the band's
+   own view() progress, like the homepage's approach and CTA bands, so the
+   motion is tied to this section wherever it lands on the page.
+
+   Longhands, not the `animation` shorthand — that resets animation-timeline to
+   auto and would pin this to its first frame.
+   --------------------------------------------------------------------------- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .statementCopy {
+      animation-name: eduStatementRise;
+      animation-duration: 1ms; /* superseded by the timeline */
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --edu-statement;
+      /* Not the full cover 0%-100%. Holding the last 15% at each end packs the
+         same travel into 70% of the pass, so the copy moves at roughly 17% of
+         scroll speed instead of 8% — visible as parallax rather than as drift —
+         and it sits still while entering and leaving. */
+      animation-range: cover 15% cover 85%;
+    }
+  }
+}
+
+/* The -50% is repeated here because the animation replaces the base transform
+   rather than adding to it; the lift is what actually moves. */
+@keyframes eduStatementRise {
+  from {
+    transform: translateY(calc(-50% + var(--statement-lift)));
+  }
+  to {
+    transform: translateY(calc(-50% - var(--statement-lift)));
+  }
+}
+
+/* --- disclosure rows, 1962:18119 --- */
+.rows {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: clamp(48px, 5.42vw, 78px) clamp(var(--edge), 11.94vw, 172px);
+  background: var(--surface-white);
+}
+
+/* ---------------------------------------------------------------------------
+   Diagonal holographic wash — the counterpart to the homepage pillars'
+   concentric one, in the same place in the page and at the same 14% and 480px
+   period, but linear rather than radial. Same 115deg axis as the nav drawer
+   and the hero headings.
+
+   The white stops are transparent white, which is the same thing over this
+   section's white ground and keeps the interpolation out of grey.
+   --------------------------------------------------------------------------- */
+.rows::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: repeating-linear-gradient(
+    115deg,
+    rgb(255 255 255 / 0%) 0px,
+    rgb(191 243 255 / 14%) 60px,
+    rgb(255 255 255 / 0%) 120px,
+    rgb(255 200 220 / 14%) 180px,
+    rgb(255 255 255 / 0%) 240px,
+    rgb(255 217 194 / 14%) 300px,
+    rgb(255 255 255 / 0%) 360px,
+    rgb(200 255 228 / 14%) 420px,
+    rgb(255 255 255 / 0%) 480px
+  );
+  pointer-events: none;
+  content: "";
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Travels one full period ALONG the gradient's own axis, so the bands move
+     perpendicular to themselves and the loop closes seamlessly. For 115deg
+     that axis is (sin115, -cos115) = (0.9063, 0.4226), so one 480px period is
+     (435, 202.9). Same derivation as the nav drawer's wash.
+
+     22s, matching the pillars' rate rather than the drawer's 14s: this is a
+     page section rather than a panel, and the two accordions should drift at
+     the same speed. */
+  .rows::before {
+    animation: rowsIridescence 22s linear infinite;
+  }
+}
+
+@keyframes rowsIridescence {
+  to {
+    background-position: 435px 202.9px;
+  }
+}
+
+/* Figma's 1102; the accordion's own list caps at 1101. */
+.rowsInner {
+  /* Above .rows::before, the wash — that pseudo-element is positioned, so
+     without this it would paint over the accordion. */
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: min(1102px, 100%);
+}
+
+/* --- showcase band, 1962:18246, same build as the statement --- */
+.showcase {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+  background: var(--surface-deep);
+}
+
+.showcasePhoto {
+  width: 100%;
+  height: min(1050px, 72.92vw);
+  background: url("/assets/edu-statement-2.jpg") center / cover no-repeat;
+}
+
+.showcaseDeep {
+  width: 100%;
+  height: clamp(140px, 27.92vw, 402px);
+  background: var(--surface-deep);
+}
+
+/* Figma 1962:18205 — 606.072 x 438.489 at x 417, y 415, clipping an image that
+   is 39.69px wider than the frame. */
+.showcaseFrame {
+  position: absolute;
+  top: 28.58%;
+  left: 28.96%;
+  width: min(606.072px, 42.09vw);
+  aspect-ratio: 606.072 / 438.489;
+  overflow: hidden;
+}
+
+.showcaseFrame img {
+  display: block;
+  /* Figma's inner container is 39.69px wider than the 606.072px frame and is
+     clipped by it — 6.55%. `max-width: none` is required: the global
+     `img { max-width: 100% }` was capping this back to the frame width and
+     cancelling the bleed entirely. */
+  width: calc(100% + 6.55%);
+  max-width: none;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- courses, 1962:12752 ---
+   The same two-layer build as the Proof Wall: the base layer here IS the Figma
+   rail, and it is what ships to browsers with no scroll-driven animation, to
+   narrow or short viewports, and to anyone who asks for reduced motion. The
+   scroll-driven arc is layered on at the bottom of this file. */
+.courses {
+  position: relative;
+  width: 100%;
+  /* `clip`, not `hidden`: `hidden` would make this a scroll container and the
+     arc's sticky stage would have nothing to stick to. */
+  overflow: clip;
+  background: var(--surface-darker);
+}
+
+/* Collapses to nothing in the base layer; becomes the 200svh scroll track that
+   drives the arc's timeline. */
+.coursesTrack {
+  width: 100%;
+}
+
+.coursesStage {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: clamp(40px, 4.1vw, 59px) 0 clamp(44px, 4.38vw, 63px);
+}
+
+/* Figma's x 129 at 1440 puts this on the same left edge as the proof wall's
+   heading, so the same centred 1182 box is used. */
+.coursesHead {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: min(1182px, 100% - var(--edge) * 2);
+  margin: 0 auto;
+}
+
+.coursesKicker {
+  width: min(428px, 100%);
+  color: var(--white);
+}
+
+.coursesTitle {
+  margin: 0;
+  color: var(--white);
+  white-space: nowrap;
+}
+
+/* Figma starts the row at x 301.77 and lets the third card run off the right
+   edge. Below the design width it becomes a scroller so every card stays
+   reachable, as the proof wall's rail does. */
+.rail {
+  display: flex;
+  align-items: stretch;
+  gap: 34px;
+  margin-top: clamp(36px, 5.21vw, 75px);
+  padding-left: max(var(--edge), calc(50% - 418.226px));
+  padding-right: var(--edge);
+  /* The scroller clips vertically too, which would cut the hover pop and its
+     shadow off. Padding makes room; the negative margin cancels it out again
+     so the rail sits exactly where Figma put it. */
+  margin-block: -30px;
+  padding-block: 30px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  /* Without this the mandatory snap fires on load and pulls card 1 flush to
+     the scrollport edge, eating the inset above. */
+  scroll-padding-left: max(var(--edge), calc(50% - 418.226px));
+  scrollbar-width: thin;
+}
+
+.pivot {
+  flex: none;
+  scroll-snap-align: start;
+}
+
+/* --- course card: the proof wall's construction, 457.183 x 304.789 --- */
+.card {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  width: min(457.183px, 82vw);
+  overflow: hidden;
+  transition: box-shadow 220ms ease-out;
+}
+
+.card:hover,
+.card:focus-within {
+  box-shadow:
+    0 22px 46px -12px rgb(0 0 0 / 70%),
+    0 0 0 1px rgb(255 255 255 / 16%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .card {
+    transition:
+      transform 240ms cubic-bezier(0.34, 1.35, 0.64, 1),
+      box-shadow 220ms ease-out;
+  }
+
+  .card:hover,
+  .card:focus-within {
+    transform: scale(1.03);
+  }
+}
+
+.cardHit {
+  display: flex;
+  flex-direction: column;
+  color: inherit;
+  text-decoration: none;
+}
+
+.cardHit:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: -3px;
+}
+
+.cardBg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.cardBg img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* Two layers over the photograph, in one declaration.
+
+   The flat 25% black is the background-COLOUR, so it paints beneath the
+   gradient rather than over it — a colour can only be the last value in the
+   `background` shorthand, which is exactly the order wanted here: the tint
+   darkens the photo, then Figma's scrim composites on top of the result.
+
+   That scrim is on card 02 only in Figma, but the body copy sits straight on
+   the photograph in all three and needs the same ground under it. */
+.cardBg::after {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgb(0 0 0 / 0%) 34%, rgb(0 0 0 / 62%) 100%)
+    rgb(0 0 0 / 25%);
+  content: "";
+}
+
+/* Uncovered photo area above the body, Figma's 457.183 x 304.789 as a ratio. */
+.cardMedia {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 457.183 / 304.789;
+}
+
+.cardBody {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12.192px;
+  padding: clamp(20px, 1.9vw, 27.431px);
+}
+
+.cardDuration {
+  width: 100%;
+  color: rgb(255 255 255 / 80%);
+}
+
+.cardTitle {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0;
+  color: var(--white);
+}
+
+.cardDesc {
+  width: 100%;
+  color: rgb(255 255 255 / 85%);
+}
+
+.cardLink {
+  width: 100%;
+  color: var(--ink-on-dark-1);
+}
+
+.card:hover .cardLink,
+.card:focus-within .cardLink {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* --- partner strip, 1965:21318 ---
+   Lifted out of the courses section to sit directly under the banner, and now
+   on white, which reads as the light break between the banner and the deep
+   green statement band — the same job the homepage's partner strip does.
+
+   The logos had to be rebuilt for this. Figma's exports were fully opaque with
+   the dark page composited into them, so on white they showed as seven
+   rectangles; these are re-sourced from the original uploads in the Figma file
+   (six raster, plus Sanjeevan as vector, which is why it alone is an .svg) and
+   carry real transparency. See README for the one mark that was recoloured. */
+.partnersBand {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  background: var(--surface-white);
+}
+
+.partners {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 34px;
+  width: min(1042px, 100% - var(--edge) * 2);
+  /* The clamp(64px, 10.56vw, 152px) top margin separated the strip from the
+     course rail above it; standing alone it takes even padding instead. */
+  padding: clamp(32px, 3.54vw, 50.935px) clamp(var(--edge), 3.54vw, 50.935px);
+}
+
+.partnersLabel {
+  width: 100%;
+  margin: 0;
+  /* Back to Figma's 400 and dark ink now the band is white — the same
+     treatment as the homepage's PartnersStrip label, which this now sits in
+     the same context as. The 600 weight existed only to stop thin white stems
+     reading grey against the near-black ground; dark ink on white does not
+     have that problem. */
+  font: 400 14px/1.55 var(--font-inter-tight);
+  color: var(--ink-2);
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.partnersLogos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(18px, 2.5vw, 36.034px);
+  width: min(916px, 100%);
+}
+
+/* Unlike assets, so each keeps its own Figma box; the shared rule only caps
+   them proportionally on narrow screens. */
+.partnersLogos img {
+  width: var(--logo-w);
+  height: auto;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+/* Below the design width the band's 59.44vw height shrinks faster than the
+   copy inside it: at 900px the band is 535px tall while the copy still needs
+   432, and the cue at its foot then lands on the last line. From here down the
+   banner takes its height from its contents, with the vw figure as a floor,
+   and reserves the cue's own room in its padding — derived from --cue-lift, so
+   raising the cue can never re-open this collision. */
+/* ===========================================================================
+   Courses arc — the Proof Wall's scroll-driven wheel, ported here.
+
+   Same geometry constants, same easing, same two-layer gating.
+
+   The stagger had to be solved rather than copied. How tightly the cards pack
+   on the arc is set by the RATIO offset/span, not by either figure alone: the
+   swing is 60deg, so adjacent cards sit 60 * offset/span apart. The Proof Wall
+   runs 8.081/67.68 = 0.1194, i.e. 7.164deg, which at this radius is ~270px —
+   less than the 384px card, so its cards overlap.
+
+   Three cards must also satisfy `2*offset + span = 100`, or the last one stops
+   early and the tail of the pin has nothing moving. Solving both together:
+
+     offset = 0.1194 * span,  2*offset + span = 100
+     -> span 80.72%, offset 9.64%, separation 7.164deg
+
+   which is the Proof Wall's packing to three decimal places. (An earlier pass
+   used span 67.68% with offset 16.16%: that satisfied the second constraint
+   but doubled the ratio to 0.239, so the cards sat 540px apart and never
+   overlapped — correct motion, but spread out rather than packed.)
+
+   Each card now crosses its 60deg over 80.72% of the pin instead of 67.68%, so
+   the track is shortened by the same ratio (200 * 67.68/80.72 = 168svh). That
+   keeps the scroll distance per card identical to the Proof Wall's — 135.6svh
+   against its 135.4svh — rather than making the swing 19% slower, and the
+   section is 32svh shorter into the bargain.
+   =========================================================================== */
+@supports (animation-timeline: view()) {
+  /* Gated on width and height, as the Proof Wall is: below this the card would
+     shrink past reading size, and a two-viewport pin is the wrong trade on a
+     small screen. */
+  @media (min-width: 1000px) and (min-height: 640px) and (prefers-reduced-motion: no-preference) {
+    .courses {
+      /* Geometry locked to a 1600px design width so the composition stops
+         spreading on very wide monitors. */
+      --cw-w: min(100vw, 1600px);
+      --cw-radius: calc(var(--cw-w) * 1.5);
+      --cw-card-w: calc(var(--cw-w) * 0.26667);
+      /* Card centre inside the stage, clear of the pinned heading. */
+      --cw-card-cy: 55%;
+      --cw-swing: 30deg;
+      --cw-ease: cubic-bezier(0.65, 0, 0.35, 1); /* ease-in-out-cubic */
+
+      scroll-margin-top: 0;
+    }
+
+    .coursesTrack {
+      /* 302svh, against the Proof Wall's 380, so both arcs spend the same
+         scroll per card despite their different spans.
+
+         Not the 0.8385 span ratio, which would give 319svh: the timeline is
+         the `cover` range, section PLUS a viewport, so parity solves
+         span_c * (Hc + V) = span_p * (Hp + V) — in svh,
+         0.8072 * (302 + 100) = 0.6768 * (380 + 100) = 325svh per card. Using
+         the bare span ratio once before left this arc 5.4% slower than the
+         Proof Wall rather than equal to it.
+
+         Measured at a 900px viewport, peak rotation at mid-travel is 5.81deg
+         per 100px on both, from 9.26 at the original lengths. The stage holds
+         for (302 - 100) = 202svh while the cards turn. */
+      height: 302svh;
+      view-timeline-name: --cw-track;
+    }
+
+    .coursesStage {
+      position: sticky;
+      top: 0;
+      display: block;
+      height: 100svh;
+      /* Clears the sticky nav plate, which floats over the pinned heading. */
+      padding-top: calc(var(--nav-offset) + 63px + clamp(28px, 3.2vw, 46px));
+      padding-bottom: 0;
+      overflow: hidden;
+    }
+
+    .rail {
+      position: absolute;
+      inset: 0;
+      display: block;
+      margin: 0;
+      padding: 0;
+      overflow: visible;
+      scroll-snap-type: none;
+    }
+
+    .pivot {
+      position: absolute;
+      /* The circle's centre: directly below the card's resting position. */
+      top: calc(var(--cw-card-cy) + var(--cw-radius));
+      left: 50%;
+      width: 0;
+      height: 0;
+      animation: cwSwing 1ms var(--cw-ease) both;
+      animation-timeline: --cw-track;
+      will-change: transform;
+    }
+
+    .pivot:nth-child(1) { animation-range: cover 0% cover 80.72%; }
+    .pivot:nth-child(2) { animation-range: cover 9.64% cover 90.36%; }
+    .pivot:nth-child(3) { animation-range: cover 19.28% cover 100%; }
+
+    .pivot .card {
+      position: absolute;
+      top: calc(var(--cw-radius) * -1);
+      left: 0;
+      width: var(--cw-card-w);
+      transform: translate(-50%, -50%);
+    }
+
+    /* Composed onto the centring translate, and scaled about the card's own
+       centre so a tilted card pops straight out of the arc. Overrides the
+       rail's own 1.03 with the Proof Wall's 1.045. */
+    .pivot .card:hover,
+    .pivot .card:focus-within {
+      transform: translate(-50%, -50%) scale(1.045);
+    }
+
+    /* The arc card is 84% of the Figma card (384 vs 457.183), so the display
+       type and the body padding come down with it. Body copy keeps its
+       designed size so it stays readable. */
+    .pivot .cardBody {
+      padding: clamp(18px, 1.6vw, 23px);
+    }
+
+    .pivot .cardTitle {
+      font-size: clamp(20px, 2.22vw, 32px);
+    }
+  }
+}
+
+@keyframes cwSwing {
+  from {
+    transform: rotate(var(--cw-swing));
+  }
+  to {
+    transform: rotate(calc(var(--cw-swing) * -1));
+  }
+}
+
+@media (max-width: 700px) {
+  .heroLeaves {
+    display: none;
+  }
+
+  /* The overhanging frame has nowhere to overhang once the bands are this
+     short, so it sits in the photo rather than across the join. */
+  .showcaseFrame {
+    top: 34%;
+    left: 50%;
+    width: min(606.072px, 78vw);
+    translate: -50% 0;
+  }
+}

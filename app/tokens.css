@@ -1,0 +1,86 @@
+/* Design tokens — mirrored from the Figma LSET Foundation Website variables + text styles. */
+:root {
+  /* ---- Colour ---- */
+  --color-teal-950: #0c3b2a;
+  --color-green-950: #295c44;
+  --color-cyan-50: #e7f7f9;
+  --color-orange: #eb5d37;
+  /* Brighter than Figma's Color/Orange/Default; used for the scroll cue. */
+  --color-orange-bright: #fa6140;
+
+  /* Figma `brand/forest-800` — drawer headings, darker than --ink-1. */
+  --brand-forest-800: #0a1d13;
+  --ink-1: #0c3b2a;
+  --ink-2: #285442;
+  --ink-on-dark-1: #ffffff;
+  --ink-on-dark-2: #a8b5ac;
+
+  --white: #ffffff;
+  --surface-white: #ffffff;
+  --surface-darker: #05150c;
+
+  /* Literals used in the homepage that are not yet Figma variables */
+  /* Was the Figma mint #edffe8; the light bands are white by direction. */
+  --surface-band: var(--surface-white);
+  --surface-deep: #02130c;
+  --ink-on-band: #002800;
+  --scrim-base: #01120c;
+  --footer-meta: #8a9bb0;
+  --social-chip: #f7f8fa;
+
+  --line-dark: #24352b;
+  /* Figma `line/ph` — the nav drawer's promo card outline. */
+  --line-ph: #a8c1ac;
+  --line-band: rgba(12, 59, 42, 0.22);
+  --line-on-photo: rgba(255, 255, 255, 0.16);
+
+  /* ---- Radius ---- */
+  --radius-pill: 100px;
+  --radius-input: 4px;
+  --radius-banner: 24px;
+  --radius-chip: 8px;
+
+  /* ---- Type families ---- */
+  --font-flex: "Google Sans Flex", "Google Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Google Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-inter: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-inter-tight: "Inter Tight", "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* ---- Layout ---- */
+  --page-width: 1440px;
+  --content-width: 1200px;
+  /* Page-edge inset: the banner gutter on desktop, tightening on small screens
+     so full-bleed sections never crowd the viewport edge. */
+  --edge: clamp(16px, 1.67vw, 24px);
+
+  /* Approach-section parallax. Declared here because the overhanging photo is
+     a child of the pillars section and could not inherit them from .approach.
+     Fluid, so the lift never exceeds the room a short section actually has. */
+  --approach-overscan: clamp(48px, 8.33vw, 120px);
+  --approach-lift: clamp(44px, 7.64vw, 110px);
+
+  /* CTA-band parallax. Same shape as the approach pair but its own values, so
+     tuning one band never silently moves the other. */
+  --cta-overscan: clamp(48px, 8.33vw, 120px);
+  --cta-lift: clamp(38px, 6.6vw, 95px);
+
+  /* Banner height. The hero is full-bleed, so the section is exactly this tall
+     and the parallax range is derived from it — the two cannot drift apart.
+     Figma's own hero was 856px; antzsystems.com measured 699px. */
+  /* The floor is 560, not 460: the oversized heading wraps to two lines and the
+     copy block reaches ~300px, which a 460px banner could not clear the nav
+     plate inside. */
+  --banner-height: clamp(560px, 54.17vw, 780px);
+  /* Sticky menu: --nav-inset is the frame it wraps its own content in;
+     --nav-offset is how far it sits below the banner's top edge. */
+  --nav-inset: 12px;
+  --nav-offset: clamp(12px, 1.67vw, 24px);
+}
+
+/* Narrow screens: the hero copy reflows to many more lines, so the banner
+   needs real height or the centred block collides with the collapsed nav. */
+@media (max-width: 700px) {
+  :root {
+    --banner-height: 640px;
+  }
+}

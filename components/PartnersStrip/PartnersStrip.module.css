@@ -1,0 +1,50 @@
+/* Figma `section` — originally overlaid on the dark proof wall; now a
+   standalone band directly under the hero, on the page ground. */
+.strip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15.281px;
+  width: 100%;
+  /* Figma's 50.935px above; below it is that +50%, to open up the join with
+     the section that follows. */
+  padding: clamp(34px, 3.54vw, 50.935px) var(--edge)
+    calc(clamp(34px, 3.54vw, 50.935px) * 1.5);
+  background: var(--surface-band);
+}
+
+.label {
+  max-width: 790px;
+  font: 400 14px/1.55 var(--font-inter-tight);
+  color: var(--ink-2);
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* Always one row. Below the width the full-size logos need, they scale down
+   together rather than wrapping: flex-shrink removes width in proportion to
+   each item's own size, so every logo ends up at the same reduced scale and
+   their relative sizes hold. */
+.logos {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  /* Figma's 40.748px, widened by 25% twice; the floor lets the gap give ground
+     before the logos have to. */
+  gap: clamp(12px, 4.42vw, 63.67px);
+}
+
+/* The marks were drawn white for the dark section. Inverting flips that ink to
+   black while preserving each logo's internal tonal relationships — several are
+   two-tone or greyscale, so recolouring every fill to black would flatten them. */
+.logos img {
+  width: var(--logo-w);
+  height: auto;
+  /* Both needed before a flex item will shrink below its intrinsic width. */
+  min-width: 0;
+  flex-shrink: 1;
+  filter: invert(1);
+}

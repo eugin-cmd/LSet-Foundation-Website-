@@ -1,0 +1,121 @@
+/* ===========================================================================
+   Scroll cue — lifted out of Hero.module.css unchanged so the Foundation and
+   Education banners share one implementation.
+   =========================================================================== */
+
+/* Scroll cue, replacing the "Scroll to know more" line. It bounces gently at
+   rest and radiates a ring on hover. */
+/* Centred in the banner and sitting low, independent of the copy block. */
+.slot {
+  position: absolute;
+  right: 0;
+  /* The clamp is the banner's own foot inset. --cue-lift rides on top of it so
+     a banner with room to spare can raise the cue without losing the fluid
+     base; it defaults to nothing, so a banner that says nothing is unchanged. */
+  bottom: calc(clamp(36px, 5vw, 72px) + var(--cue-lift, 0px));
+  left: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.cue {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 8px;
+  pointer-events: auto;
+  border-radius: var(--radius-pill);
+  color: var(--color-orange-bright);
+  animation: cueBounce 2.4s cubic-bezier(0.45, 0, 0.35, 1) infinite;
+  transition: filter 220ms ease;
+}
+
+/* The radiating ring. Present but invisible until hover, so nothing has to be
+   created on the fly. */
+.cue::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-pill);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cue:hover {
+  filter: brightness(1.15);
+}
+
+.cue:hover::after {
+  animation: cueRadiate 1.6s ease-out infinite;
+}
+
+.cue:focus-visible {
+  outline: 2px solid var(--color-orange-bright);
+  outline-offset: 4px;
+}
+
+.cue :global(.scrollCueWheel) {
+  animation: cueWheel 2.4s ease-in-out infinite;
+}
+
+/* A small settle-and-drop, weighted so it hangs at the top and falls away. */
+@keyframes cueBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  18% {
+    transform: translateY(-5px);
+  }
+  38% {
+    transform: translateY(2px);
+  }
+  52% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes cueRadiate {
+  0% {
+    transform: scale(0.86);
+    opacity: 0.55;
+  }
+  60% {
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.85);
+    opacity: 0;
+  }
+}
+
+@keyframes cueWheel {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  45% {
+    transform: translateY(6px);
+    opacity: 0;
+  }
+  46%,
+  70% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cue,
+  .cue::after,
+  .cue:hover::after,
+  .cue :global(.scrollCueWheel) {
+    animation: none;
+  }
+}

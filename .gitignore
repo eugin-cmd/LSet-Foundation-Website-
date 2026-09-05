@@ -1,0 +1,14 @@
+node_modules
+.next
+out
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
+
+# Generated single-file snapshots — rebuild with scripts/build_preview.py
+preview/
+
+# Stock footage kept locally for reference only. 72MB, which is past GitHub's
+# 50MB warning and would sit in the history permanently; the frames actually
+# used are already committed under public/assets.
+References/*.mp4

@@ -1,0 +1,15 @@
+/* Figma Frame 1984078023 — mint band, 1440x161, padding 40px 59px. */
+.band {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 40px 59px;
+  background: var(--surface-band);
+}
+
+.copy {
+  width: 964px;
+  color: var(--ink-on-band);
+  text-align: center;
+}

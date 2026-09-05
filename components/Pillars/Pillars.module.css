@@ -1,0 +1,317 @@
+/* Registered so it can be interpolated — a plain custom property is not
+   animatable, and this is what the radial wash below moves. */
+@property --pillars-ring {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* Figma Frame 1984078025 — mint section 1440x913, content 1101 wide, centred. */
+.pillars {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 913px;
+  padding: clamp(72px, 7.78vw, 112px) var(--edge);
+  background: var(--surface-band);
+}
+
+/* ---------------------------------------------------------------------------
+   Radial holographic wash, radiating outward from the section's centre.
+
+   Same palette as the hero headings and the nav drawer, concentric here.
+
+   14% over a 480px period. The two knobs do different jobs and it took a few
+   passes to separate them: the PERIOD decides whether the pattern reads as
+   rings at all, and the OPACITY decides how loud they are.
+
+   The centre-to-corner distance is 853px, so a 720px period (the first
+   attempt) fits only 1.18 cycles — one ring, which reads as a broad bloom no
+   matter what the opacity is. 480px fits 1.78, so the concentric structure is
+   there. Opacity then went 22 -> 45 (too loud) -> 28 -> 14, which is where it
+   sits: a 4%-of-white deviation at its deepest, faint enough to notice only
+   once the eye rests on the section.
+
+   The white stops are transparent white, which is the same thing over the
+   section's white ground and keeps the interpolation out of grey.
+
+   Two constraints shaped the technique:
+
+   - The section cannot be clipped. The field photo above it overhangs by
+     translateY(-100%), so `overflow: hidden` here would cut it off. That rules
+     out the usual approach of scaling an oversized layer, which would bleed
+     into the neighbouring sections. Animating the gradient's stop offsets
+     instead keeps every pixel inside this element's own background box.
+   - A repeating gradient repeats its stop list infinitely in BOTH directions,
+     so shifting every stop outward by exactly one period maps the pattern onto
+     itself — the loop closes with no seam and no flat disc at the centre.
+
+   var() carries a fallback, so without @property support the wash renders
+   static at offset 0 rather than invalidating the whole declaration.
+   --------------------------------------------------------------------------- */
+.pillars::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: repeating-radial-gradient(
+    circle at 50% 50%,
+    rgb(255 255 255 / 0%) calc(var(--pillars-ring, 0px) + 0px),
+    rgb(191 243 255 / 14%) calc(var(--pillars-ring, 0px) + 60px),
+    rgb(255 255 255 / 0%) calc(var(--pillars-ring, 0px) + 120px),
+    rgb(255 200 220 / 14%) calc(var(--pillars-ring, 0px) + 180px),
+    rgb(255 255 255 / 0%) calc(var(--pillars-ring, 0px) + 240px),
+    rgb(255 217 194 / 14%) calc(var(--pillars-ring, 0px) + 300px),
+    rgb(255 255 255 / 0%) calc(var(--pillars-ring, 0px) + 360px),
+    rgb(200 255 228 / 14%) calc(var(--pillars-ring, 0px) + 420px),
+    rgb(255 255 255 / 0%) calc(var(--pillars-ring, 0px) + 480px)
+  );
+  pointer-events: none;
+  content: "";
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* 22s for one 480px period, ~22px/s. Kept slow even at this opacity: the
+     movement is the part that gives a near-invisible pattern away, so a faint
+     wash drifting quickly is more noticeable than a stronger one drifting
+     slowly. */
+  .pillars::before {
+    animation: pillarsRadiate 22s linear infinite;
+  }
+}
+
+@keyframes pillarsRadiate {
+  to {
+    --pillars-ring: 480px;
+  }
+}
+
+/* --- overhanging field photo (Figma `Container`, 962x696 at top -615) --- */
+.photo {
+  position: absolute;
+  /* Anchored by its own bottom edge: 81px of the photo sits inside this
+     section and the rest overhangs, so the overlap survives a fluid height
+     where a fixed top: -615px would not. */
+  top: 81px;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  z-index: 2;
+  /* 66.81vw is Figma's 962px at a 1440 page. Scaling with the viewport rather
+     than only capping at 962px keeps the photo's height in step with the
+     approach section above, which is also vw-based — capped, it stayed 696px
+     tall while the section shrank and ran into the heading. */
+  width: min(962px, 66.81vw, 100% - var(--edge) * 2);
+  aspect-ratio: 962 / 696;
+  overflow: hidden;
+}
+
+.photoInner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* Figma's 1025px leaf inside a 962px frame, as a ratio. */
+  width: 106.55%;
+  height: 100%;
+}
+
+.photoInner img {
+  position: absolute;
+  top: -4.2%;
+  left: -7.07%;
+  width: 110.4%;
+  height: 108.46%;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* --- accordion --- */
+.list {
+  /* Above .pillars::before, the radial wash — that pseudo-element is
+     positioned, so without this it would paint over the accordion. */
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: min(1101px, 100%);
+}
+
+.group {
+  display: contents;
+}
+
+.divider {
+  height: 0;
+  margin: clamp(30px, 3.66vw, 52.672px) 0;
+  border-top: 1px solid var(--line-band);
+}
+
+.item {
+  overflow: hidden;
+  min-height: 93px;
+}
+
+.trigger {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6.653px;
+  width: 100%;
+  text-align: left;
+}
+
+/* The icon sits beside the number and takes its colour, so one declaration
+   moves both. Stroke lives here rather than on the svg, matching the hero's
+   icon row. */
+.indexRow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--color-teal-950);
+}
+
+.indexRow svg {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.index {
+  font: 400 17.742px/1.55 var(--font-sans);
+  color: currentColor;
+}
+
+.title {
+  color: var(--color-teal-950);
+}
+
+.chevron {
+  position: absolute;
+  top: clamp(30px, 3.75vw, 54px);
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 15px;
+  height: 8px;
+  color: var(--color-teal-950);
+}
+
+.chevron svg {
+  transform: rotate(90deg);
+  transition: transform 220ms ease;
+}
+
+.chevronOpen svg {
+  transform: rotate(-90deg);
+}
+
+/* The row animates via grid-template-rows 0fr -> 1fr: it eases to the panel's
+   natural height without anyone having to measure it, and unlike max-height it
+   never overshoots or stalls. The child needs overflow:hidden and min-height:0
+   for the 0fr track to actually collapse. */
+.panelWrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.panelWrap[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+
+.panel {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  overflow: hidden;
+  /* Content settles just behind the height, so it reads as easing in rather
+     than being revealed by a shutter. */
+  opacity: 0;
+  translate: 0 -6px;
+  transition:
+    opacity 300ms ease 40ms,
+    translate 340ms cubic-bezier(0.22, 0.61, 0.36, 1) 40ms;
+}
+
+.panelWrap[data-open="true"] .panel {
+  opacity: 1;
+  translate: 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panelWrap,
+  .panel {
+    transition: none;
+  }
+}
+
+.desc {
+  /* Sits on the first child rather than the panel: padding on the panel
+     survives the collapsed 0fr track and left closed rows 7px tall. */
+  padding-top: 7px;
+  color: var(--ink-2);
+}
+
+.more {
+  margin-top: clamp(20px, 3.06vw, 44px);
+  font: 500 14px/normal var(--font-sans);
+  color: var(--ink-1);
+  white-space: pre;
+}
+
+.more:hover {
+  text-decoration: underline;
+}
+
+
+@media (max-width: 900px) {
+  .pillars {
+    min-height: 0;
+  }
+
+  .item {
+    min-height: 0;
+  }
+
+  .trigger {
+    padding-right: 32px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   The overhanging photo rides up as it passes, matching the heading above it
+   so the whole approach section reads as planes over the backdrop. Its base
+   transform is repeated in the keyframes, since the animation replaces it.
+   --------------------------------------------------------------------------- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .photo {
+      animation-name: pillarsPhotoRise;
+      /* Explicit: the `animation` shorthand defaults duration to 0s, which
+         leaves a scroll-driven animation pinned to its first frame. */
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      /* The same timeline the approach heading uses, so the photo and the text
+         rise in lockstep over the backdrop rather than on separate clocks. */
+      animation-timeline: --approach-view;
+      animation-range: cover 0% cover 100%;
+    }
+  }
+}
+
+@keyframes pillarsPhotoRise {
+  from {
+    transform: translate(-50%, calc(-100% + var(--approach-lift) * 0.78));
+  }
+  to {
+    transform: translate(-50%, calc(-100% - var(--approach-lift) * 0.85));
+  }
+}
