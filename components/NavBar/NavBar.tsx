@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import PillCta from "@/components/PillCta/PillCta";
@@ -12,6 +13,7 @@ type BrandRowVars = React.CSSProperties & { "--brand-index": number };
 
 const DRAWER_ID = "nav-drawer";
 const DRAWER_PANEL_ID = "nav-drawer-panel";
+const BURGER_ID = "nav-open";
 
 const BRANDS = [
   { label: "FOUNDATION", href: "/" },
@@ -44,6 +46,27 @@ const LINKS = [
  */
 export default function NavBar() {
   const pathname = usePathname();
+
+  /* The drawer's checkbox is the source of truth, and it stays uncheckable by
+     CSS alone — a controlled input would break the scripts-stripped snapshot,
+     where the label has to keep working on its own. So closing it is a direct
+     `checked = false` on the ref rather than React state.
+
+     Every navigating item in the bar gets this. Without it the panel stayed
+     open across a client-side route change — the nav lives in the layout now,
+     so nothing tears it down — and since the drawer covers the content, the
+     new page arrived hidden behind it. The FOUNDATION chip was in fact
+     navigating correctly the whole time; it just looked inert. */
+  const drawerRef = useRef<HTMLInputElement>(null);
+  /* Below 1180px the whole bar — brand chips included — collapses into the
+     burger panel, which is its own checkbox. Navigating from a chip there hit
+     exactly the same fault the drawer had: the route changed behind a panel
+     that stayed open. Both get unchecked, so one handler covers every width. */
+  const burgerRef = useRef<HTMLInputElement>(null);
+  const closeMenus = () => {
+    if (drawerRef.current) drawerRef.current.checked = false;
+    if (burgerRef.current) burgerRef.current.checked = false;
+  };
   /* -1 for a route no brand claims; the highlight then rests on the first
      column rather than vanishing. */
   const activeIndex = BRANDS.findIndex((b) => b.href === pathname);
@@ -56,6 +79,7 @@ export default function NavBar() {
           the menu has to keep working there. Visually hidden but still
           focusable, so the chip can be reached from the keyboard. */}
       <input
+        ref={drawerRef}
         type="checkbox"
         id={DRAWER_ID}
         className={s.drawerToggle}
@@ -68,14 +92,24 @@ export default function NavBar() {
 
       <div className={s.stack}>
         <header className={s.nav}>
-          <Link href="/" className={s.logo} aria-label="LSeT Foundation — home">
+          <Link
+            href="/"
+            className={s.logo}
+            aria-label="LSeT Foundation — home"
+            onClick={closeMenus}
+          >
             <img src="/assets/logo-lset-nav.svg" alt="" width={166} height={63} />
           </Link>
 
           {/* CSS-only disclosure: the menu has to work with scripts stripped, so
               the checkbox is the control and `:checked ~ .groups` opens it. */}
-          <input type="checkbox" id="nav-open" className={s.toggle} />
-          <label htmlFor="nav-open" className={s.burger}>
+          <input
+            ref={burgerRef}
+            type="checkbox"
+            id={BURGER_ID}
+            className={s.toggle}
+          />
+          <label htmlFor={BURGER_ID} className={s.burger}>
             <span className="sr-only">Menu</span>
             <span className={s.burgerBar} aria-hidden="true" />
             <span className={s.burgerBar} aria-hidden="true" />
@@ -102,6 +136,7 @@ export default function NavBar() {
                     key={label}
                     href={href}
                     aria-current={i === activeIndex ? "page" : undefined}
+                    onClick={closeMenus}
                     className={`${s.brandItem} ${
                       i === activeIndex ? s.brandItemActive : ""
                     } wf-nav`}
@@ -134,7 +169,12 @@ export default function NavBar() {
                     {body}
                   </label>
                 ) : (
-                  <a key={label} href={href} className={`${s.pill} wf-nav`}>
+                  <a
+                    key={label}
+                    href={href}
+                    className={`${s.pill} wf-nav`}
+                    onClick={closeMenus}
+                  >
                     {body}
                   </a>
                 );
@@ -146,7 +186,7 @@ export default function NavBar() {
         </header>
 
         <div className={s.drawer}>
-          <NavDrawer id={DRAWER_PANEL_ID} />
+          <NavDrawer id={DRAWER_PANEL_ID} onNavigate={closeMenus} />
         </div>
       </div>
     </div>

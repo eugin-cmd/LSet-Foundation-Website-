@@ -1,9 +1,15 @@
 import type { AccordionItem } from "@/components/Pillars/Accordion";
 
 /** Figma nodes 1962:18121 / 18127 / 18136. */
-export const EDUCATION_ROWS: AccordionItem[] = [
+/** The accordion's own item plus the key its icon is looked up by. */
+export type EducationRow = AccordionItem & {
+  key: "hands" | "faculty" | "species";
+};
+
+export const EDUCATION_ROWS: EducationRow[] = [
   {
     index: "01",
+    key: "hands",
     title: "Hands-on Training",
     // PLACEHOLDER: Figma leaves rows 01 and 03 collapsed and supplies no body
     // copy for them, exactly as the homepage's pillars board does.
@@ -13,6 +19,7 @@ export const EDUCATION_ROWS: AccordionItem[] = [
   },
   {
     index: "02",
+    key: "faculty",
     title: "Multinational Faculty",
     description:
       "Mentored daily by international practitioners from six countries, alongside India's leading zoo directors, veterinarians, and conservation researchers.",
@@ -20,6 +27,7 @@ export const EDUCATION_ROWS: AccordionItem[] = [
   },
   {
     index: "03",
+    key: "species",
     title: "Species Exposure",
     // PLACEHOLDER: see above.
     description:

@@ -99,6 +99,49 @@
   stroke-linejoin: round;
 }
 
+/* ---------------------------------------------------------------------------
+   The icons drop in when the drawer OPENS, not on page load — which is why
+   this hangs off the checkbox rather than sitting on .rowIndexRow directly.
+   An unconditional animation would have played through while the panel was
+   still closed and be long finished by the time anyone opened it.
+
+   The checkbox lives in NavBar's module, so its hashed class is not reachable
+   from here; its id is a documented global (DRAWER_ID in NavBar.tsx), and
+   `~ *` walks from it to the .stack sibling that contains the panel.
+
+   Same keyframe shape as the hero's icon row — fall, land, two decaying
+   rebounds, each keyframe carrying its own easing so the drop accelerates like
+   gravity while the bounces decay. The distances are scaled to the row: -28px
+   against the hero's -120, and 3px/1px rebounds against 13/4. A 120px fall
+   would start these icons outside their own row.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  :global(#nav-drawer):checked ~ * .rowIndexRow svg {
+    /* Defined in globals.css, so the accordion's identical drop is the same
+       keyframe rather than a second copy of it. Named through the custom
+       property because css-loader would hash a direct reference — see the
+       note beside the keyframe. */
+    animation-name: var(--anim-icon-drop-short);
+    animation-duration: 780ms;
+    animation-fill-mode: both;
+  }
+
+  /* Staggered so they land one after another rather than as a block. The first
+     starts at 120ms, inside the panel's own 480ms reveal, so the icons arrive
+     as the drawer is still opening. */
+  :global(#nav-drawer):checked ~ * .row:nth-child(1) .rowIndexRow svg {
+    animation-delay: 120ms;
+  }
+
+  :global(#nav-drawer):checked ~ * .row:nth-child(2) .rowIndexRow svg {
+    animation-delay: 210ms;
+  }
+
+  :global(#nav-drawer):checked ~ * .row:nth-child(3) .rowIndexRow svg {
+    animation-delay: 300ms;
+  }
+}
+
 .rowIndex {
   /* Tabular figures so "01" takes the same advance as "02" and "03". With the
      number above the title this no longer shifts the titles — that was the

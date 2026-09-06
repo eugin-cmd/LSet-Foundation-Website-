@@ -1,4 +1,5 @@
 import Blinder from "@/components/Blinder/Blinder";
+import WaveText from "@/components/WaveText/WaveText";
 import ScrollCue from "@/components/ScrollCue/ScrollCue";
 import Leaves from "@/components/icons/Leaves";
 import Drone from "@/components/icons/Drone";
@@ -49,7 +50,14 @@ export default function Hero() {
               <AiChip />
             </div>
 
-            <h1 className={`${s.title} wf-display-xl wf-iridescent`}>Conservation&apos;s Technology Partner</h1>
+            {/* aria-label carries the real string; WaveText's spans are
+                hidden from assistive tech. */}
+            <h1
+              className={`${s.title} wf-display-xl wf-iridescent`}
+              aria-label="Conservation's Technology Partner"
+            >
+              <WaveText text={"Conservation\u2019s Technology Partner"} />
+            </h1>
             <p className={`${s.lede} wf-body-l`}>
               We combine education, conservation expertise and innovative technology to help
               wildlife organisations solve complex challenges. Together with our global partners,

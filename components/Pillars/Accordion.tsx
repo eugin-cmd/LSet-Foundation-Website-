@@ -38,7 +38,10 @@ export default function Accordion({
         return (
           <div key={item.title} className={s.group}>
             {i > 0 && <div className={s.divider} aria-hidden="true" />}
-            <div className={s.item}>
+            {/* data-open here as well as on the panel: the panel is a later
+                sibling of the trigger, and CSS cannot select backwards to
+                reach the icon from it. */}
+            <div className={s.item} data-open={open}>
               <button
                 type="button"
                 id={triggerId}

@@ -199,6 +199,62 @@ video {
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Short icon drop — fall, land, two decaying rebounds, each keyframe carrying
+   its own easing so the fall accelerates like gravity while the bounces decay.
+   Shared by the nav drawer's destination icons and the pillars accordion's,
+   which are the same three marks at the same sort of size.
+
+   The hero's own iconDrop keeps its separate definition: it falls 120px into a
+   banner, where these fall 28px inside a row.
+
+   Modules reach it through --anim-icon-drop-short, NOT by naming it directly.
+   css-loader rewrites every `animation-name` value inside a *.module.css to a
+   hashed local name whether or not that file declares the keyframe, so a plain
+   reference here compiles to `NavDrawer_icon-drop-short__lBCzC` and matches
+   nothing — the animation silently does not run. A var() is left alone.
+   --------------------------------------------------------------------------- */
+:root {
+  --anim-icon-drop-short: icon-drop-short;
+}
+
+@keyframes icon-drop-short {
+  0% {
+    opacity: 0;
+    transform: translateY(-28px);
+    animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.32);
+  }
+
+  38% {
+    opacity: 1;
+  }
+
+  52% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.25, 0.7, 0.35, 1);
+  }
+
+  68% {
+    transform: translateY(-3px);
+    animation-timing-function: cubic-bezier(0.6, 0, 0.85, 0.35);
+  }
+
+  82% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.25, 0.7, 0.35, 1);
+  }
+
+  91% {
+    transform: translateY(-1px);
+    animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.4);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

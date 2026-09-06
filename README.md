@@ -82,9 +82,10 @@ Page order in [`app/page.tsx`](app/page.tsx), with the Figma y-offsets each sect
   Education rows. The footer is on every page, so its links carry both ways.
   - **In-page anchors in the nav have to be absolute.** "The Work" was `#the-work`,
     which is dead on `/education` because that section only exists on the homepage.
-    It is `/#the-work` now. The drawer's Conservation and Technology destinations
-    are still bare hashes with no target anywhere — pre-existing placeholders, since
-    neither has a page or a section yet.
+    It is `/#the-work` now. The drawer's **Conservation** row is the Foundation's
+    own arm, so it points at `/` — it had been a bare `#conservation` with no target
+    on either page. Technology is still a bare hash: ANTZ SYSTEMS has neither a page
+    nor a section yet.
 - **`build_preview.py` now takes a route**: `build_preview.py <out.html> [route]`.
   It also reads the real `<title>` out of the fetched page instead of hardcoding the
   homepage's, so each snapshot is named for its own route.
@@ -733,89 +734,172 @@ frame ends at y 853, so nothing occupies that area either. The same treatment ap
 including the lesson above, that the crop has to land on the scrim's floor rather than
 wherever the photograph stops being interesting.
 
-## Education rows diagonal wash
+## Education row icons
 
-The education page's disclosure rows carry the counterpart to the pillars' concentric wash:
-`.rows::before`, same **14% over a 480px period at 22s**, but a `repeating-linear-gradient`
-on the 115deg axis rather than a radial one — diagonal bands where the homepage has rings,
-in the same place in each page.
+The three rows carry line art in the homepage accordion's style: `CuppedHands` for hands-on
+training, `Globe` for multinational faculty, `Birds` for species exposure. Looked up from a
+`key` on each row (`EducationRow` in `education.data.ts`), the same pattern Pillars and the
+nav drawer use, rather than by array position.
 
-The travel is the drawer's derivation, not the pillars': the shift is one full period **along
-the gradient's own axis**, `(sin115, -cos115) * 480 = (435, 202.9)px`, so the bands move
-perpendicular to themselves. Shifting by exactly one period along the axis is an identity —
-measured, t=0 and t=22000ms differ by **0 pixels**.
+`EducationPillars` needed `"use client"` for this. Accordion is a client component and these
+are passed to it as component *references*, which cannot cross a server-to-client boundary —
+`Pillars.tsx` carries the directive for exactly the same reason.
 
-The two sections are deliberately matched in weight, and measured they are: deviation from
-white 5.1% on both (min 242), per-channel spread [2.72, 2.07, 2.23] here against
-[2.66, 2.17, 2.24] on the pillars. Contrast is identical too — 11.50:1 for
-`--color-teal-950`, 7.90:1 for `--ink-2`.
+**The drop animation came for free.** The rule that plays `icon-drop-short` when a row opens
+lives on `.item[data-open="true"] .indexRow svg` in the shared `Pillars.module.css`, so
+adding icons to this accordion animated them without touching the animation at all. Verified:
+`none` on closed rows, `icon-drop-short` on the open one, and the drop stepping
+-28 -> -21.4 -> -2.5 -> 0.
 
-3.41 periods fit across the section's gradient-axis extent (1637px for a 1440x785 box),
-against the pillars' 1.78 ring cycles. A wide, short section simply shows more of a linear
-pattern than a radial one, so the band count is not tuned to match — the intensity is.
+**Every mark is drawn for 20px, which is a real constraint.** At the accordion's size a
+1.6-unit stroke renders 1.0px and detail finer than roughly 2px of clear space merges. Two
+consequences:
 
-`.rowsInner` takes `position: relative; z-index: 1` for the same reason `.list` does on the
-homepage. All three triggers hit-test clean and the disclosure still opens.
+- The hero's `PawPrint` is deliberately **not** reused here despite being the obvious mark for
+  species: its toe rings leave a ~1.5px hole at 20px, which is precisely the figure that made
+  an earlier paw lump in this same accordion.
+- `Birds` was drawn upside down first. The arcs peaked in the centre, which renders as a pair
+  of carets; a bird needs wingtips high and the body dipping. The dips are also 5 and 3.3
+  units rather than the 2 a bird glyph usually gets, because a shallower curve flattens into a
+  wavy line under a 1.0px stroke.
 
-## Pillars radial wash
+Both were caught by rendering at true 20px and magnifying the real pixels 8x, not by looking
+at the SVGs.
 
-The Conservation / Education / Technology section carries the holographic palette as a
-**radial** wash radiating outward from its centre — `.pillars::before` at 14% over a 480px
-period, 22s per cycle.
+## Education rows band
 
-That pair was arrived at from both directions, and the period matters as much as the
-opacity. The centre-to-corner distance is 853px, so:
+The education page's disclosure rows run the same scroll-linked holographic band as the
+homepage pillars section — see that entry for the mechanism, the palette and why the white
+passes were removed. `.rowsInner` takes `position: relative; z-index: 1` for the same reason
+`.list` does there, the band is `pointer-events: none`, and the accordion still opens.
 
-| | cycles on screen | band width | deepest deviation from white | per-channel spread |
-|---|---|---|---|---|
-| 22% / 720px (first) | 1.18 | 90px | 7.1% (min 237) | [4.01, 3.35, 3.55] |
-| 45% / 440px (too loud) | 1.94 | 55px | 12.9% (min 222) | [8.35, 6.68, 7.29] |
-| 28% / 480px | 1.78 | 60px | 8.6% (min 233) | [5.26, 4.25, 4.38] |
-| **14% / 480px** | **1.78** | **60px** | **5.1% (min 242)** | **[2.66, 2.17, 2.24]** |
+It replaced a 14%, white-passed, 22s-clock diagonal wash. That version could only ever drift
+one way; this one reverses with the scroll.
 
-The two knobs do different jobs, and separating them is the whole lesson: the **period**
-decides whether the pattern reads as rings at all, the **opacity** decides how loud they
-are. At 720px only 1.18 cycles fit on screen — one ring, which reads as a broad bloom
-however the opacity is set, so no amount of tuning there would have produced bands. Keeping
-480px preserves the concentric structure while 14% takes the intensity below even the first
-attempt's.
+## Pillars scroll-linked band
 
-The rate stays at ~22px/s (22s per 480px) rather than returning to the first version's
-30px/s: a pattern with visible structure reads as more active than a faint one at the same
-speed.
+The Conservation / Education / Technology section carries a diagonal holographic band that
+travels **left to right as the page scrolls down, and back to the left on the way up**.
 
-Two constraints shaped the technique, and they rule out the obvious approach:
+**It is scroll-linked, not timed**, and that is what makes the reversal free:
+`animation-timeline: view()` makes the animation's progress a function of how far the section
+has travelled through the viewport rather than of elapsed time, so scrolling back retraces it.
+A time-based animation could only ever run one way. It replaced a radial ripple on a 22s clock
+for exactly that reason. The pseudo-element is `inset: 0`, so its own `view()` progress is the
+section's and no named timeline is needed.
 
-- **The section cannot be clipped.** The field photo above it overhangs by
-  `translateY(-100%)`, so `overflow: hidden` here would cut it off. That rules out scaling
-  an oversized layer, which is how outward radiation is usually done — it would bleed into
-  the neighbouring bands. Animating the gradient's *stop offsets* keeps every pixel inside
-  the element's own background box.
-- **A uniform scale cannot loop a repeating radial pattern anyway.** Ring n sits at `nP`, so
-  mapping ring n onto ring n+1 needs a factor of `(n+1)/n`, which differs per ring. Shifting
-  the stops instead is a translation along the gradient line, and shifting by exactly one
-  period is an identity — the loop closes.
+Measured going down and then back up through the same five scroll positions: 0 -> 271.9 ->
+543.6 -> 815.4 -> 1087.6px on the x, with y advancing proportionally for the diagonal, and the
+identical values in reverse on the way up.
 
-The offset is a registered custom property, since a plain one is not interpolable:
+**The palette is packed edge to edge with no white passes** — 200px period, 50px a hue — and
+that is the difference between a band and a sheen. The hero headings' version keeps a white
+pass between each hue, which is what makes it read as a sheen; removing them turns the same
+four pastels into a continuous colour band.
 
-    @property --pillars-ring { syntax: "<length>"; inherits: false; initial-value: 0px; }
+The shift lies along the gradient's own 115deg axis, `(sin115, -cos115) x 1200`, so the band
+travels perpendicular to its own stripes rather than sliding sideways along them — six 200px
+periods over the section's whole pass.
 
-and every stop is `calc(var(--pillars-ring, 0px) + Npx)`. The `var()` fallback matters: with
-no `@property` support the whole declaration would otherwise be invalid at computed-value
-time and the wash would vanish rather than sit still.
+At 26% alpha, and because every pixel is now tinted rather than half of them, it measures
+7.8% deepest deviation from white with a per-channel spread of [6.23, 4.60, 4.65] — against
+the radial version's 5.1% and [2.66, 2.17, 2.24], so roughly 2.3x the presence, and still
+short of the 12.9% version that was too loud. Contrast: 11.05:1 worst for
+`--color-teal-950`, 7.59:1 for `--ink-2`.
 
-There is no flat disc at the centre, which is the trap here: a repeating gradient repeats its
-stop list infinitely in **both** directions, so pushing the first stop outward does not leave
-the core unpainted.
-
-Measured: the frame at t=0 and t=22000ms differ by **0 pixels**, so the radiation has no
-seam — the one-period shift is an identity whatever the period, so that property survived
-every retune. Worst-case contrast against the wash is 11.50:1 for `--color-teal-950` and
-7.90:1 for `--ink-2`.
-
-`.list` takes `position: relative; z-index: 1` so the accordion sits above the wash — the
-pseudo-element is positioned, and without it the wash painted over the copy. The wash is
+`.list` keeps `position: relative; z-index: 1` so the accordion sits above the band — the
+pseudo-element is positioned, and without it the band paints over the copy. It is
 `pointer-events: none` and all three triggers hit-test clean.
+
+The education page's disclosure rows carry the identical treatment — same palette, period,
+alpha and scroll-linking — so the two accordion sections read as one thing in two places.
+Measured on both, going down and back up through five scroll positions: 0 -> 271.8 -> 543.6
+-> 815.9 -> 1087.6px, and the exact reverse coming up.
+
+**Six periods per PASS, not a matched px-per-scroll rate.** The two sections differ in height
+(913px on the homepage, 785px on education), so an identical rate would have to be recomputed
+from both heights and would stop being true the moment either reflowed. Per-pass holds
+structurally at every viewport; the residual difference in rate is under 8% and is not
+perceptible.
+
+## Icon drops — drawer and accordion
+
+Two places share one fall: the drawer's three destination icons when the panel **opens**, and
+the pillars accordion's mark when its row **opens**. Fall, land, two decaying rebounds, each
+keyframe carrying its own easing so the drop accelerates like gravity while the bounces decay.
+The keyframe is `icon-drop-short` in [`app/globals.css`](app/globals.css); the hero's own
+`iconDrop` stays separate because it falls 120px into a banner where these fall 28px inside a
+row.
+
+**Modules reach that keyframe through `var(--anim-icon-drop-short)`, never by name.**
+css-loader rewrites every `animation-name` inside a `*.module.css` to a hashed local name
+whether or not that file declares the keyframe — so a plain `animation: icon-drop-short`
+compiles to `NavDrawer_icon-drop-short__lBCzC`, matches nothing, and the animation silently
+does not run. Nothing errors; the icons simply sit still. A `var()` is left alone, so the name
+is published as a custom property beside the keyframe and both modules read it from there.
+
+The accordion's row exposes `data-open` on `.item` as well as on the panel: the panel is a
+*later sibling* of the trigger, and CSS cannot select backwards to reach the icon from it.
+Only one icon moves per open, so unlike the drawer's three there is no stagger — the 40ms
+delay just lets the panel below start expanding first.
+
+Verified on both: `animation-name: none` while closed, `icon-drop-short` while open, and
+`none` again once closed, so each replays every time rather than firing once on load. The
+accordion's drop steps -28 -> -21.4 -> -2.5 -> -0.7 -> 0 with opacity 0 -> 1; the drawer's
+cascade at t=500ms is -6.6px, -19.1px, -24.6px.
+
+**The drawer's hangs off the checkbox, not off `.rowIndexRow`.** An unconditional animation
+would have played through while the panel was still closed and been long finished by the time
+anyone opened it. The checkbox lives in NavBar's module, so its hashed class is unreachable
+from NavDrawer's; its `id` is a documented global (`DRAWER_ID`), and `~ *` walks from it to
+the `.stack` sibling holding the panel:
+
+    :global(#nav-drawer):checked ~ * .rowIndexRow svg { ... }
+
+Its three are staggered 120/210/300ms, the first starting inside the panel's own 480ms reveal
+so they arrive while the drawer is still opening.
+
+## Drawer border
+
+The panel carries a 4px holographic ring: `border: 4px solid transparent` with the gradient
+supplied as a background layer clipped to the border box, so the ring is the same palette and
+115deg axis as the wash inside it — but a much tighter one.
+
+**The ring's period is 160px against the wash's 480**, and that is what makes the travel felt
+rather than merely present: 20px bands instead of 60, and measured on the rendered edge, 31
+coloured hue runs across the 1301px top edge (cycling blue-rose-peach-mint) against roughly
+2.5 cycles before. 160 is not a free choice: the ring's shift is a fixed 1440px along the
+gradient axis, so the period must divide it exactly or the loop seams — 480, 240, 160 and 120
+all do, 200 does not.
+
+**Four background layers, topmost first**, and none is redundant:
+
+1. the panel wash at 55% over 480px, clipped to the padding box
+2. white, clipped to the padding box — masks layer 3 out of the interior
+3. the ring gradient at 82.5% over 160px, clipped to the border box
+4. white, clipped to the border box — the ring's opaque base
+
+Layer 4 was the fix for a real defect. Without it the ring's semi-transparent gradient
+composited over the dark banner showing through from behind the panel rather than over white:
+measured, the ring came out at mean rgb (134,135,126) against the interior's (240,240,238) — a
+murky edge rather than a bright one, and **1.79x** the interior's saturation instead of the
+1.5x asked for. With both gradients on white the ratio is the alpha ratio and nothing else:
+ring mean rgb (240,242,238), **1.49x** the interior's saturation.
+
+The whites are images rather than a `background-color` because a colour can only be the
+shorthand's last value, where it would paint beneath every layer including the ring.
+
+**One clock, two rates.** `background-position` takes a value per layer, so a single 14s
+animation moves the wash 480px along the gradient axis and the ring 1440px — 3x the distance,
+and with the ring's 160px period that is **nine** of its own cycles against the wash's one.
+
+Both loop seamlessly because each shift is a whole number of that layer's periods along the
+axis: `435 x 0.9063 + 202.9 x 0.4226 = 480 = 1 x 480` for the wash, and 3x that
+`= 1440 = 9 x 160` for the ring. Verified: t=0 and t=14000ms differ by 1 pixel (rounding),
+while t=0 and t=1000ms differ by 507,375 — it is moving, and it closes.
+
+`box-sizing` is border-box globally, so the panel's outer size is unchanged; the 40px padding
+is measured from the inside of the ring.
 
 ## Drawer destination rows
 
@@ -867,15 +951,91 @@ gone: it was there because proportional digits made "01" 13.3px wide against 15.
 which shifted each title's x when the number was inline. With the number above the title
 that no longer applies, but it still keeps the three index rows identical to each other.
 
+## Heading ripple
+
+Both hero headings ripple once on load — `components/WaveText`, which splits the string into
+per-character spans with a 24ms stagger and a base delay of 1450ms (the blinder's last slat
+lands at 1365ms, so anything earlier ripples behind a closed blind). The rise is 0.05em, in
+em so it scales with the heading rather than reading differently at the homepage's 80px and
+the education page's 68px — measured, 4px and 3.4px.
+
+**The characters move with `position: relative` and `top`, not a transform, and that is the
+whole reason this is a component rather than a one-line animation.** Both headings carry the
+holographic sheen as a background clipped to their text. A transformed descendant is
+composited on its own layer and stops being clipped against its ancestor's background, so
+the glyphs render transparent with nothing behind them — the heading simply disappears.
+Measured across four candidates on a flattened banner, counting bright pixels inside the
+heading's box:
+
+| | glyph pixels | |
+|---|---|---|
+| `transform: translateY(-4px)` | 546 | heading invisible |
+| `translate: 0 -4px` | 546 | heading invisible |
+| `position: relative; top: -4px` | 57,964 | clip intact |
+| `margin-block-start: -4px` | 57,977 | clip intact |
+
+The shipped version measures 58,097 bright pixels at rest and 58,054 while displaced, with
+four hues present in both, so the sheen survives the ripple.
+
+Words are wrapped as well as characters, and that is structural: a line can break between any
+two inline-level boxes, so per-character spans alone would let the heading break mid-word.
+The word is the `inline-block`; the characters inside stay inline.
+
+The spans are `aria-hidden` and each heading carries the real string as an `aria-label`.
+Splitting does not change the accessible name, but some screen readers pause at every inline
+boundary, which would spell the heading out.
+
+## Leaf entrance
+
+The leaf flourish under each hero's subtext rises into place and then stirs, once on load.
+`components/icons/Leaves.module.css`, with the component rather than in either hero's module —
+both banners style this mark identically (68px, white, 0.9 opacity), so importing `<Leaves />`
+is enough to get the behaviour.
+
+**One keyframe set, not two animations.** Both phases move `transform`, and a second animation
+on the same property replaces the first rather than following it — so every keyframe carries
+the whole transform and the rotation phase writes `translateY(0)` explicitly. Verified the two
+phases do not bleed: `translateY` is 16 -> 3.68 -> 0 across the rise and stays exactly 0 for
+every rotation keyframe after it.
+
+The rise takes the first 28% and eases out, settling rather than arriving at speed, with
+opacity 0 -> 1 alongside it. The stir then builds 0.8 -> 1.8 -> 3.0 -> 3.4deg and decays back
+to nothing — the "ease in" is that envelope, not the timing function, since a literal
+`ease-in` would accelerate each swing into its extreme and stop dead there, reading as a
+twitch rather than a stir.
+
+`transform-origin: 4% 58%` is measured off the artwork: the two sprigs' stems converge at the
+left edge a little below the middle, so the spray sways from where a branch would be held.
+Pivoting about the bounding box centre reads as a wobble.
+
+The **1450ms delay** matters. The blinder's last slat lands at `11 x 55ms + 760ms = 1365ms`,
+so anything earlier plays behind a closed blind and is never seen — the same reason the hero
+icon row is delayed to 1320/1410ms.
+
+Verified identical on both pages, and `animation-name: none` under
+`prefers-reduced-motion: reduce`.
+
 ## Drawer wash
 
 The nav drawer's panel carries the same holographic palette as the hero headings, but as its
 own `background` rather than clipped to text — so it paints beneath the content
 automatically, with no pseudo-element or z-index to manage. The white stops of the original
 become fully transparent white, which is the same thing over the panel's white ground and
-keeps the interpolation out of grey, and the hues are diluted to **55%**: at full strength
+keeps the interpolation out of grey, and the hues are diluted to **42%**: at full strength
 those bands sit fine behind 30px headings, but this panel carries 14px body copy and they
-were competing with it.
+were competing with it. 42% is a second dilution down from 55% — the first pass was still
+reading as a pattern rather than a sheen.
+
+**The 4px ring is the same wash at 63%**, i.e. 1.5x the panel, painted on `border-box`
+under a transparent `border: 4px solid transparent` while the panel's own wash sits on
+`padding-box`. Two whites are needed under them (one per box) and a colour can only be a
+`background` shorthand's *last* value, so both are written as
+`linear-gradient(var(--surface-white), var(--surface-white))` images instead. The ring's
+period is 160px against the panel's 480px and its `background-position` travels three
+periods to the panel's one on the same 14s clock — a `background-position` list takes a
+value per layer, so one animation drives both rates. Measured on rendered pixels: mean
+chroma (max-min channel) **18.94** on the ring against **12.84** on the panel interior,
+a **1.48x** ratio against the 1.5x asked for.
 
 **The wash travels along the gradient's own axis**, which is what makes it read as a
 diagonal wash rather than a sideways slide. For a 115deg gradient that axis is
@@ -888,10 +1048,34 @@ loop has no seam. (The hero's pure-horizontal 529.62px lands on the same axis di
 14s rather than the hero's 9s: the panel is 1301px wide against a text box, and at the same
 rate the bands hurried across it.
 
-Measured effect on the panel and its type: over the pixels that were pure white, the wash
-settles at mean rgb (247.9, 247.0, 245.9) with a minimum of 217 — a tint, not a pattern.
-Worst-case contrast against the washed ground is 13.96:1 for `--brand-forest-800` and
-6.86:1 for `--ink-2`, both far above AA, so the copy is unaffected.
+Measured effect on the panel and its type: the interior settles at mean rgb
+(241.4, 241.8, 239.9) — a tint, not a pattern. Worst-case contrast against the washed
+ground was 13.96:1 for `--brand-forest-800` and 6.86:1 for `--ink-2` at the earlier, more
+saturated 55%, so the diluted wash can only be lighter behind the copy.
+
+**Navigating closes the drawer.** The panel is a checkbox, and a client-side route change
+does not reset it — so before, clicking FOUNDATION did navigate (the `href` was always
+`/`, and hit-testing reached the link) but the new page arrived *behind* the still-open
+panel, which read as a dead link. Every destination now calls a `closeDrawer` that sets
+`drawerRef.current.checked = false` directly, rather than lifting the open state into
+React: the checkbox has to remain the source of truth or the scripts-stripped snapshot
+loses the drawer entirely. It is wired to the three brand chips, the logo, the nav links,
+the three drawer rows and the promo — verified all six paths close and land on the right
+route.
+
+**Two panels, one handler.** Below 1180px the bar collapses and the brand chips move
+inside the burger panel, which is a *second* checkbox — so a chip there had the identical
+fault, navigating behind a panel that stayed open. `closeMenus` unchecks both, which is
+why it is no longer called `closeDrawer`, and the burger's id is now the `BURGER_ID`
+constant rather than a literal repeated on the input and its label.
+
+**Hit-testing the drawer needs the panel fully open.** Probing a row 200ms after checking
+the box reports the scrim on top of it, which looks like the rows being unclickable. It is
+the 480ms `clip-path` reveal: a clipped-out region takes no hits, so the fixed scrim
+underneath answers instead. From 400ms on all three rows and the promo receive hits, and a
+real dispatched click at Conservation's centre lands on `/`. Synthetic `element.click()`
+bypasses hit-testing entirely, so it cannot catch this either way — dispatch a mouse event
+at coordinates when that is the question.
 
 ## Hero heading treatment
 

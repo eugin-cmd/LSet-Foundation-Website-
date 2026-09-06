@@ -1,5 +1,6 @@
 import Blinder from "@/components/Blinder/Blinder";
 import ScrollCue from "@/components/ScrollCue/ScrollCue";
+import WaveText from "@/components/WaveText/WaveText";
 import Leaves from "@/components/icons/Leaves";
 import PawPrint from "@/components/icons/PawPrint";
 import OpenBook from "@/components/icons/OpenBook";
@@ -32,10 +33,11 @@ export default function EducationHero() {
             <OpenBook />
           </div>
 
-          <h1 className={`${s.heroHeading} wf-display-xl wf-iridescent`}>
-            Institute of
-            <br />
-            animal care &amp; Management
+          <h1
+            className={`${s.heroHeading} wf-display-xl wf-iridescent`}
+            aria-label="Institute of animal care & Management"
+          >
+            <WaveText text={"Institute of\nanimal care & Management"} />
           </h1>
 
           <p className={`${s.heroLede} wf-body-l`}>

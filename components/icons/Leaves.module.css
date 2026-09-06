@@ -1,0 +1,82 @@
+/* ===========================================================================
+   The leaf's own stir on page load. It lives with the component rather than in
+   either hero's module, so both banners get it from importing <Leaves /> and
+   neither has to know about it — the two heroes style this mark identically
+   (68px, white, 0.9 opacity), so there was nothing to diverge on anyway.
+   =========================================================================== */
+.leaf {
+  /* The two sprigs' stems converge at the left edge, a little below the middle
+     — rendered and measured off the artwork. Rotating there makes the spray
+     sway from where a branch would be held, rather than pivoting about the
+     middle of its own bounding box, which reads as a wobble. */
+  transform-origin: 4% 58%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .leaf {
+    /* 1450ms: the blinder's last slat lands at 11 x 55ms + 760ms = 1365ms, so
+       the entrance would otherwise play behind a closed blind. */
+    animation: leafRiseShake 1800ms 1450ms both;
+  }
+}
+
+/* Rise, then stir. One keyframe set rather than two animations: both phases
+   move `transform`, and a second animation on the same property would simply
+   replace the first rather than follow it. So every keyframe carries the whole
+   transform, and the rotation's phase writes translateY(0) explicitly.
+
+   The rise takes the first 28% and eases out, settling rather than arriving at
+   speed. The stir then builds 0.8 -> 1.8 -> 3.0 -> 3.4deg and decays back to
+   nothing — the "ease in" is that envelope, not the timing function, since a
+   literal ease-in would accelerate each swing into its extreme and stop dead
+   there, reading as a twitch rather than a stir. */
+@keyframes leafRiseShake {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) rotate(0deg);
+    animation-timing-function: cubic-bezier(0.2, 0, 0.3, 1);
+  }
+
+  28% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+    animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1);
+  }
+
+  34% {
+    transform: translateY(0) rotate(-0.8deg);
+  }
+
+  41% {
+    transform: translateY(0) rotate(1.8deg);
+  }
+
+  50% {
+    transform: translateY(0) rotate(-3deg);
+  }
+
+  59% {
+    transform: translateY(0) rotate(3.4deg);
+  }
+
+  68% {
+    transform: translateY(0) rotate(-2.4deg);
+  }
+
+  77% {
+    transform: translateY(0) rotate(1.5deg);
+  }
+
+  85% {
+    transform: translateY(0) rotate(-0.8deg);
+  }
+
+  93% {
+    transform: translateY(0) rotate(0.3deg);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+}

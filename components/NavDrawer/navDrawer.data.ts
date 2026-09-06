@@ -15,7 +15,10 @@ export const DESTINATIONS: Destination[] = [
     title: "Conservation",
     description:
       "Drones, edge AI, bioacoustics and sensors — built for the field, repairable on the truck.",
-    href: "#conservation",
+    /* The homepage. This row IS the Foundation — conservation is the arm the
+       FOUNDATION brand covers — and it had been a bare "#conservation" with no
+       target on either page. */
+    href: "/",
   },
   {
     index: "02",

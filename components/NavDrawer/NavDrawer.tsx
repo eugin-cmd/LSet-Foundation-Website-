@@ -21,7 +21,14 @@ const ICONS: Record<Destination["key"], React.ComponentType> = {
   technology: NodeNetwork,
 };
 
-export default function NavDrawer({ id }: { id: string }) {
+export default function NavDrawer({
+  id,
+  onNavigate,
+}: {
+  id: string;
+  /** Closes the panel; every link inside it navigates, so every link calls it. */
+  onNavigate?: () => void;
+}) {
   return (
     <div className={s.inner} id={id}>
       <div className={s.label}>
@@ -36,7 +43,7 @@ export default function NavDrawer({ id }: { id: string }) {
         {DESTINATIONS.map((d) => {
           const Icon = ICONS[d.key];
           return (
-            <a key={d.index} href={d.href} className={s.row}>
+            <a key={d.index} href={d.href} className={s.row} onClick={onNavigate}>
               {/* Three grid items, not a nested wrapper: .row places the
                   index row on its own line and puts the title and the
                   description side by side on the next one, so the paragraph
@@ -52,7 +59,7 @@ export default function NavDrawer({ id }: { id: string }) {
         })}
       </div>
 
-      <a href={PROMO.href} className={s.promo}>
+      <a href={PROMO.href} className={s.promo} onClick={onNavigate}>
         <span className={s.promoMedia}>
           <img src={PROMO.image} alt="" width={278} height={130} />
         </span>

@@ -7,13 +7,15 @@
  * The source's hardcoded fill="white" is swapped for currentColor; size comes
  * from CSS, so the viewBox is the only geometry that lives here.
  */
+import s from "./Leaves.module.css";
+
 const WIDTH = 114;
 const HEIGHT = 60;
 
 export default function Leaves({ className }: { className?: string }) {
   return (
     <svg
-      className={className}
+      className={className ? `${s.leaf} ${className}` : s.leaf}
       width={WIDTH}
       height={HEIGHT}
       viewBox={`0 0 ${WIDTH} ${HEIGHT}`}

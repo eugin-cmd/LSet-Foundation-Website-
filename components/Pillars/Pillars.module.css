@@ -1,11 +1,3 @@
-/* Registered so it can be interpolated — a plain custom property is not
-   animatable, and this is what the radial wash below moves. */
-@property --pillars-ring {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 0px;
-}
-
 /* Figma Frame 1984078025 — mint section 1440x913, content 1101 wide, centred. */
 .pillars {
   position: relative;
@@ -19,71 +11,63 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Radial holographic wash, radiating outward from the section's centre.
+   Holographic band across the section — a diagonal colour band that travels
+   left to right as the page scrolls down, and back to the left on the way up.
 
-   Same palette as the hero headings and the nav drawer, concentric here.
+   Scroll-LINKED, not timed. `animation-timeline: view()` makes the animation's
+   progress a function of how far this section has travelled through the
+   viewport rather than of elapsed time, so reversing the scroll reverses the
+   band with no extra work — a time-based animation could only ever run one
+   way. It replaced a radial ripple on a 22s clock for exactly that reason.
 
-   14% over a 480px period. The two knobs do different jobs and it took a few
-   passes to separate them: the PERIOD decides whether the pattern reads as
-   rings at all, and the OPACITY decides how loud they are.
+   The palette is the hero headings' four pastels, but packed edge to edge with
+   no white passes between them, which is what turns a sheen into a band: 200px
+   period, 50px a hue. (The white passes are what keep the hero's version
+   reading as a sheen; they are the difference between the two effects.)
 
-   The centre-to-corner distance is 853px, so a 720px period (the first
-   attempt) fits only 1.18 cycles — one ring, which reads as a broad bloom no
-   matter what the opacity is. 480px fits 1.78, so the concentric structure is
-   there. Opacity then went 22 -> 45 (too loud) -> 28 -> 14, which is where it
-   sits: a 4%-of-white deviation at its deepest, faint enough to notice only
-   once the eye rests on the section.
-
-   The white stops are transparent white, which is the same thing over the
-   section's white ground and keeps the interpolation out of grey.
-
-   Two constraints shaped the technique:
-
-   - The section cannot be clipped. The field photo above it overhangs by
-     translateY(-100%), so `overflow: hidden` here would cut it off. That rules
-     out the usual approach of scaling an oversized layer, which would bleed
-     into the neighbouring sections. Animating the gradient's stop offsets
-     instead keeps every pixel inside this element's own background box.
-   - A repeating gradient repeats its stop list infinitely in BOTH directions,
-     so shifting every stop outward by exactly one period maps the pattern onto
-     itself — the loop closes with no seam and no flat disc at the centre.
-
-   var() carries a fallback, so without @property support the wash renders
-   static at offset 0 rather than invalidating the whole declaration.
+   The pseudo-element is inset: 0, so its own view() progress is the section's
+   and no named timeline is needed.
    --------------------------------------------------------------------------- */
 .pillars::before {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: repeating-radial-gradient(
-    circle at 50% 50%,
-    rgb(255 255 255 / 0%) calc(var(--pillars-ring, 0px) + 0px),
-    rgb(191 243 255 / 14%) calc(var(--pillars-ring, 0px) + 60px),
-    rgb(255 255 255 / 0%) calc(var(--pillars-ring, 0px) + 120px),
-    rgb(255 200 220 / 14%) calc(var(--pillars-ring, 0px) + 180px),
-    rgb(255 255 255 / 0%) calc(var(--pillars-ring, 0px) + 240px),
-    rgb(255 217 194 / 14%) calc(var(--pillars-ring, 0px) + 300px),
-    rgb(255 255 255 / 0%) calc(var(--pillars-ring, 0px) + 360px),
-    rgb(200 255 228 / 14%) calc(var(--pillars-ring, 0px) + 420px),
-    rgb(255 255 255 / 0%) calc(var(--pillars-ring, 0px) + 480px)
+  background: repeating-linear-gradient(
+    115deg,
+    rgb(191 243 255 / 26%) 0px,
+    rgb(255 200 220 / 26%) 50px,
+    rgb(255 217 194 / 26%) 100px,
+    rgb(200 255 228 / 26%) 150px,
+    rgb(191 243 255 / 26%) 200px
   );
   pointer-events: none;
   content: "";
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  /* 22s for one 480px period, ~22px/s. Kept slow even at this opacity: the
-     movement is the part that gives a near-invisible pattern away, so a faint
-     wash drifting quickly is more noticeable than a stronger one drifting
-     slowly. */
-  .pillars::before {
-    animation: pillarsRadiate 22s linear infinite;
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .pillars::before {
+      animation-name: pillarsBandDrift;
+      /* Explicit: the `animation` shorthand defaults duration to 0s, which
+         leaves a scroll-driven animation pinned to its first frame. */
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
   }
 }
 
-@keyframes pillarsRadiate {
+/* Six 200px periods over the section's pass. The shift lies along the
+   gradient's own 115deg axis — (sin115, -cos115) x 1200 — so the band travels
+   perpendicular to its own stripes instead of sliding sideways along them. */
+@keyframes pillarsBandDrift {
+  from {
+    background-position: 0 0;
+  }
   to {
-    --pillars-ring: 480px;
+    background-position: 1087.6px 507.1px;
   }
 }
 
@@ -127,7 +111,7 @@
 
 /* --- accordion --- */
 .list {
-  /* Above .pillars::before, the radial wash — that pseudo-element is
+  /* Above .pillars::before, the holographic band — that pseudo-element is
      positioned, so without this it would paint over the accordion. */
   position: relative;
   z-index: 1;
@@ -179,6 +163,22 @@
   stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+/* The mark drops in when its row is opened — the same fall the drawer's
+   destination icons use, from the shared keyframe in globals.css.
+
+   Driven by the row's own open state rather than running once on load, so it
+   replays every time a row is opened. Only one icon moves per open, so unlike
+   the drawer's three there is no stagger; the 40ms delay just lets the panel
+   below start expanding first. */
+@media (prefers-reduced-motion: no-preference) {
+  .item[data-open="true"] .indexRow svg {
+    animation-name: var(--anim-icon-drop-short);
+    animation-duration: 780ms;
+    animation-delay: 40ms;
+    animation-fill-mode: both;
+  }
 }
 
 .index {
