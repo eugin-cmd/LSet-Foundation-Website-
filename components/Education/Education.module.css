@@ -24,6 +24,11 @@
      band past --banner-height. */
   --cue-reserve: calc(clamp(36px, 5vw, 72px) + var(--cue-lift) + 47px + 20px);
 
+  /* Vertical overscan on the footage, so it can sink on scroll without ever
+     exposing an edge inside the banner. The same value the other two banners
+     use, so all three drift by the same amount. */
+  --video-overscan: 72px;
+
   /* One layout at every width, rather than a fixed band that switches to a
      content-driven one at a breakpoint. --banner-height is a floor and the
      padding is symmetric, so above the crossover this centres the copy in a
@@ -40,8 +45,34 @@
   min-height: var(--edu-banner-h);
   padding: var(--cue-reserve) var(--edge);
   overflow: hidden;
-  background: url("/assets/edu-hero.jpg") center / cover no-repeat;
   background-color: var(--scrim-base);
+}
+
+/* The banner carries footage rather than the Figma still: birds4.mp4,
+   downscaled to 1080p H.264 and stripped of its AAC track — the banner plays
+   muted. Same arrangement as the other two banners, down to the overscan. */
+.heroVideo {
+  position: absolute;
+  top: calc(var(--video-overscan) * -1);
+  left: 0;
+  width: 100%;
+  height: calc(100% + var(--video-overscan) * 2);
+  object-fit: cover;
+  object-position: center;
+}
+
+/* The still had the node's own scrim gradients baked into the export — the
+   tint below still says so — and footage does not, so they are reproduced
+   here. The same two stops the other two banners take from their Figma nodes.
+   Without them the nav plate and the heading would be sitting on bare
+   footage, which is what the baked export was quietly doing for them. */
+.heroScrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, #01120c 3.381%, rgba(0, 0, 0, 0) 25.943%),
+    linear-gradient(0deg, #01120c 0%, rgba(0, 0, 0, 0) 58.071%);
 }
 
 /* Figma puts the block at y 660 of 856 — low in the band. It is centred here
@@ -78,6 +109,19 @@
 
 /* Flat 25% black over the photograph, under the copy and under the blinder —
    it is first in the DOM and nothing here raises a z-index. */
+/* 25%, the same as the Antz banner — no divergence.
+
+   This briefly ran at 32%, which the footage before this one forced: those
+   macaws were bright enough that yellow plumage behind the heading pushed the
+   palest hue in the iridescent fill to 2.94:1, under the 3.0 that large text
+   needs. This clip is darker and softer, and at 25% it clears everything with
+   room: heading 3.61:1 at its worst instant, lede 5.18:1, icon row 8.67:1,
+   sampled at eight points around the 28s loop with the copy hidden so every
+   reading is true ground. The heading is better here than on the Foundation
+   banner, which measures 3.03:1.
+
+   The number belongs to the footage, not to the banner, so re-measure on any
+   swap — this one moved twice. */
 .heroTint {
   position: absolute;
   inset: 0;
@@ -109,7 +153,9 @@
      elapses, so nothing sits in place before its turn. The delays wait out the
      blinder — its last slat lands at 11 x 55ms + 760ms = 1365ms — so the drop
      is actually seen rather than played behind a closed blind. */
-  animation: eduIconDrop 940ms both;
+  animation-name: var(--anim-icon-drop);
+  animation-duration: 940ms;
+  animation-fill-mode: both;
 }
 
 .heroIcons svg:nth-child(1) {
@@ -126,51 +172,32 @@
   }
 }
 
-/* Drop, overshoot, settle. */
-@keyframes eduIconDrop {
-  0% {
-    opacity: 0;
-    transform: translateY(-120px);
-    animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.32);
-  }
-  38% {
-    opacity: 1;
-  }
-  52% {
-    transform: translateY(0);
-    animation-timing-function: cubic-bezier(0.25, 0.7, 0.35, 1);
-  }
-  68% {
-    transform: translateY(-13px);
-    animation-timing-function: cubic-bezier(0.6, 0, 0.85, 0.35);
-  }
-  82% {
-    transform: translateY(0);
-    animation-timing-function: cubic-bezier(0.25, 0.7, 0.35, 1);
-  }
-  91% {
-    transform: translateY(-4px);
-    animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.4);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .heroHeading {
   width: 100%;
   margin: 0;
   /* 900, not WF/Display XL's 400 — Google Sans Flex is variable to 1000, so
      this is the real face rather than a synthesised bold.
 
-     68px at 1440 (4.72vw), against the Foundation hero's 80px. That 80 is not
-     available: "ANIMAL CARE & MANAGEMENT" measures 1380px at 80/900 in a
-     1276px column, 104px over, so it would take a third line. 72px (1242px)
-     is the largest that fits, and it does now fit the 780px band — but on 34px
-     of line-width margin and 6.3px of column slack, so a small font-metric
-     shift would break the heading to three lines. 68px reads the same and has
-     103px and 15.2px instead. */
+     68px at 1440 (4.72vw), against the Foundation hero's 80px.
+
+     The break is "Institute of animal care / & Management", by direction, so
+     the longest line is the FIRST one: "INSTITUTE OF ANIMAL CARE" at 1056px in
+     the 1276px column — 220px of slack, and the band stays exactly the 780px
+     the other two banners share. Two lines hold from 1440 down to 600px; below
+     that the 32px floor takes it to three, as it did on either break.
+
+     Which line is long depends entirely on where this break falls, and that
+     decides what sizes are available — worth recording, since the alternative
+     was tried and set aside. Breaking after "Institute of" instead makes
+     "ANIMAL CARE & MANAGEMENT" the long line at 1173px, only 103px clear, and
+     puts 80px out of reach: it measures 1380px there, 104px over the column,
+     forcing a third line. On THIS break 80px fits, at 1242px with 34px clear.
+
+     Kept at 68 regardless, because 34px of line-width margin is thin enough
+     that a font-metric shift would drop the heading to three lines, and
+     because the size has not been asked for. 80px for full parity with the
+     Foundation hero, or 76px (1180px, 96px clear) as the cautious middle, are
+     each one value away. */
   font-size: clamp(32px, 4.72vw, 68px);
   font-weight: 900;
   /* Fallback for no background-clip support; .wf-iridescent replaces it. */
@@ -188,14 +215,6 @@
   text-wrap: pretty;
 }
 
-.heroLeaves {
-  flex: none;
-  width: 68px;
-  height: auto;
-  margin-top: 2px;
-  color: var(--white);
-  opacity: 0.9;
-}
 
 /* ---------------------------------------------------------------------------
    Parallax: the copy column rises as the banner scrolls past, so it separates
@@ -212,13 +231,25 @@
    --------------------------------------------------------------------------- */
 @supports (animation-timeline: scroll()) {
   @media (prefers-reduced-motion: no-preference) {
-    .heroInner {
-      animation-name: eduCopyRise;
+    .heroInner,
+    .heroVideo {
       animation-duration: 1ms;
       animation-timing-function: linear;
       animation-fill-mode: both;
       animation-timeline: scroll(root block);
       animation-range: 0 var(--edu-banner-h);
+    }
+
+    .heroInner {
+      animation-name: eduCopyRise;
+    }
+
+    /* Now that the banner holds footage there is a second plane to move: it
+       sinks as the copy rises, so the two separate rather than the copy
+       travelling over a fixed picture. This is what the overscan above is for.
+       Same pairing as the homepage banner. */
+    .heroVideo {
+      animation-name: eduFootageSink;
     }
   }
 }
@@ -229,6 +260,29 @@
   }
   to {
     transform: translateY(-150px);
+  }
+}
+
+@keyframes eduFootageSink {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(var(--video-overscan));
+  }
+}
+
+/* Hold the poster frame for viewers who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  .heroVideo {
+    display: none;
+  }
+
+  .hero {
+    background-image: url("/assets/edu-hero-poster.jpg");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
   }
 }
 
@@ -361,71 +415,9 @@
   justify-content: center;
   width: 100%;
   padding: clamp(48px, 5.42vw, 78px) clamp(var(--edge), 11.94vw, 172px);
-  background: var(--surface-white);
-}
-
-/* ---------------------------------------------------------------------------
-   Holographic band — the same treatment as the homepage pillars section, which
-   this sits in the same place in the page as. Scroll-LINKED, so the band
-   travels left to right as the page scrolls down and back to the left on the
-   way up; see the note in Pillars.module.css for why a timed animation cannot
-   do that.
-
-   Four pastels packed edge to edge with no white passes, 200px period, 50px a
-   hue. It replaced a 14%, white-passed, 22s-clock version — the white passes
-   are what make the hero headings' iridescence read as a sheen, and removing
-   them is what turns the same palette into a band.
-   --------------------------------------------------------------------------- */
-.rows::before {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: repeating-linear-gradient(
-    115deg,
-    rgb(191 243 255 / 26%) 0px,
-    rgb(255 200 220 / 26%) 50px,
-    rgb(255 217 194 / 26%) 100px,
-    rgb(200 255 228 / 26%) 150px,
-    rgb(191 243 255 / 26%) 200px
-  );
-  pointer-events: none;
-  content: "";
-}
-
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .rows::before {
-      animation-name: rowsBandDrift;
-      /* Explicit: the `animation` shorthand defaults duration to 0s, which
-         leaves a scroll-driven animation pinned to its first frame. */
-      animation-duration: 1ms;
-      animation-timing-function: linear;
-      animation-fill-mode: both;
-      /* The pseudo-element is inset: 0, so its own view() progress is the
-         section's and no named timeline is needed. */
-      animation-timeline: view();
-      animation-range: cover 0% cover 100%;
-    }
-  }
-}
-
-/* Six 200px periods over this section's pass, the same rule the pillars band
-   follows, with the shift along the gradient's own 115deg axis —
-   (sin115, -cos115) x 1200 — so the band travels perpendicular to its own
-   stripes rather than sliding sideways along them.
-
-   Six periods per PASS, not a matched px-per-scroll rate: these two sections
-   differ in height (785px here against 913px), so an identical rate would have
-   to be recomputed from both heights and would stop being true the moment
-   either reflowed. Per-pass holds structurally at every viewport; the residual
-   difference in rate is under 8% and is not perceptible. */
-@keyframes rowsBandDrift {
-  from {
-    background-position: 0 0;
-  }
-  to {
-    background-position: 1087.6px 507.1px;
-  }
+  /* Transparent, not white: the holographic mesh is painted by the <MeshField>
+     wrapper behind this section, and any background here paints over it. */
+  background: transparent;
 }
 
 /* Figma's 1102; the accordion's own list caps at 1101. */
@@ -887,10 +879,7 @@
 }
 
 @media (max-width: 700px) {
-  .heroLeaves {
-    display: none;
-  }
-
+  
   /* The overhanging frame has nowhere to overhang once the bands are this
      short, so it sits in the photo rather than across the join. */
   .showcaseFrame {

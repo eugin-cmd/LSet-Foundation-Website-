@@ -136,6 +136,39 @@ video {
   text-transform: uppercase;
 }
 
+/* A 3px dot on each side of a section kicker.
+
+   Inline-block pseudo-elements rather than a flex row: the kickers are
+   left-aligned in some sections and centred in others, and inline dots inherit
+   whatever `text-align` the section already sets instead of needing a
+   `justify-content` per caller. It also leaves each kicker's own `display`
+   alone — three of the four are flex items, and blockifying them would have
+   stretched the row and pulled the dots to the extremes.
+
+   `currentColor` so the dots follow the kicker they belong to: black in WHO WE
+   ARE, white in the three that sit on photography. */
+.wf-dotted::before,
+.wf-dotted::after {
+  content: "";
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  /* `middle` centres on the x-height; the kickers are uppercase or title case,
+     so the dot is nudged up to sit on the cap's optical centre instead. */
+  vertical-align: middle;
+  transform: translateY(-0.06em);
+}
+
+.wf-dotted::before {
+  margin-inline-end: 0.55em;
+}
+
+.wf-dotted::after {
+  margin-inline-start: 0.55em;
+}
+
 /* ---------------------------------------------------------------------------
    A utility rather than a copy inside each hero's module, so the palette and
    the 529.62px shift have one definition and the two heroes cannot drift.
@@ -205,7 +238,10 @@ video {
    Shared by the nav drawer's destination icons and the pillars accordion's,
    which are the same three marks at the same sort of size.
 
-   The hero's own iconDrop keeps its separate definition: it falls 120px into a
+   The hero drop lives here too now, as icon-drop / --anim-icon-drop. It had been
+   copied verbatim into Hero.module.css as `iconDrop` and Education.module.css as
+   `eduIconDrop` — byte-identical keyframes — and the Antz banner would have made
+   a third. It falls 120px into a
    banner, where these fall 28px inside a row.
 
    Modules reach it through --anim-icon-drop-short, NOT by naming it directly.
@@ -215,7 +251,214 @@ video {
    nothing — the animation silently does not run. A var() is left alone.
    --------------------------------------------------------------------------- */
 :root {
+  /* The holographic mesh, as one paint shared by every surface that wears it.
+     <MeshField> paints the page's light sections with it and the nav drawer
+     paints its interior with it, so the two cannot drift — the same reason
+     MeshField exists at all, one step further out.
+
+     A custom property rather than a class, because the paint lands on a
+     pseudo-element in both places and a class cannot reach one. The three
+     var()s inside resolve against whichever element uses it, so each surface
+     brings its own swirl angle and its own pointer offsets.
+
+     Mesh gradient — eight overlapping pastel blobs over the field's own white.
+     Seven hues: the four the hero headings use (cyan, rose, peach, mint) plus
+     #FFFCCC pale butter, #FFE3F8 pale lilac-pink and #CCE4FF pale sky, with
+     cyan appearing twice. Each blob fades to its OWN hue at zero alpha rather
+     than to `transparent`: same result, but it states the intent, and it
+     cannot be mistaken for a fade-to-grey bug.
+
+     The three added hues are all very light, which is why widening the palette
+     cost so little weight — measured, mean chroma 16.71 -> 17.39 -> 18.26
+     across the additions, with the deepest pixel moving only 16.1% -> 17.3%
+     off white. They also improved corner coverage (palest corner 249 -> 245),
+     because each went into the thinnest remaining quadrant.
+
+     Every centre is the sum of three terms:
+
+       base            a fixed percentage, unevenly spread so the eight never
+                       read as a regular ring
+       swirl orbit     radius * cos/sin(--mesh-swirl + phase), the
+                       scroll-driven turn; see the keyframe below
+       pointer offset  depth * --mesh-mx / --mesh-my, the cursor term
+
+     The pointer depths differ in BOTH magnitude and sign, which is the whole
+     trick: moving the cursor right pushes some blobs right and others left, so
+     the field parts and converges around the cursor instead of sliding across
+     as one block. A uniform offset is what makes this effect look cheap.
+
+     No repeat and no background-size: every blob is placed by the gradient's
+     own `at`, inside an image that is exactly the box. That is what keeps the
+     geometry readable — `background-position` percentages resolve against
+     (box - image), so with an image larger than the box the same numbers
+     would move the blobs backwards and at a scaled-down rate.
+
+     The blobs are wide (43-60% of the box), so the sum of both offsets stays
+     small against each blob's own falloff. That is why the travel can be this
+     large without any blob edge becoming visible: what moves is where the
+     colour is densest, never where it stops.
+     --------------------------------------------------------------------- */
+  --mesh-paint:
+      radial-gradient(
+        ellipse 47% 55% at
+        calc(18% + 15% * cos(var(--mesh-swirl, 0deg)) + 32% * var(--mesh-mx, 0))
+        calc(26% + 15% * sin(var(--mesh-swirl, 0deg)) + 25% * var(--mesh-my, 0)),
+        rgb(191 243 255 / 54%),
+        rgb(191 243 255 / 0%) 100%
+      ),
+      radial-gradient(
+        ellipse 42% 51% at
+        calc(76% + 14% * cos(var(--mesh-swirl, 0deg) + 68deg) + -1 * 23% * var(--mesh-mx, 0))
+        calc(16% + 14% * sin(var(--mesh-swirl, 0deg) + 68deg) + 18% * var(--mesh-my, 0)),
+        rgb(255 200 220 / 54%),
+        rgb(255 200 220 / 0%) 100%
+      ),
+      radial-gradient(
+        ellipse 49% 56% at
+        calc(88% + 17% * cos(var(--mesh-swirl, 0deg) + 155deg) + 29% * var(--mesh-mx, 0))
+        calc(66% + 17% * sin(var(--mesh-swirl, 0deg) + 155deg) + -1 * 22% * var(--mesh-my, 0)),
+        rgb(255 217 194 / 54%),
+        rgb(255 217 194 / 0%) 100%
+      ),
+      radial-gradient(
+        ellipse 44% 54% at
+        calc(26% + 15% * cos(var(--mesh-swirl, 0deg) + 232deg) + -1 * 27% * var(--mesh-mx, 0))
+        calc(82% + 15% * sin(var(--mesh-swirl, 0deg) + 232deg) + -1 * 25% * var(--mesh-my, 0)),
+        rgb(200 255 228 / 54%),
+        rgb(200 255 228 / 0%) 100%
+      ),
+      radial-gradient(
+        ellipse 51% 60% at
+        calc(52% + 10% * cos(var(--mesh-swirl, 0deg) + 310deg) + 16% * var(--mesh-mx, 0))
+        calc(46% + 10% * sin(var(--mesh-swirl, 0deg) + 310deg) + 13% * var(--mesh-my, 0)),
+        rgb(191 243 255 / 38%),
+        rgb(191 243 255 / 0%) 100%
+      ),
+      radial-gradient(
+        ellipse 46% 53% at
+        calc(60% + 15% * cos(var(--mesh-swirl, 0deg) + 110deg) + 36% * var(--mesh-mx, 0))
+        calc(88% + 15% * sin(var(--mesh-swirl, 0deg) + 110deg) + -1 * 32% * var(--mesh-my, 0)),
+        rgb(255 252 204 / 54%),
+        rgb(255 252 204 / 0%) 100%
+      ),
+      radial-gradient(
+        ellipse 42% 51% at
+        calc(8% + 14% * cos(var(--mesh-swirl, 0deg) + 285deg) + -1 * 34% * var(--mesh-mx, 0))
+        calc(56% + 14% * sin(var(--mesh-swirl, 0deg) + 285deg) + 29% * var(--mesh-my, 0)),
+        rgb(255 227 248 / 54%),
+        rgb(255 227 248 / 0%) 100%
+      ),
+      radial-gradient(
+        ellipse 44% 51% at
+        calc(46% + 15% * cos(var(--mesh-swirl, 0deg) + 195deg) + -1 * 31% * var(--mesh-mx, 0))
+        calc(6% + 15% * sin(var(--mesh-swirl, 0deg) + 195deg) + -1 * 23% * var(--mesh-my, 0)),
+        rgb(204 228 255 / 54%),
+        rgb(204 228 255 / 0%) 100%
+      );
+
   --anim-icon-drop-short: icon-drop-short;
+  --anim-icon-drop: icon-drop;
+}
+
+/* ---------------------------------------------------------------------------
+   Mesh-swirl angle — the single value both content-area meshes animate.
+
+   The homepage pillars and the education accordion each paint a mesh of eight
+   overlapping pastel blobs, and each blob's centre is placed at
+   `calc(base + radius * cos(--mesh-swirl + phase))`. Sweeping this one angle
+   therefore walks every centre around its own small circle at a fixed phase
+   offset from the others, which reads as the whole field slowly rotating
+   rather than eight dots sliding.
+
+   Registered, because an unregistered custom property is a token substitution
+   and does not interpolate — the mesh would jump between keyframes instead of
+   turning. Registered here rather than in either module: @property is global
+   (css-loader does not localise custom properties), so two declarations would
+   be one declaration written twice.
+
+   `inherits: false` keeps it off descendants — nothing inside these sections
+   should inherit an angle that only the backdrop uses.
+
+   Every use passes a fallback, `var(--mesh-swirl, 0deg)`. Without @property
+   support there is no initial value, so a bare var() would be invalid at
+   computed-value time and take the whole background-image with it, leaving the
+   section plain white. With the fallback those browsers get the mesh at its
+   0deg resting position, static.
+   --------------------------------------------------------------------------- */
+@property --mesh-swirl {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ---------------------------------------------------------------------------
+   Pointer position inside the meshed section, normalised to -1..1 on each
+   axis, 0 at the centre. Written by usePointerMesh; every blob adds its own
+   multiple of these to its centre, so the mesh follows the cursor.
+
+   `inherits: TRUE`, unlike --mesh-swirl above, and the difference is load
+   bearing. The hook can only set a property on the section element, while the
+   mesh is painted by that section's ::before. A pseudo-element inherits from
+   the element that originates it, so an inherited property arrives; a
+   non-inherited one does not, and the mesh would sit dead centre for ever.
+   (Learned the hard way trying to pin --mesh-swirl from the parent for a
+   measurement — the frames all came back identical.)
+
+   Registered so it can be TRANSITIONED. The hook writes raw pointer values and
+   does no easing of its own; the section carries
+   `transition: --mesh-mx 420ms ease-out`, so the mesh trails the cursor and
+   settles, with no animation loop in script. An unregistered custom property
+   is a token substitution and cannot transition, so this would snap instead.
+
+   Every use passes the 0 fallback, `var(--mesh-mx, 0)`, so a browser without
+   @property — or a page with no script at all — resolves the pointer term to
+   nothing and keeps the scroll-driven swirl on its own.
+   --------------------------------------------------------------------------- */
+@property --mesh-mx {
+  syntax: "<number>";
+  initial-value: 0;
+  inherits: true;
+}
+
+@property --mesh-my {
+  syntax: "<number>";
+  initial-value: 0;
+  inherits: true;
+}
+
+/* Drop, overshoot, settle — the banner icon rows' 940ms fall. Referenced through
+   --anim-icon-drop, never by name: css-loader rewrites every `animation-name`
+   inside a *.module.css to a hashed local, so a direct reference from a module
+   compiles to something that matches nothing and silently does not run. */
+@keyframes icon-drop {
+  0% {
+    opacity: 0;
+    transform: translateY(-120px);
+    animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.32);
+  }
+  38% {
+    opacity: 1;
+  }
+  52% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.25, 0.7, 0.35, 1);
+  }
+  68% {
+    transform: translateY(-13px);
+    animation-timing-function: cubic-bezier(0.6, 0, 0.85, 0.35);
+  }
+  82% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.25, 0.7, 0.35, 1);
+  }
+  91% {
+    transform: translateY(-4px);
+    animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.4);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes icon-drop-short {

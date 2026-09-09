@@ -16,9 +16,29 @@ import s from "./Education.module.css";
 export default function EducationHero() {
   return (
     <section className={s.hero}>
-      {/* Flat 25% black over the photograph. The export already carries the
-          node's own scrim gradients; this sits on top of them. */}
+      {/* Decorative and silent, so it is kept out of the accessibility tree
+          and out of the tab order — no controls to reach. */}
+      <video
+        className={s.heroVideo}
+        poster="/assets/edu-hero-poster.jpg"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        aria-hidden="true"
+        tabIndex={-1}
+      >
+        <source src="/assets/edu-hero.mp4" type="video/mp4" />
+      </video>
+
+      {/* Flat 25% black over the footage, under the gradient scrims so those
+          keep full strength. As on the other two banners. */}
       <div className={s.heroTint} aria-hidden="true" />
+
+      {/* The still export carried the node's scrim gradients baked in; the
+          footage does not, so they are a layer of their own now. */}
+      <div className={s.heroScrim} aria-hidden="true" />
 
       {/* Opens on load, over everything else in the banner. */}
       <Blinder />
@@ -37,7 +57,7 @@ export default function EducationHero() {
             className={`${s.heroHeading} wf-display-xl wf-iridescent`}
             aria-label="Institute of animal care & Management"
           >
-            <WaveText text={"Institute of\nanimal care & Management"} />
+            <WaveText text={"Institute of animal care\n& Management"} />
           </h1>
 
           <p className={`${s.heroLede} wf-body-l`}>
@@ -50,7 +70,7 @@ export default function EducationHero() {
           </p>
 
           {/* Decorative flourish under the subtext. */}
-          <Leaves className={s.heroLeaves} />
+          <Leaves />
         </div>
       </div>
 

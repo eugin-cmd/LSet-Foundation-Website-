@@ -76,10 +76,17 @@ Page order in [`app/page.tsx`](app/page.tsx), with the Figma y-offsets each sect
   photo behind the whole card, an uncovered media area, then the body. Figma puts a
   bottom gradient on card 02 only, but the body copy sits straight on the photograph
   in all three, so all three get it.
-- **The two pages are linked in four places**, all verified by clicking through in
-  both directions: the nav brand chips (`/` and `/education`), the nav logo, the
-  footer's "Education" under WHAT WE DO, and the homepage drawer's and pillars'
-  Education rows. The footer is on every page, so its links carry both ways.
+- **The three pages are linked in nine places**, all verified by clicking through: the nav
+  brand chips (`/`, `/education`, `/technology`), the nav logo, the footer's "Education",
+  "Technology" and "Antz Systems" under WHAT WE DO, and the drawer's and pillars' Education and
+  Technology rows. The footer and nav are in the root layout, so their links carry from every
+  page.
+  - **Everything that names the third pillar points at `/technology`** — the ANTZ SYSTEMS brand
+    chip, the footer's "Technology" *and* its "Antz Systems", the drawer's Technology
+    destination, and the homepage accordion's row 03 "Know more". All five were dead before the
+    page existed: three were `href="#"` and two were a bare `#technology` with no target
+    anywhere. Verified by clicking each one from the homepage and reading the resulting
+    pathname and `<h1>`.
   - **In-page anchors in the nav have to be absolute.** "The Work" was `#the-work`,
     which is dead on `/education` because that section only exists on the homepage.
     It is `/#the-work` now. The drawer's **Conservation** row is the Foundation's
@@ -766,61 +773,971 @@ consequences:
 Both were caught by rendering at true 20px and magnifying the real pixels 8x, not by looking
 at the SVGs.
 
-## Education rows band
+## The Antz Systems page — /technology
 
-The education page's disclosure rows run the same scroll-linked holographic band as the
-homepage pillars section — see that entry for the mechanism, the palette and why the white
-passes were removed. `.rowsInner` takes `position: relative; z-index: 1` for the same reason
-`.list` does there, the band is `pointer-events: none`, and the accordion still opens.
+Figma frame `Antz Systems`, node 1965:18354 (1440x3941). Built from the parts the other two
+pages already use: the shared `--banner-height` and `<ScrollCue>`, the shared `<Accordion>`,
+`<PillCta>`, `<IntroBand>`, and the nav and footer from the root layout. Only the platform
+showcase and the closing band are new.
 
-It replaced a 14%, white-passed, 22s-clock diagonal wash. That version could only ever drift
-one way; this one reverses with the scroll.
+**The route is `/technology`, not `/antz-systems`.** The site's own vocabulary for this pillar
+is Technology — it is what the homepage accordion, the nav drawer's third destination and the
+footer all call it — and ANTZ SYSTEMS is the same destination under its product name. This
+finally gives the third brand chip a page: it had been `href="#"` since the nav was built, and
+the drawer's Technology row a bare `#technology`. Both now point here.
 
-## Pillars scroll-linked band
+Section heights against the design, measured at 1440: hero 780 (the shared banner height, not
+Figma's 856 — one token moves all three heroes), band 134/157, platform 959/921, rows
+1184/1255, cta 308/274, page 3844/3941. The differences are fluid clamps and text wrap; the
+project does not pin section heights.
 
-The Conservation / Education / Technology section carries a diagonal holographic band that
-travels **left to right as the page scrolls down, and back to the left on the way up**.
+### The leaf flourish, and where its styling now lives
 
-**It is scroll-linked, not timed**, and that is what makes the reversal free:
-`animation-timeline: view()` makes the animation's progress a function of how far the section
-has travelled through the viewport rather than of elapsed time, so scrolling back retraces it.
-A time-based animation could only ever run one way. It replaced a radial ripple on a 22s clock
-for exactly that reason. The pseudo-element is `inset: 0`, so its own `view()` progress is the
-section's and no named timeline is needed.
+The banner closes its copy column with the same leaf spray the other two do, bringing its own
+rise-then-stir on load — the component has always owned that animation, so the banner only has
+to render `<Leaves />`.
 
-Measured going down and then back up through the same five scroll positions: 0 -> 271.9 ->
-543.6 -> 815.4 -> 1087.6px on the x, with y advancing proportionally for the diagonal, and the
-identical values in reverse on the way up.
+**Its styling moved into the component too.** It had been written out in both heroes and the
+two rules were byte-identical — 68px, white, 0.9 opacity, 2px of top margin — as were their
+`@media (max-width: 700px) { display: none }` overrides. The Antz banner would have made a
+third copy of each, so `Leaves.module.css` now carries the lot and both existing heroes render
+`<Leaves />` with no class at all. Verified on all three pages afterwards: 68x36, white,
+`leafRiseShake` running, transform-origin at the stem, and `display: none` at 600px.
 
-**The palette is packed edge to edge with no white passes** — 200px period, 50px a hue — and
-that is the difference between a band and a sheen. The hero headings' version keeps a white
-pass between each hue, which is what makes it read as a sheen; removing them turns the same
-four pastels into a continuous colour band.
+Passing no class matters, incidentally: the old call sites passed `className={s.leaves}` and
+`className={s.heroLeaves}`, and once those rules were gone those lookups would have resolved to
+`undefined` and shipped `class="undefined"` into the DOM.
 
-The shift lies along the gradient's own 115deg axis, `(sin115, -cos115) x 1200`, so the band
-travels perpendicular to its own stripes rather than sliding sideways along them — six 200px
-periods over the section's whole pass.
+**`opacity: 0.9` is the reduced-motion value, not the shipped one.** The stir fills forwards
+with `opacity: 1` at its last keyframe and an animation outranks a plain declaration, so with
+motion allowed the leaf settles fully opaque. Measured both ways: 1 with motion, 0.9 under
+`prefers-reduced-motion: reduce`. That was equally true before the rule moved; it is written
+down now so nobody reads 0.9 as what they are looking at.
 
-At 26% alpha, and because every pixel is now tinted rather than half of them, it measures
-7.8% deepest deviation from white with a per-channel spread of [6.23, 4.60, 4.65] — against
-the radial version's 5.1% and [2.66, 2.17, 2.24], so roughly 2.3x the presence, and still
-short of the 12.9% version that was too loud. Contrast: 11.05:1 worst for
-`--color-teal-950`, 7.59:1 for `--ink-2`.
+**The banner is at its practical limit.** It now stacks wordmark, four icons, a two-line
+heading, a two-line lede and the leaf. Cue clearance after adding it: 27 / 19 / 19 / 19 / 67 /
+69 / 53 at 1440 / 1280 / 1100 / 900 / 700 / 600 / 390 — still clear, but 19px is the floor
+across the desktop widths, and the band is already growing past `--banner-height` to hold it
+(722 at 1280, 682 at 1100). Anything further in this banner collides with the scroll cue.
 
-`.list` keeps `position: relative; z-index: 1` so the accordion sits above the band — the
-pseudo-element is positioned, and without it the band paints over the copy. It is
-`pointer-events: none` and all three triggers hit-test clean.
+### Section rhythm on this page
 
-The education page's disclosure rows carry the identical treatment — same palette, period,
-alpha and scroll-linking — so the two accordion sections read as one thing in two places.
-Measured on both, going down and back up through five scroll positions: 0 -> 271.8 -> 543.6
--> 815.9 -> 1087.6px, and the exact reverse coming up.
+Every content section pads by one token, `--antz-block` (`clamp(48px, 5.42vw, 78px)`, which is
+Figma's own padding on this page's disclosure board), top and bottom. That makes each gap
+between two of them exactly twice it, and all of them equal.
 
-**Six periods per PASS, not a matched px-per-scroll rate.** The two sections differ in height
-(913px on the homepage, 785px on education), so an identical rate would have to be recomputed
-from both heights and would stop being true the moment either reflowed. Per-pass holds
-structurally at every viewport; the residual difference in rate is under 8% and is not
-perceptible.
+It needed doing because the page had no rhythm at all: the platform section had **no top
+padding**, a leftover from when its stage was a full-bleed baked export meant to butt the
+banner. Once the band went and the carousel became a centred 1100px block, that left the
+carousel crammed against the hero. Measured before: pads of 0/80, 78/78 and 56/56, so no two
+gaps matched.
+
+Measured after, content edge to content edge:
+
+| join | gap |
+|---|---|
+| banner edge → carousel | **78** |
+| platform copy → first accordion row | **156** |
+| last row → closing-band title | **156** |
+| closing-band buttons → footer | **78** |
+
+78 against a full-bleed neighbour, 156 at every interior join where both sides pad. This page
+needs the token where the other two do not: their content sections sit between full-bleed photo
+bands that absorb the join, so a single symmetric padding is all each needs.
+
+The closing band takes `--antz-block` rather than Figma's 56, which grows it from 274px to
+321px. The alternative was one gap in the page being 22px tighter than the rest.
+
+### A wrap the chevron fix caused
+
+Worth recording because it was a trade, not a clean win. Reserving 40px for the chevron cut the
+title's available width from 1096 to 1056, and "Records that grow with the animal" needs about
+1108px at 52px — so row 01 went from *overlapping* the chevron to *wrapping*. Better, but the
+second line was the single orphan word "animal".
+
+`.title` now carries `text-wrap: balance`, which splits it evenly instead: the widest line drops
+from 858px to 590px. It only bites on a title long enough to wrap, which across all three
+boards is this one; the other seven are single lines where it does nothing.
+
+Figma has this title on one line, but its own text node is 1375px wide inside a 1101px frame —
+it overflows there too. Holding one line on the real page would mean either dropping this
+board's title size below the 52px the other two use, or rewording the copy.
+
+### The banner icon row
+
+Four marks above the heading, one per product in the Antz ecosystem, in the order that site
+presents them. They are drawn from its actual copy rather than picked for looks — the project
+was crawled for what each product is:
+
+| icon | product | what its own copy claims |
+|---|---|---|
+| panelled frame | **Antz Platform** | records, healthcare, nutrition, breeding, transfers, inventory, compliance and reporting "in one system" |
+| play frame + spark | **Antz EthoStudio** | "expertise within your team, turned into AI... trained on your own animals, your own footage" |
+| ceiling-mounted camera | **Antz Edge** | "automated behavioural observation running continuously... no keeper presence required" |
+| pin on a dashed route | **Antz Trails** | "the visitor app powered by your live operational data" |
+
+Each choice is argued in its own file: the Platform mark is a panelled surface rather than
+another node graph because `NodeNetwork` already stands for the Technology pillar; EthoStudio
+is footage-plus-spark rather than a brain because a brain says "AI" without saying whose data
+it learns from; Edge is a mounted camera rather than an eye because what distinguishes it is
+that the watching is installed and unattended; Trails is a route rather than a phone because a
+phone names the medium and not the thing.
+
+**All four were redrawn after being rendered at their true 34px and magnified 7x**, which is
+the only test that catches this. The first attempt had eight strokes apiece: the EthoStudio
+weights collapsed into a smudge, the Trails pins became unreadable blobs, and the Edge
+field-of-view arcs read as a hill under a lamp. The rebuilt set is three or four elements each
+with nothing under 11 units. Even then the Edge mount needed a third pass — as an arm and plate
+out to the right it read as the letters "OH", so the mount moved above the body into the
+silhouette nobody mistakes.
+
+**The 940ms fall was factored out rather than copied a third time.** It already existed twice,
+byte-identical, as `iconDrop` in Hero.module.css and `eduIconDrop` in Education.module.css
+(verified identical before merging). It now lives in globals.css as `icon-drop`, reached
+through `--anim-icon-drop` — the same var() indirection `--anim-icon-drop-short` uses, and for
+the same reason: css-loader rewrites every `animation-name` inside a `*.module.css` to a hashed
+local, so a direct reference from a module compiles to a name that matches nothing and silently
+does not run. Both existing callers now point at the shared keyframe.
+
+Verified on the running page rather than assumed: `animationName` resolves to `icon-drop`, and
+the icons hold at `-120px / opacity 0` until their delays, then fall in sequence 90ms apart
+(1320 / 1410 / 1500 / 1590ms — after the blinder's last slat at 1365ms), rebound at t≈2350ms
+(-4, -2, -13px) and settle by 2900ms.
+
+**Cue clearance tightened and is worth watching.** The extra row pushes the copy down, and the
+band grows to absorb it. Cue top minus copy bottom, after: 58 / 35 / **19** / 20 / 68 / 69 / 54
+at 1440 / 1280 / 1100 / 900 / 700 / 600 / 390 — clear everywhere, but 19px at 1100px against
+31px before. Another line of copy in this banner would collide.
+
+### The banner lede
+
+Figma puts the "From the records your team writes today..." paragraph in a mint band below the
+banner (`Frame 1984078023`, node 1965:18356). It sits **inside the banner under the heading**
+instead, by direction — the same move the education hero made with its institute paragraph —
+and that takes the mint band off the page entirely.
+
+Measure is `min(800px, 100%)`, the same the education lede uses: narrower than the 1276px copy
+column, so it reads as a paragraph rather than one long line under a centred heading.
+
+**The scroll cue had to be repointed.** It aimed at `#antz-intro`, which was the band's id, so
+removing the band would have left it pointing at nothing. The platform section now carries
+`id="antz-platform"` and the cue aims there.
+
+**Cue clearance was the thing to check**, because a taller copy column is exactly what made the
+education banner collide with its own cue twice. The reserve is symmetric padding against a
+`min-height` floor, so the band grows rather than the cue landing on the paragraph. Measured
+after the change — cue top minus copy bottom:
+
+| width | 1440 | 1280 | 1100 | 900 | 700 | 600 | 390 |
+|---|---|---|---|---|---|---|---|
+| band | 780 | 693 | 596 | 560 | 640 | 640 | 640 |
+| clearance | 86 | 62 | **31** | 33 | 92 | 93 | 78 |
+
+Clear at every width, tightest at 1100px. The lede holds two lines down to 600px and takes a
+third at 390.
+
+`<IntroBand>` is unrendered again as a result, along with the `tone` and `measure` knobs added
+for this page. Both are kept: the component is shared, it was already unrendered before this
+page existed, and the Antz frame is the one place in the design system that still wants the
+mint.
+
+### The hero heading
+
+Weight **900** and `clamp(30px, 4.44vw, 64px)`, matching the other two heroes rather than
+Figma's WF/Display XL 400/52px — the same bold + holographic treatment the Foundation and
+Education headings carry. Google Sans Flex is variable to 1000, so 900 is the real face.
+
+**The line breaks after "Across"**, not before it: "One System Across" / "the Whole
+Institution", 757px and 897px at 64px. Figma breaks it after "One System", which left the two
+lines very unequal — 458px against 1200px — under a centred heading.
+
+**That break is what caps the size.** With the old one, 80px was impossible: "Across the Whole
+Institution" measured 1500px in a 1276px column, 224px over, so it would take a third line.
+With "Across" moved up, the longest line is 1122px at 80px — it fits with 154px to spare, and
+the cue clearance holds because the band grows rather than the cue colliding.
+
+**Still 64px, deliberately.** Going to 80 grows this banner to 799px against the 780px
+`--banner-height` the other two heroes share; 72px is the largest that keeps all three the same
+height (781px). Both are one value away if that divergence is wanted.
+
+Verified across widths — 2 lines and no overflow at 1440 / 1280 / 1100 / 900 / 700 / 600,
+wrapping to 3 at 390px, which is correct on a phone and still fits the 640px narrow banner.
+
+### The platform stage: a real band plus the module carousel
+
+The stage began as a single baked export of the whole composition, because Figma's PNG exports
+of those device frames come back with an **opaque white matte** — verified, zero transparent
+pixels at 1x and 2x, on the composite and on each child separately. That would have punched a
+white hole in the gradient band, and keying the white out would have eaten the app's own white
+UI panels. (Before concluding it I checked whether the band actually runs *behind* the devices
+or merely stops at them: it runs behind, green at design x=232, 260, 300 and x=1150, 1206, all
+inside the composite's 228..1212 bounds.)
+
+It is now **the Antz Platform module carousel on the section's plain white**. Two changes got
+it there. First the baked export was replaced by a CSS gradient band with the carousel over it,
+which was already strictly better — the slides are transparent, so the band showed through them
+properly, and each carries its own label pill where the baked version had burnt them in.
+**Then the band itself was removed by direction.** Verified after: the frame's left and right
+margins sample pure white at four heights, with no residual green anywhere.
+
+The band's geometry is recorded here in case it is ever wanted back, since it was recovered by
+measurement rather than guessed: the stage was 581px tall with the devices at y 75..581 and the
+band at y 243..497, so relative to the devices it ran from (243-75)/506 = 33% to
+(497-75)/506 = 83% of their height, as a 90deg gradient from rgb(115,172,151) to rgb(12,59,42)
+— the latter exactly `--color-teal-950`, so only the light end was a literal. Nothing else
+depended on it, so removing it also let the stage and the carousel drop the stacking contexts
+that existed only to sit above it.
+
+Figma's four-step indicator was always pointing at a carousel; now there is one.
+
+`antz-platform-stage.jpg` is now unreferenced but left in `public/assets` in case the static
+version is ever wanted back.
+
+### The section's order
+
+The "Antz Platform" lockup sits **above** the carousel, so it titles the section rather than
+captioning it afterwards — Figma has it below, between the devices and the paragraph.
+
+The mark and the two-line wordmark move together. Splitting them, which "move the icon" could
+have meant literally, would have left a bare rounded-square icon over the carousel and an
+orphaned "Antz Platform" under it.
+
+The section's four children — lockup, carousel, copy, divider — are `clamp(28px, 3.33vw, 48px)`
+apart, and the copy block's own paragraph-to-CTA gap is `clamp(20px, 2.22vw, 32px)`.
+
+It started at Figma's 22.966px, borrowed from inside the copy block when the lockup moved to the
+top, and that was too tight at section level: it left the dots almost touching the paragraph
+and the CTA almost touching the divider. Section-scale joins get a section-scale gap; the
+paragraph and its CTA stay closer, because they belong together. Measured down the section:
+
+| join | gap |
+|---|---|
+| lockup → carousel | 48 |
+| carousel → dots | 12 *(the carousel's own, they belong to it)* |
+| dots → paragraph | 48 |
+| paragraph → button | 32 |
+| button → divider | 48 |
+| divider → first accordion row | 156 *(the two sections' `--antz-block` pads)* |
+
+One consequence worth knowing: the lockup is the section's first content, so at the scroll
+position where the section's top edge meets the viewport top, the sticky nav plate overlays it.
+That is true of every section's first content on all three pages and is inherent to a floating
+nav, not new here.
+
+### The pagination dots
+
+Seven equal 12px circles, 10px apart, with the active one filled dark — replacing Figma's four
+pill-shaped steps with a cyan-to-yellow gradient on the active one. Same geometry the Antz
+Systems site uses for its own carousel.
+
+Colours are palette tokens rather than new literals: `--line-1` (#b5ceb9) for the inactive
+dots, which is the pale sage this page already uses on its closing band, and
+`--color-green-950` (#295c44) for the active one, which is the green of the platform CTA
+directly below them. Verified rendered: all seven 12x12 at `border-radius: 50%`, active
+`rgb(41,92,68)`, inactive `rgb(181,206,185)`.
+
+The class name stayed `dotActive` deliberately. The snapshot's script-free carousel finds the
+active-dot class by matching `/dotActive/` against the initially-active dot's `classList` —
+css-loader hashes the name, so it cannot be written literally there — and renaming it would
+break the dots in the snapshot silently.
+
+Only the fill transitions now. The previous pills also animated their width, which is what that
+transition was named for.
+
+### The module carousel
+
+Ported from the Antz Systems website's own `ModuleCarousel`, which is where the seven slides
+come from (`public/assets/antz-carousel/`, ~1.4MB of transparent WebP). Active slide centred,
+neighbours stacked *behind* it — 19% across, 260px back, 0.86 scale, 16deg of yaw, 12px blur,
+50% opacity — with autoplay every 4.5s, a hover pause, an 8s cooldown after any manual
+navigation, arrows, dots, keyboard arrows, pointer drag past a 45px threshold, and click-a-
+neighbour-to-advance.
+
+**Two deliberate departures from the original:**
+
+- **CSS transitions, not framer-motion.** That library is a dependency of the Antz project and
+  not of this one, and every other animation on this site is CSS, so adding a motion library
+  for one component would have been the odd choice. The original's spring (stiffness 200,
+  damping 30) is approximated by a firm ease-out — it settles rather than overshooting, which
+  also matters because an overshoot would wobble the 12px blur on the neighbours.
+- **No wheel handler.** The original's own comment notes macOS eats the gesture unless "Swipe
+  between pages" is off, and pointer drag covers the same intent everywhere.
+
+**The presentation lives entirely in CSS**, behind `data-state` (`active` / `side` / `hidden`)
+and a `--dir` custom property carrying the sign of each slide's offset. That is what lets the
+snapshot's script-free mirror work by moving attributes alone. `perspective` sits on the track,
+not the slide — a perspective on the slide itself would give each its own vanishing point — and
+the slide needs `transform-style: preserve-3d` or its child's `translateZ` is flattened away.
+
+Reduced motion flattens the stack to a cross-fade and runs no autoplay at all, as the original
+does.
+
+**Verified in both the app and the built snapshot** (as a `file://` URL): 7 slides, 7 dots,
+Next → slide 1 with 0 and 2 as its sides, Prev → back to 0, dot 5 → slide 4 with 3 and 5 as
+sides, and the wrap correct throughout (slide 0 active shows 1 and 6 as neighbours). Autoplay
+measured advancing 0 → 1 → 2 → 3 unattended.
+
+**One measurement trap worth recording.** Testing the hover pause by dispatching a synthetic
+`mouseenter` reported it broken — the carousel kept advancing. React synthesises
+`onMouseEnter` from delegated `mouseover`/`mouseout`, so a raw `mouseenter` event never reaches
+the handler. Driven with a real pointer move instead, it held at dot 0 for 11 seconds against a
+4.5s cadence and resumed the moment the pointer left.
+
+**And one bug in the snapshot builder this exposed.** Its asset pattern was
+`/assets/[A-Za-z0-9._-]+` — one path segment. The slides are the first assets in a
+subdirectory, so it matched `/assets/antz-carousel` and tried to read the folder as a file
+(`IsADirectoryError`). The pattern now walks subdirectories.
+
+### Two defects this page exposed
+
+- **The shared accordion's title had no room reserved for its chevron.** The chevron is
+  absolutely positioned at `right: 0` and is 15px wide, and `.title` had no end padding. The
+  other two boards never hit it because their longest titles stop hundreds of pixels short.
+  This page's row 01, "Records that grow with the animal", is the longest title on the site and
+  measured a **-3px overlap** at a 1100px viewport. `.title` now carries
+  `padding-inline-end: 40px` — the 15px mark plus a 25px gap. Re-measured after: row 01 clears
+  by 223/197/167px at 1440/1280/1100, and all six titles on the other two boards are still one
+  line, ending 400-570px short of the new reserve.
+- **The closing band's title wrapped where Figma has one line.** Figma's measure is 402px,
+  which fits there; at 1440 this site renders the same string at 27px with 5% tracking and it
+  wrapped to two lines. Widened to 470px. Below ~1300 the fluid type shrinks and 402 would have
+  been enough anyway — the cap only matters at the top of the range.
+
+### Smaller decisions
+
+- **`<IntroBand>` gained two optional knobs** rather than being copied. The same node id,
+  `Frame 1984078023`, appears in all three page frames and differs in exactly two ways: the
+  homepage direction turned the band white while Antz keeps Figma's `#edffe8` mint, and the
+  measure is 964px there against 666px here. Hence `tone` and `measure`, both defaulting to the
+  existing behaviour.
+- **No icons on this board.** The other two carry a line-art mark beside each number, added
+  later at request; this frame has none, so the rows are numbers only. `icon` on
+  `AccordionItem` is optional for exactly this case. Say the word if the three should match.
+- **The light run sits on a `<MeshField>`**, matching the other two pages. It was left off
+  while the stage was a full-bleed baked export that would have covered the mesh anyway; with
+  the carousel there instead, the platform showcase and the disclosure board are a continuous
+  light run and the field has something to do. One field wraps both — a field per section would
+  put a visible step where they meet, since each mesh is anchored to its own box. The banner
+  above and the closing band below are both dark, so the run needs no further wrapping.
+
+  Both sections had to go `background: transparent` and take a stacking position. That second
+  part is the trap: the field's mesh is `position: absolute; z-index: 0`, and a positioned
+  element paints above static in-flow content whatever the document order — which is how the
+  homepage's WHO WE ARE copy came to be washed out at 40% grey while its declared colour was
+  pure black. `.platform` now carries `position: relative; z-index: 1`; `.rows` already had a
+  position for its own inner stacking.
+
+  Verified rather than assumed, on rendered pixels: the accordion titles and the platform
+  paragraph both come back at exactly their declared `rgb(12,59,42)`, so nothing is painting
+  over them. The field measures 2360px with 8 gradients and its swirl running, and pointer
+  tracking reaches it — `--mesh-mx` reads -0.583 with the cursor left of centre and 0.597 to
+  the right.
+- **The closing band's two pills are local, not new `<PillCta>` variants.** Same geometry as
+  that component — 100px radius, 12px/22px padding, 13px medium — so they read as one family,
+  but this sage-on-dark pair appears nowhere else and `PillCta`'s job is the green/white pair
+  with the hover wipe. The green pill in the platform section *is* `<PillCta>`, which until now
+  had no caller for its `solid` variant.
+- **The lockup is set in Inter**, not the site's `--font-flex`, because it is the product's own
+  wordmark rather than page typography, and in Figma's literal `#4a4a4a` — deliberately not one
+  of the site's forest inks. Inter 500 and 600 were added to the font request for it.
+- **New tokens:** `--line-1: #b5ceb9` (the closing band's sage), `--color-antz-cyan: #0faec3`
+  and `--color-antz-yellow: #ffcc00` (the platform indicator's active step).
+- **The four-step indicator is decoration, not a control.** The design shows no second slide
+  and there is nothing to page through, so it renders as spans and is `aria-hidden`. A real
+  control would have to be a button that does something.
+
+### Copy to replace
+
+Only row 02 is open in the Figma frame, so **only its body copy exists**. The other four rows
+are written to the same voice and marked `PLACEHOLDER` in
+[`antz.data.ts`](components/Antz/antz.data.ts) — the accordion has nothing to reveal without
+them. The closing band's two buttons are also `href="#"`: there is no submissions page or
+project index yet.
+
+## The squiggle divider
+
+A fine squiggle whose ends fade into the page. It has **two users** now — closing the partners
+strip off from WHO WE ARE, and closing the Antz carousel off from its copy — so it lives in
+[`<WaveRule />`](components/WaveRule/WaveRule.tsx) rather than being written twice.
+
+**The component owns the paint; the caller owns the placement.** That split exists because the
+two users place it differently: the partners strip pins it absolutely to its own bottom edge
+(76px below the logos, which is that section's own bottom padding), while the Antz platform
+section drops it in flow as its last child — below the CTA button, closing the whole section —
+so the section's own 23px gap spaces it and the closing `--antz-block` padding still follows
+it. Both inset to the same
+`100% - --edge * 2`, so the two rules are identical rather than merely similar — verified
+rendered: 1392x5, opacity 0.59, `background-size: 12px 5px` and the same mask on both, with
+only `position` differing.
+
+On the Antz page that makes it wider than the 1100px carousel above it, which the fading ends
+turn into a soft band across the page rather than a rule that overhangs its subject.
+
+It is a bare `aria-hidden` div rather than an `<hr>`: an `<hr>` announces a thematic break, and
+these two close a band off visually without dividing the document's meaning.
+
+One 12px period lives in
+[`public/assets/logo-rule-wave.svg`](public/assets/logo-rule-wave.svg), tiled with `repeat-x`,
+absolutely positioned at the section's bottom edge and inset by `--edge` on both sides so it
+spans the 1392px content width. A `border-bottom` on `.strip` would have run edge to edge and
+read as a page-wide rule instead of one belonging to this band. It sits 76px below the logos,
+which is the strip's own bottom padding — no separate spacing to keep in step.
+
+**Both ends fade to nothing**, so the rule merges into the page rather than stopping at two
+visible ends: a `mask-image` ramp, transparent to opaque over the first 16% and back over the
+last, with the core held fully opaque between so the middle keeps the weight it was tuned to.
+
+A mask rather than a gradient painted over the top, because this section sits on the
+holographic mesh — anything overpainted would have to match a ground that is both tinted and
+moving. Masking removes the ink itself and works against whatever is behind it.
+
+Measured, and the first measurement was wrong in a way worth recording. Comparing the rule
+against one global ground value showed the ink *rising* steadily from left to right, which
+looked like a broken mask; it was the mesh behind it darkening rightward. Against the **local**
+ground sampled per column — the rows just above and below the rule at the same x — the real
+shape appears: ink ~1 at both edges (invisible), ramping to a flat core averaging 59.6, and
+symmetric end to end.
+
+**Period and roundness are not independent.** Two semi-ellipses per period, each spanning half
+of it, so `rx` is always a *quarter* of the period — `rx` is the semi-axis along that chord.
+Roundness is `rx/ry`: 1.0 is a true semicircle, higher is flatter.
+
+| | period | rx | ry | roundness | peak-to-trough | cycles across 1392px |
+|---|---|---|---|---|---|---|
+| first pass | 24 | 6 | 3 | 2.00 | 6px | 58 |
+| rounder pass | 32 | 8 | 6 | 1.33 | 12px | 44 |
+| **shipped** | **12** | **3** | **2** | **1.50** | **4px** | **116** |
+
+Two things fall out of that constraint. Asking for a *rounder* crest moved the period from 24
+to 32, because a rounder crest at the same period would have been a shallower one rather than a
+rounder one. Asking then for *shorter crests and more of them* moved it the other way, to 12 —
+and at 2px of amplitude the exact curvature stops mattering, since the crest is two pixels tall
+and the eye cannot read its curve. So roundness is left wherever the frequency puts it (1.50)
+rather than being tuned for.
+
+Measured on the shipped version: peak-to-trough exactly the designed **4.0px**, turning points
+every 6.0px (a 12px period, matching the tile), and ~116 cycles across the rule.
+
+**Arcs, not quadratic curves.** The shape is exactly round and the amplitude is what you write.
+The first attempt used `Q 6 1` and measured a **1.5px** wave where 3px was intended — a
+quadratic only reaches *half way* to its control point.
+
+**It tiles without a kink** because a semi-ellipse whose chord lies along x leaves both
+endpoints vertically, so consecutive arcs meet tangent to each other, including across the tile
+boundary. Verified at 7x magnification and on the 2x capture, which shows the curve without 1x
+antialiasing mushing it: even periods, no discontinuity at the joins.
+
+**A 0.5 SVG stroke is a real half-pixel; a 0.5px box is not.** This is the useful part. When
+the rule was a flat `height: 0.5px` element, Chrome rounded the length up and painted solid
+black — measured, one device pixel at 1x and two at 2x, luminance 0.0. As an SVG
+`stroke-width="0.5"` at 59% opacity it antialiases properly: the darkest rule pixel measures
+**rgb(168,161,166)** with the rule's pixels averaging 188.4 against a ground of 244. Same
+nominal 0.5, completely different result, because one is a box the compositor snaps and the
+other is a stroke the rasteriser antialiases.
+
+Note that tightening the curve made it *fainter*, not just smaller: at the 32px period the
+darkest pixel was rgb(134,128,131) and the mean 179.9. A tighter radius spreads the same
+half-pixel stroke across more partially-covered pixels, so frequency and apparent weight are
+coupled. `opacity` is the dial if it ever needs firming up.
+
+Two things that would silently break it:
+
+- **`background-size` is pinned to the tile's natural 12x5**, so one SVG unit stays one CSS
+  pixel and the 0.5 stroke cannot be scaled off half a pixel. `height` on the rule must also
+  stay at or above `2 * ry + stroke`, or the crests clip.
+- **The stroke is `#000` literally, not `currentColor`.** An SVG loaded through `url()` in CSS
+  is its own document and never sees the page's colour.
+
+Opacity lives on `.strip::after` in CSS rather than as a translucent stroke inside the asset:
+it is the number most likely to be tuned again, and the whole layer is just the line, so
+dimming the layer and dimming the stroke are the same thing here.
+
+## WHO WE ARE and the stats band
+
+Both come from Figma `Desktop - 4` (node 1930:10054), which is a later revision of the
+homepage frame: **WHO WE ARE** is node 2124:9475 and the **stats band** is 2127:9943. Only
+those two were taken — the rest of that frame duplicates what the page already had, and was
+left alone.
+
+They sit where Figma puts them, between the partners strip and the approach section, which
+splits the page's light run in two because the stats band is dark. Each `<MeshField>` is one
+continuous mesh and the band separates them, so there is no boundary for two fields to fail
+to line up across.
+
+Every dimension was checked against the design rather than eyeballed. Measured in the
+browser at 1440: section **482**, band **279**, stat cell **184**, numeral box **62**, label
+**26**, kicker **23**, both paragraphs **84** at three lines each, leaf **81** — all equal to
+Figma, and the stat cells come out at exactly the designed **331px**.
+
+Two of those only landed after a fix:
+
+- **The numeral needs `line-height: 1.29`, not a round 1.1.** Figma's "15+" text box is 71x62
+  at 48px, and 62/48 is what makes the cell 184 and the band its designed 279. At 1.1 the band
+  measured 270.
+- **The kicker's 24px gap has to live inside its own frame.** As a `margin-block-end` it added
+  to the column's 6px flex gap and the section came out 488 against 482. Figma keeps the
+  kicker and paragraphs in one frame with 24px between them and only 6px between that frame
+  and the leaf, so the markup nests the same way and the two gaps stay independent.
+
+### The counting figures
+
+The stat figures count up **when the band scrolls into view, never on load** — an
+`IntersectionObserver` at a 0.6 threshold, one observation per figure, staggered 90ms apart
+over 1100ms on an ease-out cubic so each settles onto its number rather than arriving at full
+speed. Verified: on a 900px viewport the band sits 1486px below the fold, and the figures hold
+at 0 for 5.5s untouched; they only climb once scrolled to.
+
+**The final figure is what renders on the server; script only counts up to it.** Never the
+other way round — so with no JavaScript, a failed hydration, or `prefers-reduced-motion:
+reduce`, the real numbers are what is on screen. Confirmed in the SSR output: `data-count="15"`
+with `15` as the text.
+
+Three details that are load-bearing:
+
+- **`tabular-nums` stops the row jittering.** It was there for tidiness before; with counting it
+  is structural. Proportional digits change width as they climb, so "15" would shuffle sideways
+  on nearly every frame. Tabular figures share one advance, so a number only grows when it
+  gains a digit.
+- **The suffix is never counted.** "15+" and "12+" are stored as `{ value: 15, suffix: "+" }`,
+  so the plus is content that rides along rather than something the animation has to parse
+  back out of a string.
+- **A figure already scrolled past is left alone.** If the observer's first callback finds the
+  band above the viewport (`boundingClientRect.bottom < 0`), it unobserves without resetting —
+  otherwise the figure would be stranded at zero until the user scrolled back up.
+
+The shared snapshot strips every script, so `scripts/build_preview.py` re-adds a vanilla copy
+of the counter, as it does for the pointer mesh and the accordion. **Keep the two in step.**
+Tested on the built snapshot as a `file://` URL: 0 before scrolling, then the same staggered
+climb to 15 / 4 / 3 / 12.
+
+### The holographic figures and labels
+
+Both the numerals and the labels carry `.wf-iridescent`, the same holographic fill the hero
+headings use. It suits this band because that palette is white plus high-luminance pastels,
+designed for dark grounds, and #1f515b is dark.
+
+Each cell reads as a different hue — "15+" cyan, "12+" pale blue — because the gradient has a
+fixed 480px period and each glyph is only 30-70px wide, so every cell samples a different
+slice of it. Over the 9s loop each one cycles through the palette.
+
+Measured on the rendered band: fill chroma 30.0 (hues genuinely present, not white), mean fill
+contrast **7.69:1** against the ground and **4.88:1** at the darkest fill pixel — both clear AA
+for normal text, so the 20px labels are safe as well as the 48px figures.
+
+Note the two measurement traps here. Sampling "glyph pixels" as everything above mid-grey pulls
+in antialiased edges and reported a false 2.58:1; the fill core alone is 4.88:1. And nothing in
+this cell may be transformed — the fill is `background-clip: text`, and a transformed descendant
+is composited on its own layer and loses the ancestor's text clip. Counting rewrites
+`textContent`, which is why it is safe.
+
+**The figures are 600, up from Figma's 400.** Google Sans Flex is a variable font and the site
+loads the 400..900 axis, so it is a real weight rather than a synthesised one.
+
+### Deviations from the Figma file, and why
+
+- **DM Sans is substituted with `--font-flex`.** Figma sets DM Sans for the paragraphs, the
+  numerals and the labels. The site does not load DM Sans anywhere — every other block of body
+  copy already substitutes Google Sans Flex — so pulling in a seventh family for two sections
+  would have been the odd choice. Sizes and line heights are Figma's.
+- **The copy IS Figma's `#000000`** (`MD3_Antz/neutralPrimary`), as `--ink-black`, and so is
+  the leaf. It was first built with `--ink-1` (#0c3b2a) for consistency with the headings
+  either side, but that read as washed out and the design's own black stands. This is the one
+  place on the site using pure black for copy. Rendered contrast against the mesh: **17.21:1**.
+
+### The mesh was painting over the copy
+
+Worth its own note, because the symptom looked like a colour choice and was not. The copy read
+as pale **even after it was set to pure black**: the darkest rendered pixel of the paragraphs
+was rgb(92,114,107), the kicker rgb(103,123,129) and the leaf rgb(96,111,99).
+
+The field's mesh is `position: absolute; z-index: 0` on `.field::before`, and **a positioned
+element paints above static in-flow content whatever the document order**. `.who` and
+`.strip` had no `position`, so the mesh's semi-transparent blobs were compositing over their
+text and washing it out. `.approach` and `.pillars` already carried `position: relative` and
+were unaffected, which is why the fault showed up only in the two newest sections on the
+field. Both now take `position: relative; z-index: 1`, and the rendered ink is rgb(0,0,0).
+
+**Any section added to a `<MeshField>` needs a stacking position**, not just a transparent
+background. And note the trap in verifying it: a contrast figure computed from the *declared*
+colour against the ground says nothing here — it reported a comfortable pass throughout, while
+the pixels on screen were 40% grey. Measure the rendered glyph.
+- **`--color-teal-700` is the band's ground, now `#1f415b`.** It began as Figma
+  `MD3_Antz/OnPrimaryContainer` (#1f515b) and was darkened by direction — same hue, 16 less
+  green, which reads closer to navy than to teal. Still its own token rather than a reuse of the
+  forest greens, and the band is still its only consumer. The change only ever helps legibility:
+  it lowers the ground's luminance, so white went from 8.80:1 to 10.68:1 and the palest
+  hue in the holographic fill from 8.40:1 to 10.20:1.
+- **The kicker reuses `.wf-subtitle` as-is** — Figma's WF/Subtitle is 17px/600 at -0.5%
+  tracking, which is exactly what that utility already sets.
+- **All four stat cells are identical.** Figma gives the first a 15px radius and the other
+  three none, with no fill on any of them — a leftover from whatever component they were built
+  from. Four cells of one repeated row should match.
+
+### The leaf branch
+
+`components/icons/LeafSprig.tsx`, from Figma node 2127:9960 — "noun_leaves_3582719", by Bernd
+Lakenbrink via the Noun Project.
+
+**It is not the same artwork as `components/icons/Leaves.tsx`**, which is the hero's wider
+114x60 spray traced from `References/leafs.svg`. This one is seven separate leaves on an 81x82
+box. They look alike at a glance; do not de-duplicate them.
+
+Inlined rather than served from `/assets`, for the reasons `Leaves.tsx` gives: it inherits
+`currentColor` like every other mark, and costs no extra request and no data URI in the static
+export. Three things were stripped from the 33.5KB Figma export to get to 7.7KB of real path
+data — the canvas ground (a #585858 rect and a 23,000px-wide #444444 page path), the artboard's
+white rects, and **the Noun Project credit converted to outlines, 24.7KB on its own**.
+
+**The export's `rotate(40.68deg)` and rotated 55x60 clip are Figma's internal crop, not a
+visual rotation** — a trap worth knowing, because the reference code hands you the rotation and
+applying it is plainly wrong. Checked against the canvas-accurate render: unrotated matches at
+**IoU 0.89**, rotated at **0.21**. The residual 11% is antialiasing at 81px, confirmed by
+locating the differing pixels — they sit across y 29-50, inside the artwork, not at the bottom
+where the credit would be. The clip was dropped after checking it crops nothing: rendered with
+and without, the silhouettes are pixel-identical at 841 ink px.
+
+Also note `contentsOnly: true` on `get_screenshot` renders a node **without its own
+transform**, so it is the wrong reference for settling an orientation question — it showed this
+sprig unrotated for a different reason than the correct answer.
+
+**Attribution is an open question.** The Figma layer carries a "Created by Bernd Lakenbrink"
+credit line at 5px, which is not design content and is not rendered. Noun Project icons are
+CC-BY unless a royalty-free licence was bought. **Confirm which licence applies**, and if
+attribution is required, add it to the site's credits rather than as 5px type under the leaf.
+
+## Content-area mesh gradient
+
+The page's light surface — **everything from directly under the banner to the dark CTA band**:
+the partners strip, the approach section and the pillars accordion on the homepage, and the
+disclosure rows on education — is a mesh of eight overlapping pastel blobs that **follow the
+cursor**, over a slow scroll-driven swirl. It lives on one wrapper,
+[`<MeshField>`](components/MeshField/MeshField.tsx), not on each section.
+
+The field's top edge is the banner's bottom edge exactly: measured, hero bottom 780px and
+field top 780px, gap **0**. The hard edge there is the intended one — a dark banner meeting a
+light field — while inside the field the largest row-to-row jump is 3.19 against a 2.00
+median, i.e. gradient noise and no section boundaries showing through.
+
+**It became a wrapper because the mesh has to be continuous across adjacent light sections.**
+Each mesh is anchored to its own box, so when the approach section stopped being a photograph
+and started carrying its own mesh next to the pillars section's, the two did not line up: a
+hard line ran straight across the page at their boundary, measured as a **26.9 row-to-row
+colour jump against a 2.0 median**. One field spanning both has nothing to line up. After the
+change the same measurement reads **4.54 against a 3.2 median** — inside the gradient's own
+row-to-row variation. It also collapsed three copies of the eight-blob gradient into one.
+
+Sections inside the field must leave their own `background` **transparent**. A white
+background on a child paints straight over the mesh, which is the failure mode to look for if
+a section ever goes flat.
+
+### The approach section
+
+The canopy photograph is its backdrop, as Figma has it: `option 3 2` (node 1930:10060) in
+`Desktop - 4`. It was briefly replaced with the holographic mesh and then put back, so the
+section is byte-identical to what it was before that detour — photo, 3px defocus, flat 25%
+black tint, white copy, the brand `--color-orange` accent, and the two-plane parallax.
+
+**The image already in the repo is the Figma image.** `public/assets/approach-bg.jpg` compares
+against a fresh export of that node at a mean absolute difference of **0.51/255** — JPEG
+recompression and nothing else — so re-exporting would have added 2.8MB of PNG for no visual
+gain.
+
+Worth knowing for next time: the node's *raw fills* are not the image. `download_assets` on it
+returns a **1440x4090** source, because the hero (`option 3 1`), the approach block
+(`option 3 2`) and the CTA band (`option 3 3`) are all crops of one tall photograph. The
+node's *export* is the composited crop, and that is what to compare against.
+
+**Two planes, moving against each other.** Both are `view()`-driven, so they need no listener
+and survive the static export. Measured across the section's 1910px cover range: the photo
+sinks `0 → +120px` while the heading rises `+93.5 → −110px` — 323px of differential travel, and
+either direction retraces on the way back up.
+
+- `.bg` is oversized and `.bgArea` clips it. A blurred layer fades out at its own edges, so the
+  layer is grown by 3x the blur radius on every side on top of the vertical
+  `--approach-overscan` the drift consumes; without that slack the faded edge shows as a
+  translucent band letting the section's dark green through.
+- `--approach-view` is a named timeline on the section, because a bare `view()` on `.bg` would
+  be measured against `.bgArea`, which clips it, and would never advance.
+- `translateX(-50%)` is repeated in both frames of the heading keyframe, since the animation
+  replaces the base transform outright while it runs.
+
+**Contrast over the photograph**, measured inside each element's own box against the lightest
+photo pixel behind it: the white title **7.68:1** and the kicker **13.61:1** both pass. The
+`#eb5d37` accent is **2.35:1**, under the 3.0 AA floor for large text — the lighter foliage
+comes through the 25% tint right where "THEN WE TEACH IT." sits. **This is pre-existing, not
+something the restore introduced**, and it is the same colour that measured 2.73:1 when the
+ground was briefly white, so the accent has always been marginal here. Left alone as asked. The
+fix, if wanted, is a deeper tint behind the heading or a deeper orange — the same
+`#d84a20`-style step that was measured at 3.73:1 on the light ground.
+
+**It still sits inside the `<MeshField>` that wraps it with `<Pillars>`.** The photo is opaque
+and covers the mesh across its own 1010px, so the field now shows only under Pillars. That is
+harmless and was left as-is rather than restructuring the page for it, but it does mean the
+mesh paints behind an opaque layer there.
+
+## Content-area mesh gradient
+
+The page's light surface — **everything from directly under the banner to the dark CTA band**:
+the partners strip, the approach section and the pillars accordion on the homepage, and the
+disclosure rows on education — is a mesh of eight overlapping pastel blobs that **follow the
+cursor**, over a slow scroll-driven swirl. It lives on one wrapper,
+[`<MeshField>`](components/MeshField/MeshField.tsx), not on each section.
+
+The field's top edge is the banner's bottom edge exactly: measured, hero bottom 780px and
+field top 780px, gap **0**. The hard edge there is the intended one — a dark banner meeting a
+light field — while inside the field the largest row-to-row jump is 3.19 against a 2.00
+median, i.e. gradient noise and no section boundaries showing through.
+
+**It became a wrapper because the mesh has to be continuous across adjacent light sections.**
+Each mesh is anchored to its own box, so when the approach section stopped being a photograph
+and started carrying its own mesh next to the pillars section's, the two did not line up: a
+hard line ran straight across the page at their boundary, measured as a **26.9 row-to-row
+colour jump against a 2.0 median**. One field spanning both has nothing to line up. After the
+change the same measurement reads **4.54 against a 3.2 median** — inside the gradient's own
+row-to-row variation. It also collapsed three copies of the eight-blob gradient into one.
+
+Sections inside the field must leave their own `background` **transparent**. A white
+background on a child paints straight over the mesh, which is the failure mode to look for if
+a section ever goes flat.
+
+### The approach section
+
+Figma had a blurred canopy photograph under a 25% tint, with white copy and a deep-green strip
+below it. All three are gone: the section is transparent on the field, so the heading and the
+field photo that overhangs from `<Pillars>` float over the wash instead of sitting on a dark
+plate.
+
+- **The two empty divs are load bearing.** They hold the height the photograph block (860px)
+  and the green strip (150px) used to occupy, which is what the overhanging photo's position
+  in Pillars is measured against. Removing them would have meant re-tuning that overhang for
+  no gain.
+- **The backdrop parallax went with the photograph.** `.bg` used to sink as the heading rose,
+  a counter-drift that gave the two planes their separation; with nothing to counter it was
+  removed. The heading still rises, and the mesh has its own motion.
+- **`approach-bg.jpg` is now unreferenced** but left in `public/assets` in case the
+  photographic version is wanted back. It is 517KB, and dropping it took the homepage snapshot
+  from 7.62MB to 6.97MB and the education one from 3.51MB to 2.84MB.
+- **The accent is `#d84a20`, not `var(--color-orange)`.** The brand `#eb5d37` measured fine
+  over the photograph, but over the near-white mesh it is **2.73:1** — under the 3.0:1 AA
+  floor for large text. `#d84a20` is the nearest deeper step that clears it, at 3.73:1 as
+  shipped, and at 52px the two are all but indistinguishable. It is scoped to this one rule
+  rather than changed in `tokens.css`, so `--color-orange` is still exactly the Figma value
+  everywhere else — including the uses on dark grounds, where it was never a problem. **If the
+  brand orange has to be exact here too, that is the one line to revert**, at the cost of the
+  contrast failure above.
+- The rest of the copy has room to spare: `--ink-1` on the title 10.96:1, `--ink-2` on the
+  kicker 7.53:1, and the partners strip's `--ink-2` label 7.97:1 over its part of the mesh.
+
+**Two drivers, deliberately separate.** Every blob centre is the sum of three terms — a fixed
+base, a swirl orbit `radius * cos/sin(--mesh-swirl + phase)`, and a pointer offset
+`depth * --mesh-mx / --mesh-my`. The pointer is the primary motion; the swirl is what the
+section does when there is no cursor in it.
+
+**Why the swirl stayed rather than being replaced.** It is the behaviour on touch (no hover
+position to follow — every "move" there is the start of a tap, which would yank the mesh to
+wherever the finger landed), under `prefers-reduced-motion: reduce`, and anywhere the script
+does not run. Keeping it is what makes the pointer term safe to depend on: each of those
+paths still has a living backdrop, and the pointer term resolves to zero rather than to
+something broken.
+
+**The pointer depths differ in magnitude AND sign** — x depths 32, -23, 29, -27, 16, 36, -34, -31 — so
+moving the cursor right pushes some blobs right and others left. The field parts
+and converges around the cursor instead of sliding across as one block, which is the thing
+that makes this effect look cheap when it is done with a uniform offset.
+
+**Tuning the travel: three levers, and only two of them help.** Asked to make the tracking
+more obvious, the obvious lever is amplitude, but it saturates:
+
+| | corner-to-corner \|dRGB\| | whole-section chroma | palest corner |
+|---|---|---|---|
+| pointer x1.0, blobs full size | 4.78 | 16.65 | 242 |
+| pointer x1.8, blobs full size | 7.39 | 15.65 | 247 |
+| pointer x2.6, blobs full size | 8.85 | 16.65 | 248 |
+| pointer x1.8, blobs x0.85 | 8.85 | 14.59 | 248 |
+| pointer x1.8, blobs x0.72 | **6.58** | 12.09 | **253** |
+| **x1.8, blobs x0.85, alpha 54/38** | **8.51** | **16.71** | 249 |
+
+x1.8 to x2.6 buys only 20% more movement while emptying the corners, so amplitude stopped at
+**x1.8**. The second lever is blob *size*: a tighter blob has a steeper falloff, so the same
+displacement changes more pixels — x0.85 matched x2.6's movement at a lower amplitude.
+
+The third lever backfires, which is the interesting part. At x0.72 the blobs stop overlapping
+enough to cover the box: the palest corner reaches 253 of 255 (effectively bare white) and the
+measured movement *drops* to 6.58, because what the cursor is now moving is colour across
+emptiness rather than colour against colour. Shrinking the blobs past the point where they
+form a field makes the motion less visible, not more.
+
+Tightening the blobs costs colour (chroma 16.65 to 14.59), so alpha went 44/31 to **54/38** to
+put it back: final chroma **16.71**, indistinguishable from the value approved before, with
+**1.78x the movement**. Contrast is still fine — `--color-teal-950` 9.28:1 and `--ink-2`
+6.38:1 over the mesh's deepest pixel, both well clear of AA.
+
+Corner coverage is the thing to watch if this is ever pushed further: a blob wandering off the
+box leaves bare white, and the palest-corner column above is that measurement — the minimum
+channel in a 120x120 corner patch, taken across all five cursor positions. 249 is acceptable;
+253 is not.
+
+**Two properties, two inheritance settings, and the difference is load bearing.**
+`--mesh-swirl` is `inherits: false`; `--mesh-mx` / `--mesh-my` are `inherits: true`. The hook
+can only set a property on the *section*, while the mesh is painted by that section's
+`::before`. A pseudo-element inherits from its originating element, so an inherited property
+arrives and a non-inherited one does not — with `inherits: false` the mesh would sit dead
+centre for ever. (Confirmed from the other direction earlier: pinning `--mesh-swirl` from the
+parent for a measurement returned identical frames every time.)
+
+**The easing is CSS, not script.** [`usePointerMesh`](components/usePointerMesh.ts) writes raw
+normalised pointer values and does no smoothing; the section carries
+`transition: --mesh-mx 340ms ease-out`. Each new value restarts the transition from wherever
+the last one reached, which is a lerp by another name, and it means **no rAF loop runs while
+the pointer is still**. Both properties have to be registered for this to work at all — an
+unregistered custom property cannot transition, so the line would silently do nothing and the
+mesh would snap. 340ms, shortened from 420 when the tracking was asked to read more obviously
+— a quicker follow is felt as much as the larger amplitude is. The floor is around 250ms,
+where the mesh stops trailing and the blobs read as attached to the cursor; past ~600ms they
+lag far enough behind a fast sweep to look broken rather than heavy.
+
+`getBoundingClientRect` is read inside the rAF callback, not in the event handler. The
+section's box moves with every scroll so the value cannot be cached, and reading it per
+`pointermove` would interleave a layout read with the style writes. Once a frame is both
+correct and cheap.
+
+**The snapshot needed the same behaviour in plain script.** `build_preview.py` strips every
+`<script>`, so the hook's effect never runs there and the mesh would have been left with only
+its swirl. The builder already re-added a vanilla accordion; it now also re-adds a vanilla
+pointer tracker implementing the identical contract — set the two properties on the section,
+let CSS ease. **Keep the two in step when either changes.** Verified on the built snapshot as
+a `file://` URL, not just in the dev app: 0.7 / 0.6 with the cursor at (0.85, 0.80), easing to
+0 / 0 within a second of leaving.
+
+One measurement trap worth recording: testing `pointerleave` by moving the cursor to `y = 5`
+proved nothing, because the section's top edge was at `y ≈ 0` — that point is *inside* it, and
+the properties dutifully reported the top edge instead of zero. The leave path only gets
+exercised from a coordinate genuinely past the section's box.
+
+It replaced a striped diagonal band, which replaced a radial ripple. The band's failing was
+that it was still stripes: `repeating-linear-gradient` cannot avoid reading as an edge every
+50px, and travelling it perpendicular to itself made those edges *more* legible, not less.
+A mesh has no periodic structure to catch the eye.
+
+**Seven hues across eight blobs.** The hero headings' four pastels (cyan `#BFF3FF`, rose,
+peach, mint) plus three added on request — **#FFFCCC** pale butter, **#FFE3F8** pale
+lilac-pink and **#CCE4FF** pale sky; cyan appears twice. Each new blob went into the thinnest
+remaining quadrant (butter bottom-centre, lilac left-middle, sky top-centre) with its phase
+filling the widest remaining gap, so all eight orbits stay spread instead of clumping into a
+beat. `#CCE4FF` is deliberately bluer than the existing cyan, so it widens the cool end rather
+than doubling it.
+
+| | mean chroma | movement | deepest off white | palest corner | teal / ink-2 |
+|---|---|---|---|---|---|
+| 5 blobs, 4 hues | 16.71 | 8.51 | 16.1% | 249 | 9.28:1 / 6.38:1 |
+| 7 blobs, 6 hues | 17.39 | 8.55 | 16.1% | **245** | 9.28:1 / 6.38:1 |
+| **8 blobs, 7 hues** | **18.26** | **8.87** | 17.3% | 245 | 8.98:1 / 6.17:1 |
+
+All three additions are very light, which is why widening the palette cost so little weight.
+Corner coverage *improved* with them (249 to 245) because they fill quadrants the original
+five left thin — worth knowing, since coverage was the ceiling on pushing the movement.
+
+**Two things to watch.** Where butter overlaps mint it makes a faint chartreuse — the only
+place the palette stops reading as clean pastel; the fix would be dropping that one blob's
+alpha or moving it clockwise, not removing it. And the intensity has now drifted well past the
+brief it started from: the mesh was originally tuned to match the striped band it replaced at
+12.34 chroma, and it is at 18.26, about 48% above that. Every step was asked for and it does
+not read as loud, but if the level ever needs pulling back while keeping all seven hues, the
+alpha is the one number to move.
+
+**The pointer depths are chosen to sum to about zero**, not just to differ. The seven blobs
+before `#CCE4FF` summed to +16/+3, so that one takes -17/-13 and brings the set to -1/-10. A
+depth sum far from zero translates the whole field with the cursor instead of parting it
+around the cursor, which is the difference between this reading as a mesh and reading as a
+cheap parallax layer.
+
+**One angle drives every blob.** Each centre is placed at
+`calc(base + radius * cos(var(--mesh-swirl, 0deg) + phase))`, paired with `sin` on the other
+axis, so sweeping one property walks all five centres around their own circles. The phases
+are spread unevenly — 0, 68, 155, 232, 310deg — so they never travel as a block; the field
+turns rather than sliding. Bases and radii are percentages, so the whole thing is fluid.
+
+Radii stay well under the blobs' own 50-60% width, which is what lets the travel be doubled
+without any blob edge becoming visible: the orbit moves a soft centre around inside a much
+larger falloff, so what changes is where the colour is densest, never where it stops.
+
+`--mesh-swirl` is registered with `@property` in [`app/globals.css`](app/globals.css), and it
+has to be: an unregistered custom property is a token substitution and does not interpolate,
+so the mesh would jump between keyframes instead of turning. It is registered once globally
+rather than in each module because css-loader does not localise custom properties — two
+declarations would be one declaration written twice.
+
+**Every use passes the `0deg` fallback**, `var(--mesh-swirl, 0deg)`. Without `@property`
+support there is no initial value, so a bare `var()` would be invalid at computed-value time
+and take the entire `background-image` with it — the section would render plain white rather
+than degrade. With the fallback those browsers get the mesh static at its resting angle. The
+same is true under `prefers-reduced-motion: reduce` and without `animation-timeline` support,
+both of which already gate the animation: a static mesh, which is a fine thing to look at.
+
+**Blob geometry is inside the gradient, not in `background-position`.** Each layer is an
+image exactly the size of the box, with the blob placed by the gradient's own `at`. Moving
+them with `background-position` instead would have been a trap: those percentages resolve
+against *(box − image)*, so with an image larger than the box the same numbers move the blobs
+backwards, at a scaled-down rate.
+
+**Direction is free.** `view()` progress is a position on a range, not a clock, so scrolling
+up walks the angle back down — no listener, no direction flag, nothing that can fall out of
+sync with the scroll. Verified against the real range: the education section's `cover` span is
+1685px of scroll (785px section + 900px viewport) and the angle reads 0.04 / 89.98 / 179.92 /
+270.07 / 360deg at 0 / 25 / 50 / 75 / 100%. The sweep is exactly 360deg because that is the
+only sweep that closes — the section looks identical entering and leaving, so scrolling past
+repeatedly cannot accumulate a drift.
+
+**Intensity and travel were both stepped up once, by measurement.** The first pass matched
+the band it replaced exactly (30%/21% alpha, radii 6-10%); it was then asked to be "a wee bit
+more obvious" in both colour and motion without becoming crude. Shipping values are **44%
+peak alpha on the four outer blobs, 31% on the centre one, and orbit radii 1.7x the
+original** — 10-17% of the box. Measured on a clean mesh-only sample (see the sampling note
+below), against the previous pass:
+
+| | mean chroma | motion per quarter turn | deepest off white | worst contrast |
+|---|---|---|---|---|
+| 30%/21%, radii x1.0 | 11.50 | 1.15-1.31 | 9.4% | 7.16:1 |
+| 38%/27%, radii x1.7 | 13.60 | 2.24-2.71 | 10.6% | 7.01:1 |
+| **44%/31%, radii x1.7** | **15.85** | **2.47-3.05** | **11.8%** | **6.87:1** |
+
+So roughly **+38% colour presence and 2.1x the movement**. Contrast is barely touched — the
+worst case is `--ink-2` over the mesh's deepest pixel, 6.87:1, still well clear of AA, and
+`--color-teal-950` holds 10.00:1.
+
+One number to watch if this is ever pushed further: the striped band that preceded the mesh
+was judged too loud at 12.9% off white. The mesh sits at 11.8% and does not read that way,
+because a mesh has no stripe edges — the deviation figure alone was never what made that
+version loud. But it is the nearest thing to a ceiling this palette has.
+
+**Sampling the mesh cleanly is harder than it looks**, and three separate crops gave wrong
+answers before one was right. A backdrop reading of rgb(8,12,0) was the dark photo band 40px
+below the section; rgb(12,58,41) was the accordion chevrons, which sit at the right edge of
+the content column and are exactly `--color-teal-950`; rgb(41,92,68) was the nav plate, which
+overlays the section's first ~111px. The only clean window on a 1440x785 section is
+**y 130-760, x 1290-1430** — below the plate, inside the section, and outside the 1102px
+content column. A valid mesh sample has no channel below about 215; if it does, the crop is
+catching ink.
+
+Angles are sampled by pinning `--mesh-swirl` with an injected `!important` rule, so the page
+can be held still while the field turns. An inline style on the section will *not* do it: the
+animation runs on `::before`, and `--mesh-swirl` is `inherits: false`, so the parent's value
+never reaches it — the pinned frames all come back identical and the swirl looks broken.
+
+**It costs nothing measurable.** Five radial gradients repainting on the main thread each
+frame is the obvious worry, so it was measured: scrolling the full pass one `requestAnimation
+Frame` at a time, median frame interval 33.3ms with the mesh and 33.3ms with
+`background-image: none` — indistinguishable, p90 differing by 0.3ms. (33.3ms is headless
+Chrome's own rAF cadence, so the test can only demonstrate no *added* cost, which it does.)
+
+`.list` on the homepage and `.rowsInner` on education keep `position: relative; z-index: 1`
+so the accordions sit above the mesh — the pseudo-element is positioned, and without it the
+backdrop paints over the copy. It is `pointer-events: none` and every trigger hit-tests clean.
+
+**A vertical seam reported down the middle of the section was a screenshot artifact, not the
+page.** Checked on the real render at 1440: the largest column-to-column colour jumps in the
+backdrop are all inside the glyphs at x=201-217, and the median jump across the background is
+0.6 of 765. Worth knowing before chasing a tiling bug that is not there.
 
 ## Icon drops — drawer and accordion
 

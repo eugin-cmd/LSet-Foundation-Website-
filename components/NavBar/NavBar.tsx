@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import usePointerMesh from "@/components/usePointerMesh";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import PillCta from "@/components/PillCta/PillCta";
@@ -18,7 +19,9 @@ const BURGER_ID = "nav-open";
 const BRANDS = [
   { label: "FOUNDATION", href: "/" },
   { label: "EDUCATION", href: "/education" },
-  { label: "ANTZ SYSTEMS", href: "#" },
+  /* The product name for the Technology pillar; /technology is the route,
+     matching the drawer and footer, which both call it Technology. */
+  { label: "ANTZ SYSTEMS", href: "/technology" },
 ];
 
 const LINKS = [
@@ -58,6 +61,12 @@ export default function NavBar() {
      new page arrived hidden behind it. The FOUNDATION chip was in fact
      navigating correctly the whole time; it just looked inert. */
   const drawerRef = useRef<HTMLInputElement>(null);
+
+  /* Points the drawer's mesh blobs at the cursor, exactly as <MeshField> does
+     for the pages' content areas. The panel is the surface being pointed at
+     whenever it is open, so it gets the same treatment rather than the
+     scroll-driven swirl alone. */
+  const meshRef = usePointerMesh<HTMLDivElement>();
   /* Below 1180px the whole bar — brand chips included — collapses into the
      burger panel, which is its own checkbox. Navigating from a chip there hit
      exactly the same fault the drawer had: the route changed behind a panel
@@ -185,7 +194,7 @@ export default function NavBar() {
           </div>
         </header>
 
-        <div className={s.drawer}>
+        <div ref={meshRef} className={s.drawer}>
           <NavDrawer id={DRAWER_PANEL_ID} onNavigate={closeMenus} />
         </div>
       </div>

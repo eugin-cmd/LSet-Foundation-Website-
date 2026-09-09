@@ -406,66 +406,49 @@
      that 21px had been derived to land the node's 41px gap from the nav row,
      which the plate's 12px inset now takes to 52px. Even margins won. */
   padding: 40px;
+  /* Positioned so ::before below resolves `inset: 0` against this panel's
+     PADDING box — which is exactly the interior inside the 4px ring, so the
+     mesh fills the interior and stops at the ring without being clipped to it
+     by hand. */
+  position: relative;
   overflow: hidden;
   /* Transparent, so the border-box background layer below shows through it.
      box-sizing is border-box globally, so the panel's outer size is unchanged;
      the 40px padding is measured from the inside of this ring. */
   border: 4px solid transparent;
   border-radius: var(--radius-banner);
-  /* Holographic wash. Same palette and 115deg axis as the hero headings'
-     .wf-iridescent, but painted as the panel's own background rather than
-     clipped to text — so it sits beneath the content automatically and needs
-     no pseudo-element or z-index juggling.
+  /* The ring only. The interior's holographic wash used to be the topmost
+     layer here — a 115deg striped gradient at 42%, the hero headings' palette
+     painted as the panel's own background. It is now the shared mesh on
+     .drawer::before below, by direction, so the drawer wears the same
+     holographic surface as the pages' content areas rather than a second,
+     different treatment. The ring is deliberately untouched.
 
-     Diluted to 42%: at full strength these bands are legible behind 30px
-     headings but this panel carries 14px body copy, and the hues were
-     competing with it. (55% first; brought down again afterwards.) The white stops of the original become fully
-     transparent white here, which is the same thing over the white ground
-     underneath and keeps the interpolation out of grey.
+     Three layers, topmost first:
 
-     Four layers, topmost first:
+       1. white, clipped to the padding box — masks layer 2 out of the interior
+       2. the ring gradient, clipped to the border box
+       3. white, clipped to the border box — the ring's opaque base
 
-       1. the panel wash, clipped to the padding box
-       2. white, clipped to the padding box — masks layer 3 out of the interior
-       3. the ring gradient, clipped to the border box
-       4. white, clipped to the border box — the ring's opaque base
-
-     Layer 4 is not redundant. Without it the ring's semi-transparent gradient
+     Layer 3 is not redundant. Without it the ring's semi-transparent gradient
      composited over the dark banner showing through from behind the panel
      rather than over white: measured, the ring came out at mean rgb
      (134,135,126) against the interior's (240,240,238) — a murky edge instead
-     of a bright one, and 1.79x the interior's saturation rather than the 1.5x
-     asked for. Both gradients now sit on white, so the ratio is the alpha
-     ratio and nothing else.
+     of a bright one. On white, the ratio is the alpha ratio and nothing else.
 
      The whites are images rather than a background-color because a colour can
      only be the shorthand's last value, where it would be painted beneath
      every layer including the ring.
 
-     The ring runs at 63% — half again the panel's 42%, so that ratio survives
-     both being turned down — and the same palette reads as an edge rather than
-     as more of the wash.
+     The ring runs at 63%, and the same palette reads as an edge rather than as
+     more of the wash.
 
-     Its period is 160px against the wash's 480, which is what makes the travel
-     felt rather than merely present: 20px bands instead of 60, 7.4 of them
-     across the top edge instead of 2.5, and nine hue cycles per 14s turn
-     instead of three. 160 is not a free choice — the ring's shift is a fixed
-     1440px along the gradient axis, so the period has to divide it exactly or
-     the loop seams. 480, 240, 160 and 120 all do; 200 does not. */
+     Its period is 160px, which is what makes the travel felt rather than
+     merely present: 20px bands, 7.4 of them across the top edge, and nine hue
+     cycles per 14s turn. 160 is not a free choice — the ring's shift is a
+     fixed 1440px along the gradient axis, so the period has to divide it
+     exactly or the loop seams. 480, 240, 160 and 120 all do; 200 does not. */
   background:
-    repeating-linear-gradient(
-      115deg,
-      rgb(255 255 255 / 0%) 0px,
-      rgb(191 243 255 / 42%) 60px,
-      rgb(255 255 255 / 0%) 120px,
-      rgb(255 200 220 / 42%) 180px,
-      rgb(255 255 255 / 0%) 240px,
-      rgb(255 217 194 / 42%) 300px,
-      rgb(255 255 255 / 0%) 360px,
-      rgb(200 255 228 / 42%) 420px,
-      rgb(255 255 255 / 0%) 480px
-    )
-      padding-box,
     linear-gradient(var(--surface-white), var(--surface-white)) padding-box,
     repeating-linear-gradient(
       115deg,
@@ -506,6 +489,67 @@
   pointer-events: none;
 }
 
+/* The drawer's interior wears the same holographic mesh as the pages' content
+   areas — one shared --mesh-paint, defined in app/globals.css, so the two
+   surfaces cannot drift apart.
+
+   `inset: 0` resolves against .drawer's padding box, so this fills the
+   interior and stops cleanly at the 4px ring; .drawer's own overflow:hidden
+   and border-radius round its corners to match, and the panel's clip-path
+   reveal carries it open with everything else.
+
+   This is the pseudo-element the old wash was written to avoid needing. A
+   positioned pseudo-element paints above static in-flow content whatever the
+   document order — the same trap the homepage's WHO WE ARE block fell into —
+   so the panel's content is lifted above it below. */
+.drawer::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-repeat: no-repeat;
+  background-image: var(--mesh-paint);
+  /* Inner shadow, 5% black, hugging the inside of the ring.
+
+     It lives on this layer rather than on .drawer itself because an element's
+     own box-shadow is painted with its background and border — below every
+     positioned descendant, this mesh layer included. An `inset` shadow there
+     would have been laid down first and then veiled by the blobs painting over
+     it at up to 54% alpha. Here it sits above the mesh and below the panel's
+     content, which is where an inner shadow belongs.
+
+     The radius is the panel's less the 4px ring, because this box is the
+     padding box: its corners are the ring's inner curve, not the panel's outer
+     one. Without it the shadow would hug a square box and the parent's
+     overflow:hidden would cut its corners off. */
+  border-radius: calc(var(--radius-banner) - 4px);
+  /* 5% is the brief, so the geometry is the only dial — and the 4px spread is
+     doing the work, not the blur.
+
+     An inset shadow reaches only about HALF its stated alpha at a hard box
+     edge, because the blur's falloff is clipped there. So the blur changes how
+     far the band reaches, never how dark it gets: measured against the
+     identical no-shadow pixels, 20px and 10px blur both peaked at -5 on the
+     green channel, the 10px merely covering less of the edge (-11 summed
+     against -18). A positive spread is what pushes the full-strength region
+     out to the edge, so the visible band starts at the full 5% instead of
+     half: 16px/4px peaks at -8 and sums -27, the strongest of the variants
+     tried while still reading as a shadow rather than a line. A hairline
+     `0 0 0 1px` peaks hardest at -12 but is 1px wide, which reads as a rule.
+
+     Depths inside 4px measure zero on every variant: that is the transparent
+     ring, which this layer does not paint under. */
+  box-shadow: inset 0 0 16px 4px rgb(0 0 0 / 5%);
+  pointer-events: none;
+  content: "";
+}
+
+/* .drawer has exactly one child, the panel's content. Without this the mesh
+   would paint over all of it. */
+.drawer > * {
+  position: relative;
+  z-index: 1;
+}
+
 .drawerToggle:checked ~ .stack .drawer {
   clip-path: circle(150% at var(--drawer-origin));
   visibility: visible;
@@ -526,15 +570,47 @@
     animation: drawerIridescence 14s linear infinite;
   }
 
+  /* The mesh's own turn. A time-based loop rather than <MeshField>'s
+     scroll-driven view() progress, because a drawer does not travel through
+     the viewport — there is no pass to map an angle onto. 14s matches the
+     ring's turn above, so the interior and the edge move on one clock.
+
+     360deg exactly: every blob centre is base + radius * cos/sin(angle), so a
+     full sweep walks each centre once around its own circle and returns the
+     field to where it started. Anything less would jump at the loop point. */
+  .drawer::before {
+    animation: drawerMeshSwirl 14s linear infinite;
+  }
+
   /* ease-in on the way open, as asked: the circle starts slowly and runs out
      to the edges. visibility flips at the end of the close so the panel stays
      visible while it shrinks, and leaves the tab order the moment it is gone. */
   .drawer {
-    transition: clip-path 300ms ease-out, visibility 0s linear 300ms;
+    /* The last two are the pointer half of the mesh: usePointerMesh writes raw
+       values with no easing of its own, so this is what makes the blobs trail
+       the cursor and settle — the same 340ms <MeshField> uses, for the same
+       reason. They live in this declaration rather than their own because a
+       second `transition` on .drawer would replace the clip-path reveal
+       outright. Both properties are registered in globals.css; an unregistered
+       custom property cannot transition and this would silently do nothing. */
+    transition:
+      clip-path 300ms ease-out,
+      visibility 0s linear 300ms,
+      --mesh-mx 340ms ease-out,
+      --mesh-my 340ms ease-out;
   }
 
   .drawerToggle:checked ~ .stack .drawer {
-    transition: clip-path 480ms ease-in, visibility 0s linear 0s;
+    /* The mesh's two properties are repeated here as well. This declaration
+       replaces the one above outright while the panel is open — which is the
+       only time the pointer is over it — so leaving them out made the blobs
+       jump straight to the cursor instead of trailing it. Verified: the
+       computed transition-property listed clip-path and visibility only. */
+    transition:
+      clip-path 480ms ease-in,
+      visibility 0s linear 0s,
+      --mesh-mx 340ms ease-out,
+      --mesh-my 340ms ease-out;
   }
 }
 
@@ -560,12 +636,24 @@
    periods along the axis: 435 x 0.9063 + 202.9 x 0.4226 = 480 = 1 x 480 for
    the wash, and 3x that = 1440 = 9 x 160 for the ring. The white layers have
    nothing to move. */
+/* Per layer, matching the three the panel now carries. Only the ring moves:
+   the two whites are solid, so shifting them would be invisible anyway, but
+   they still need their slot or the ring's value would land on the wrong
+   layer. The wash's own 435px 202.9px entry went with the wash. */
 @keyframes drawerIridescence {
   to {
     background-position:
-      435px 202.9px,
       0 0,
       1305.1px 608.6px,
       0 0;
+  }
+}
+
+@keyframes drawerMeshSwirl {
+  from {
+    --mesh-swirl: 0deg;
+  }
+  to {
+    --mesh-swirl: 360deg;
   }
 }

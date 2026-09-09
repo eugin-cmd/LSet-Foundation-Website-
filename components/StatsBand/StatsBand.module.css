@@ -1,0 +1,96 @@
+/* Figma `Frame 1984078221` node 2127:9943 — 1440x279 on MD3_Antz/OnPrimaryContainer.
+
+   The four cells are 331px wide at x 40 / 383 / 726 / 1069, so the pitch is
+   343 and the gap 12, and they span 40..1400 — a 40px side margin. Cells sit
+   at y 47 and are 184 tall, leaving 48 below. All four numbers are recovered
+   as one grid rather than four absolute positions, so the row survives a
+   narrower viewport.
+
+   Figma gives the first cell a 15px radius and the other three none, with no
+   fill on any of them. That is a leftover from whatever component they were
+   built from: four cells of a repeated row should be identical, so none of
+   them takes it. */
+.band {
+  width: 100%;
+  padding: 47px clamp(var(--edge), 2.78vw, 40px) 48px;
+  background: var(--color-teal-700);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+  max-width: var(--page-width);
+  margin: 0 auto;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+/* Figma: DM Sans 48, normal line height. --font-flex as everywhere else on the
+   site; 48px at the 1440 design width is 3.33vw.
+
+   tabular-nums is doing more work here than tidiness now that the figures
+   count up: proportional digits change width as they climb, so "15" would
+   shuffle sideways on nearly every frame and the row would jitter. Tabular
+   figures all share one advance, so the number grows only when it gains a
+   digit.
+
+   600, up from Figma's 400. Google Sans Flex is a variable font and the site
+   loads the 400..900 axis, so this is a real weight rather than a synthesised
+   one. */
+.value {
+  margin: 0;
+  /* 1.29, not a round 1.1: Figma's "15+" text box is 71x62 at 48px, and
+     62/48 is what makes the cell 184 tall and the band its designed 279.
+     At 1.1 the band measured 270. */
+  font: 600 clamp(34px, 3.33vw, 48px) / 1.29 var(--font-flex);
+  font-variant-numeric: tabular-nums;
+  /* The fallback under the holographic fill. .wf-iridescent sets
+     `-webkit-text-fill-color: transparent`, which is a separate property from
+     `color` — so whichever of the two rules wins the cascade, the gradient
+     still shows, and this colour is what remains if background-clip: text is
+     unsupported. */
+  color: var(--ink-on-dark-1);
+}
+
+/* Figma: DM Sans 20 with -0.4px tracking, which is -0.02em of the size. */
+.label {
+  margin: 0;
+  font: 400 clamp(15px, 1.39vw, 20px) / 1.3 var(--font-flex);
+  letter-spacing: -0.02em;
+  /* As with the figure above: the solid fallback beneath the holographic fill. */
+  color: var(--ink-on-dark-1);
+}
+
+/* Four cells of "Conservation Projects" and "Partner Institutions" stop fitting
+   well before the row itself does, so the grid halves rather than letting the
+   labels wrap to three lines. */
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 12px;
+  }
+
+  .stat {
+    padding: 28px 12px;
+  }
+
+  .band {
+    padding-block: 36px;
+  }
+}
+
+@media (max-width: 420px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

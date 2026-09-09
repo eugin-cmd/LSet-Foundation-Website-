@@ -12,7 +12,7 @@ export default function ProofWall() {
       <div className={s.track}>
         <div className={s.stage}>
           <div className={s.heading}>
-            <p className={`${s.kicker} wf-subtitle`}>Real Species Real Timeline</p>
+            <p className={`${s.kicker} wf-subtitle wf-dotted`}>Real Species Real Timeline</p>
             <div className={s.titleWrap}>
               <div className={s.titleClip}>
                 <h2 className={`${s.title} wf-display-xl`}>The Proof Wall.</h2>

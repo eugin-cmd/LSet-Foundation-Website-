@@ -3,6 +3,7 @@ import EducationHero from "@/components/Education/EducationHero";
 import EducationPartners from "@/components/Education/EducationPartners";
 import EducationStatement from "@/components/Education/EducationStatement";
 import EducationPillars from "@/components/Education/EducationPillars";
+import MeshField from "@/components/MeshField/MeshField";
 import EducationShowcase from "@/components/Education/EducationShowcase";
 import EducationCourses from "@/components/Education/EducationCourses";
 
@@ -20,7 +21,9 @@ export default function EducationPage() {
         <EducationHero />
         <EducationPartners />
         <EducationStatement />
-        <EducationPillars />
+        <MeshField>
+          <EducationPillars />
+        </MeshField>
         <EducationShowcase />
         <EducationCourses />
       </main>

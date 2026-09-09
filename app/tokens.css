@@ -4,7 +4,19 @@
   --color-teal-950: #0c3b2a;
   --color-green-950: #295c44;
   --color-cyan-50: #e7f7f9;
+  /* The stats band's ground. Started as Figma `MD3_Antz/OnPrimaryContainer`
+     (#1f515b) and was darkened to #1f415b by direction — same hue family, less
+     green, so it reads closer to navy than to teal while staying distinctly
+     cooler than --color-teal-950 (#0c3b2a). Kept as its own token rather than a
+     reuse of the forest greens, and the band is still its only consumer. */
+  --color-teal-700: #1f415b;
   --color-orange: #eb5d37;
+  /* Antz Systems palette. `line/1` is the sage the closing band's title and its
+     two pills are drawn in; the cyan and yellow are the product's own gradient,
+     used on the platform indicator's active step. */
+  --line-1: #b5ceb9;
+  --color-antz-cyan: #0faec3;
+  --color-antz-yellow: #ffcc00;
   /* Brighter than Figma's Color/Orange/Default; used for the scroll cue. */
   --color-orange-bright: #fa6140;
 
@@ -14,6 +26,11 @@
   --ink-2: #285442;
   --ink-on-dark-1: #ffffff;
   --ink-on-dark-2: #a8b5ac;
+
+  /* Figma `MD3_Antz/neutralPrimary`. True black, used only where the design
+     calls for it over the light mesh — the WHO WE ARE copy and its leaf. The
+     forest inks read as washed out there. */
+  --ink-black: #000000;
 
   --white: #ffffff;
   --surface-white: #ffffff;
@@ -58,6 +75,21 @@
      Fluid, so the lift never exceeds the room a short section actually has. */
   --approach-overscan: clamp(48px, 8.33vw, 120px);
   --approach-lift: clamp(44px, 7.64vw, 110px);
+
+  /* Antz Systems block rhythm. Every content section on that page pads by this
+     top and bottom, so each gap between two of them is exactly twice it and
+     they are all equal — the page has no full-bleed section to absorb the join
+     the way the other two pages' photo bands do. 78px at 1440 is Figma's own
+     padding on that page's disclosure board, so the rhythm is the design's
+     number rather than an invented one. */
+  --antz-block: clamp(48px, 5.42vw, 78px);
+
+  /* Antz Systems content parallax. Smaller than the approach and CTA lifts
+     because that page's sections are shorter and carry no photographic
+     backdrop to hide the travel — the planes separate against the mesh and the
+     band edges instead. Each section scales this by its own factor rather than
+     taking it whole, so the carousel drifts less than the copy around it. */
+  --antz-lift: clamp(26px, 3.61vw, 52px);
 
   /* CTA-band parallax. Same shape as the approach pair but its own values, so
      tuning one band never silently moves the other. */

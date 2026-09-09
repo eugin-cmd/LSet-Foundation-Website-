@@ -11,7 +11,7 @@ export default function Approach() {
       <div className={s.deep} aria-hidden="true" />
 
       <div className={s.heading}>
-        <p className={`${s.kicker} wf-subtitle`}>OUR APPROACH</p>
+        <p className={`${s.kicker} wf-subtitle wf-dotted`}>OUR APPROACH</p>
         <h2 className={`${s.title} wf-display-xl`}>
           We integrate. We prototype.
           <br />

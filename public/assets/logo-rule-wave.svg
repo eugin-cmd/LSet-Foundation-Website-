@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="12" height="5" viewBox="0 0 12 5" fill="none">
+  <!-- One period of the squiggle under the partner logos, tiled with repeat-x.
+
+       Two semi-ellipses, one up and one down. rx is always a QUARTER of the
+       period, because each arc spans half of it and rx is the semi-axis along
+       that chord — period and rx cannot be tuned apart. rx/ry is 3/2 = 1.5.
+
+       Tuned for frequency over roundness: a 12px period puts 232 crests across
+       the 1392px rule against the 87 a 32px period gave, and 2px of amplitude
+       against 6px. Shorter crests, more of them — a squiggle rather than a
+       scallop. Roundness is left where the geometry lands it; at this
+       amplitude the crest is two pixels tall and its exact curvature is not
+       something the eye can read anyway.
+
+       It tiles without a kink because a semi-ellipse whose chord lies along x
+       leaves both endpoints vertically, so consecutive arcs meet tangent to
+       each other — including across the tile boundary at x=12.
+
+       stroke-width 0.5 is a genuine half-pixel: SVG antialiases sub-pixel
+       strokes rather than rounding them up the way a 0.5px box gets snapped.
+       Opacity is not set here — it lives on .strip::after in CSS. -->
+  <path d="M0 2.5 A 3 2 0 0 1 6 2.5 A 3 2 0 0 0 12 2.5" stroke="#000" stroke-width="0.5" stroke-linecap="round"/>
+</svg>

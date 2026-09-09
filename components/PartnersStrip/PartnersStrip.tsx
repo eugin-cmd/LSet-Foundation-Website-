@@ -1,3 +1,4 @@
+import WaveRule from "@/components/WaveRule/WaveRule";
 import s from "./PartnersStrip.module.css";
 
 /** Scale applied to the Figma dimensions below — kept explicit so the base
@@ -34,6 +35,8 @@ export default function PartnersStrip() {
           />
         ))}
       </div>
+
+      <WaveRule className={s.rule} />
     </div>
   );
 }

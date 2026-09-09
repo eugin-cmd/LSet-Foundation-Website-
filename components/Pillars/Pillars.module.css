@@ -7,68 +7,9 @@
   width: 100%;
   min-height: 913px;
   padding: clamp(72px, 7.78vw, 112px) var(--edge);
-  background: var(--surface-band);
-}
-
-/* ---------------------------------------------------------------------------
-   Holographic band across the section — a diagonal colour band that travels
-   left to right as the page scrolls down, and back to the left on the way up.
-
-   Scroll-LINKED, not timed. `animation-timeline: view()` makes the animation's
-   progress a function of how far this section has travelled through the
-   viewport rather than of elapsed time, so reversing the scroll reverses the
-   band with no extra work — a time-based animation could only ever run one
-   way. It replaced a radial ripple on a 22s clock for exactly that reason.
-
-   The palette is the hero headings' four pastels, but packed edge to edge with
-   no white passes between them, which is what turns a sheen into a band: 200px
-   period, 50px a hue. (The white passes are what keep the hero's version
-   reading as a sheen; they are the difference between the two effects.)
-
-   The pseudo-element is inset: 0, so its own view() progress is the section's
-   and no named timeline is needed.
-   --------------------------------------------------------------------------- */
-.pillars::before {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: repeating-linear-gradient(
-    115deg,
-    rgb(191 243 255 / 26%) 0px,
-    rgb(255 200 220 / 26%) 50px,
-    rgb(255 217 194 / 26%) 100px,
-    rgb(200 255 228 / 26%) 150px,
-    rgb(191 243 255 / 26%) 200px
-  );
-  pointer-events: none;
-  content: "";
-}
-
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .pillars::before {
-      animation-name: pillarsBandDrift;
-      /* Explicit: the `animation` shorthand defaults duration to 0s, which
-         leaves a scroll-driven animation pinned to its first frame. */
-      animation-duration: 1ms;
-      animation-timing-function: linear;
-      animation-fill-mode: both;
-      animation-timeline: view();
-      animation-range: cover 0% cover 100%;
-    }
-  }
-}
-
-/* Six 200px periods over the section's pass. The shift lies along the
-   gradient's own 115deg axis — (sin115, -cos115) x 1200 — so the band travels
-   perpendicular to its own stripes instead of sliding sideways along them. */
-@keyframes pillarsBandDrift {
-  from {
-    background-position: 0 0;
-  }
-  to {
-    background-position: 1087.6px 507.1px;
-  }
+  /* Transparent, not white: the holographic mesh is painted by the <MeshField>
+     wrapper behind this section, and any background here paints over it. */
+  background: transparent;
 }
 
 /* --- overhanging field photo (Figma `Container`, 962x696 at top -615) --- */
@@ -187,6 +128,22 @@
 }
 
 .title {
+  /* Reserves the chevron's column. The chevron is absolutely positioned at
+     `right: 0` and is 15px wide, so without this a long title runs straight
+     under it: the Antz board's row 01, "Records that grow with the animal", is
+     the longest title on the site and measured a -3px overlap at a 1100px
+     viewport before this. 40px is the 15px mark plus a 25px gap.
+
+     Harmless to the other two boards — their longest titles stop hundreds of
+     pixels short of this edge — but it is the shared rule, so re-measure all
+     three if the type scale ever changes. */
+  padding-inline-end: 40px;
+  /* Only bites on a title long enough to wrap, which today is one: the Antz
+     board's "Records that grow with the animal" needs about 1108px at 52px and
+     has 1056 once the chevron's column is reserved, so it takes two lines.
+     Without balancing, the second line was the single word "animal". The other
+     seven titles across the three boards are one line, where this does nothing. */
+  text-wrap: balance;
   color: var(--color-teal-950);
 }
 

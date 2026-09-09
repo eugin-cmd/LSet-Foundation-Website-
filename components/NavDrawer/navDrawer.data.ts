@@ -34,7 +34,7 @@ export const DESTINATIONS: Destination[] = [
     title: "Technology",
     description:
       "The platform our partners run on — animal records, welfare and operations in one place.",
-    href: "#technology",
+    href: "/technology",
   },
 ];
 

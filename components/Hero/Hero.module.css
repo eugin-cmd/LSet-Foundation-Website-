@@ -103,7 +103,9 @@
   /* Drops in once on load. `both` holds the first frame until the delay
      elapses, so nothing flashes in place before its turn. The drone's 0.88
      scale lives on an inner <g>, so this transform cannot collide with it. */
-  animation: iconDrop 940ms both;
+  animation-name: var(--anim-icon-drop);
+  animation-duration: 940ms;
+  animation-fill-mode: both;
 }
 
 /* Staggered so they land one after another rather than as a block. */
@@ -126,43 +128,6 @@
 /* Per-keyframe easing: the fall accelerates like gravity, then each rebound
    decays. A single timing function across the whole animation would make the
    drop and the bounces share one curve and read as mechanical. */
-@keyframes iconDrop {
-  0% {
-    opacity: 0;
-    transform: translateY(-120px);
-    animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.32);
-  }
-
-  38% {
-    opacity: 1;
-  }
-
-  52% {
-    transform: translateY(0);
-    animation-timing-function: cubic-bezier(0.25, 0.7, 0.35, 1);
-  }
-
-  68% {
-    transform: translateY(-13px);
-    animation-timing-function: cubic-bezier(0.6, 0, 0.85, 0.35);
-  }
-
-  82% {
-    transform: translateY(0);
-    animation-timing-function: cubic-bezier(0.25, 0.7, 0.35, 1);
-  }
-
-  91% {
-    transform: translateY(-4px);
-    animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.4);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .techIcons svg {
     animation: none;
@@ -191,18 +156,6 @@
   text-align: center;
   text-wrap: pretty;
 }
-
-/* Leaf flourish under the subtext. Scaled well down from the artwork's native
-   114x60 to keep it compact; height follows the viewBox so it cannot distort. */
-.leaves {
-  flex: none;
-  width: 68px;
-  height: auto;
-  margin-top: 2px;
-  color: var(--white);
-  opacity: 0.9;
-}
-
 
 /* ---------------------------------------------------------------------------
    Parallax: the content rises faster than the footage sinks, so the two
@@ -277,9 +230,4 @@
     gap: 16px;
   }
 
-  /* Purely decorative, and the phone block is already dense — icons, a
-     three-line heading and a six-line lede leave it 5px off the scroll cue. */
-  .leaves {
-    display: none;
   }
-}

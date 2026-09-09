@@ -21,7 +21,7 @@ export default function EducationCourses() {
       <div className={s.coursesTrack}>
         <div className={s.coursesStage}>
           <div className={s.coursesHead}>
-            <p className={`${s.coursesKicker} wf-subtitle`}>
+            <p className={`${s.coursesKicker} wf-subtitle wf-dotted`}>
               Real Courses. Real Careers.
             </p>
             <h2 className={`${s.coursesTitle} wf-display-xl`}>our courses</h2>

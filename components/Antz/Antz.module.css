@@ -1,0 +1,801 @@
+/* ---------------------------------------------------------------------------
+   Antz Systems page — Figma frame `Antz Systems`, node 1965:18354, 1440x3941.
+
+   Built on the same parts as the other two pages: the shared banner height and
+   scroll cue, the shared <Accordion>, the shared <PillCta>, <IntroBand> for the
+   mint band, and the nav and footer from the root layout. Only the platform
+   showcase and the closing band are new.
+   --------------------------------------------------------------------------- */
+
+/* --- hero, node 1965:18355 + 1965:18864 --------------------------------- */
+
+/* Figma's own hero block is 856px; the banner takes --banner-height instead, so
+   all three heroes are the same height and one token moves them together. */
+.hero {
+  /* Vertical overscan on the footage, so it can sink on scroll without ever
+     exposing an edge inside the banner. Same value the homepage banner uses. */
+  --video-overscan: 72px;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--banner-height);
+  /* Room for the scroll cue, which is absolutely positioned against this
+     section. Same reserve the education hero uses. */
+  padding: calc(clamp(36px, 5vw, 72px) + 47px + 20px) var(--edge);
+  overflow: clip;
+  background-color: var(--scrim-base);
+}
+
+/* The banner carries footage now rather than the Figma still: leopard.mov,
+   downscaled to 1080p H.264 and stripped of its audio and timecode tracks —
+   the banner plays muted, so they were 30MB of nothing. Same arrangement as
+   the homepage banner, down to the overscan. */
+.heroVideo {
+  position: absolute;
+  top: calc(var(--video-overscan) * -1);
+  left: 0;
+  width: 100%;
+  height: calc(100% + var(--video-overscan) * 2);
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Flat 25% black over the footage, under the gradient scrims so those keep
+   full strength. As on the other two banners. */
+.heroTint {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 25%);
+  pointer-events: none;
+}
+
+/* The Figma still had the node's own scrim gradients baked into the export;
+   footage does not, so they are reproduced here — the same two stops the
+   homepage banner takes from its Figma node — to hold the nav plate and the
+   heading legible over bright frames. */
+.heroScrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, #01120c 3.381%, rgba(0, 0, 0, 0) 25.943%),
+    linear-gradient(0deg, #01120c 0%, rgba(0, 0, 0, 0) 58.071%);
+}
+
+.heroTitle {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Figma's 23px between the wordmark, the heading and the cue line. */
+.heroInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 23px;
+  width: min(1276px, 100%);
+  text-align: center;
+}
+
+/* Figma's 231.563 x 123.924, kept as a ratio so it can shrink with the band
+   rather than being capped at one size. Both dimensions are set: a lone width
+   with `height: auto` would collapse to zero while the SVG loads. */
+.heroWordmark {
+  flex: none;
+  width: min(231.563px, 46vw);
+  height: auto;
+  aspect-ratio: 231.563 / 123.924;
+}
+
+/* .wf-display-xl carries the size and tracking; .wf-iridescent the fill. The
+   white here is the fallback under that fill, for the same reason the other two
+   headings keep one — see the note beside .wf-iridescent in globals.css. */
+/* One mark per Antz product, above the heading — the same row the education
+   hero carries, at the same size and on the same fall. */
+.heroIcons {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 1.94vw, 28px);
+  color: var(--white);
+}
+
+.heroIcons svg {
+  flex: none;
+  width: clamp(26px, 2.36vw, 34px);
+  height: auto;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* The shared 940ms fall from globals.css, reached through the custom property
+     because css-loader would hash a direct name into something that matches
+     nothing. `both` holds the first frame until the delay elapses, so nothing
+     sits in place before its turn.
+
+     The delays wait out the blinder — its last slat lands at
+     11 x 55ms + 760ms = 1365ms — so the drop is actually seen rather than
+     played behind a closed blind. Four icons at 90ms apart, matching the
+     education row's stagger. */
+  animation-name: var(--anim-icon-drop);
+  animation-duration: 940ms;
+  animation-fill-mode: both;
+}
+
+.heroIcons svg:nth-child(1) {
+  animation-delay: 1320ms;
+}
+
+.heroIcons svg:nth-child(2) {
+  animation-delay: 1410ms;
+}
+
+.heroIcons svg:nth-child(3) {
+  animation-delay: 1500ms;
+}
+
+.heroIcons svg:nth-child(4) {
+  animation-delay: 1590ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroIcons svg {
+    animation: none;
+  }
+}
+
+/* Figma's mint-band paragraph, now the banner's lede. 800px is the measure the
+   education hero uses for the same job — narrower than the 1276px copy column,
+   so the paragraph reads as a paragraph rather than as one long line under a
+   centred heading. */
+.heroLede {
+  width: min(800px, 100%);
+  color: var(--white);
+  text-wrap: pretty;
+}
+
+.heroHeading {
+  width: 100%;
+  /* 900, matching the other two heroes. Google Sans Flex is variable to 1000,
+     so this is the real face rather than a synthesised bold.
+
+     64px at 1440 (4.44vw), against the Foundation hero's 80px.
+
+     80 was unavailable while the line broke after "One System": "Across the
+     Whole Institution" measured 1500px at 80/900 in a 1276px column, 224px
+     over. Moving the break so "Across" joins the first line changed that — the
+     longest line is now "the Whole Institution" at 1122px at 80px, which fits
+     with 154px to spare, and the cue clearance holds at 19px because the band
+     grows rather than the cue colliding.
+
+     Kept at 64 all the same, because going to 80 grows this banner to 799px
+     against the 780px --banner-height the other two heroes share. 72px is the
+     largest that keeps all three the same height (781px). Both are one value
+     away if the divergence is wanted. */
+  font-size: clamp(30px, 4.44vw, 64px);
+  font-weight: 900;
+  /* Fallback for no background-clip support; .wf-iridescent replaces it. */
+  color: var(--white);
+  text-wrap: balance;
+}
+
+
+/* Parallax: the copy rises while the footage sinks, so the two separate into
+   planes as the banner leaves. Scroll-driven, so there is no listener and it
+   survives in the static export; browsers without `animation-timeline` get a
+   still banner. Longhands throughout — the `animation` shorthand resets
+   animation-timeline to auto and would pin both to their first frame. */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .heroVideo,
+    .heroInner {
+      animation-duration: 1ms; /* overridden by the timeline; keeps Safari happy */
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 var(--banner-height);
+    }
+
+    .heroVideo {
+      animation-name: antzFootageSink;
+    }
+
+    /* On .heroInner rather than .heroTitle, matching the other two heroes: it
+       is the copy column itself, so the wordmark, icon row, heading, lede and
+       leaf travel as one block. Moving them at separate rates would tear the
+       column apart mid-block, which reads as a bug rather than as depth. */
+    .heroInner {
+      animation-name: antzCopyRise;
+    }
+  }
+}
+
+@keyframes antzFootageSink {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(var(--video-overscan));
+  }
+}
+
+/* -150px, the same travel the Foundation and education heroes take. */
+@keyframes antzCopyRise {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-150px);
+  }
+}
+
+/* Hold the poster frame for viewers who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  .heroVideo {
+    display: none;
+  }
+
+  .hero {
+    background-image: url("/assets/antz-hero-poster.jpg");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+}
+
+/* --- platform showcase, node 1965:23251 --------------------------------- */
+
+.platform {
+  /* Above the field's mesh. That pseudo-element is `position: absolute` with
+     `z-index: 0`, and a positioned element paints above static in-flow content
+     whatever the document order — so without a position here the mesh would
+     paint OVER this section's copy and wash it out, which is exactly what
+     happened to the homepage's WHO WE ARE block before it was caught. */
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Figma's 22.966px was borrowed from inside its copy block when the lockup
+     moved to the top, and it is too tight at section level: it left the dots
+     almost touching the paragraph and the CTA almost touching the divider.
+     These four children — lockup, carousel, copy, divider — are separate
+     blocks, so they get a section-scale gap instead. 48px at 1440. */
+  gap: clamp(28px, 3.33vw, 48px);
+  width: 100%;
+  /* --antz-block top and bottom, like every other content section on this page,
+     so the gaps between them are equal. It had no top pad at all while the
+     stage was a full-bleed baked export that was meant to butt the banner;
+     once the band went and the carousel became a centred 1100px block, that
+     left it crammed against the hero. */
+  padding-block: var(--antz-block);
+  /* Transparent, not white: the holographic mesh is painted by the <MeshField>
+     wrapper behind this section, and any background here paints over it. */
+  background: transparent;
+
+  /* This section's own view() progress drives the parallax below, so the
+     motion stays tied to the section wherever it lands on the page rather than
+     to a document offset. */
+  view-timeline-name: --antz-platform;
+}
+
+/* The stage. Figma had a full-bleed gradient band behind the devices — light
+   sage on the left to --color-teal-950 on the right — and it was rebuilt here
+   as a real gradient when the baked export was replaced by the carousel. It has
+   since been removed by direction: the carousel now sits on the section's own
+   white. Nothing else depended on it, so the stage is a plain centring wrapper
+   again and neither it nor the carousel needs a stacking context. */
+.stage {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* --- module carousel ---------------------------------------------------- */
+
+.carousel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: min(1100px, 100% - var(--edge) * 2);
+  outline: none;
+}
+
+.carousel:focus-visible {
+  outline: 2px solid var(--color-teal-950);
+  outline-offset: 8px;
+  border-radius: 8px;
+}
+
+/* 16/9, as the original's stage is. `perspective` is what makes translateZ on
+   the neighbours read as depth rather than as a plain scale, and it has to sit
+   on this ancestor — a perspective on the slide itself would give each its own
+   vanishing point. `pan-y` leaves vertical gestures to the page while
+   horizontal ones reach the drag handler. */
+.track {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  perspective: 1800px;
+  touch-action: pan-y;
+}
+
+.slide {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 82%;
+  /* preserve-3d so the child's translateZ is not flattened away by this
+     wrapper's own transform. */
+  transform-style: preserve-3d;
+  transform-origin: center center;
+}
+
+.slide img {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+}
+
+/* The three states carry the whole presentation. --dir is the sign of the
+   slide's offset from the active one, so one rule serves both sides. */
+.slide[data-state="active"] {
+  transform: translate(-50%, -50%);
+  opacity: 1;
+  filter: blur(0);
+  z-index: 10;
+  cursor: default;
+}
+
+.slide[data-state="side"] {
+  /* Behind the active card and nudged aside, so a sliver peeks out. The
+     original's numbers: 19% across, 260px back, 0.86 scale, 16deg of yaw. */
+  transform: translate(-50%, -50%) translateX(calc(var(--dir) * 19%))
+    translateZ(-260px) scale(0.86) rotateY(calc(var(--dir) * -16deg));
+  opacity: 0.5;
+  filter: blur(12px);
+  cursor: pointer;
+}
+
+.slide[data-state="hidden"] {
+  transform: translate(-50%, -50%) translateZ(-260px) scale(0.86);
+  opacity: 0;
+  filter: blur(12px);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* A firm ease-out in place of the original's spring — it settles instead of
+     overshooting, which matters here because an overshoot would wobble the
+     12px blur on the neighbours. */
+  .slide {
+    transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 620ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+/* Reduced motion flattens the stack to a cross-fade: no depth, no yaw, no
+   blur, and the component runs no autoplay. */
+@media (prefers-reduced-motion: reduce) {
+  .slide[data-state="side"],
+  .slide[data-state="hidden"] {
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    filter: none;
+    pointer-events: none;
+  }
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: rgb(255 255 255 / 82%);
+  color: #4a4a4a;
+  box-shadow: 0 2px 10px -4px rgb(1 18 12 / 35%);
+  cursor: pointer;
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+
+.arrow:hover {
+  background: var(--white);
+  transform: translateY(-50%) scale(1.06);
+}
+
+.arrow:focus-visible {
+  outline: 2px solid var(--color-teal-950);
+  outline-offset: 2px;
+}
+
+.arrowPrev {
+  left: -4px;
+}
+
+.arrowNext {
+  right: -4px;
+}
+
+/* The next arrow is the same glyph turned round, so there is one path to keep. */
+.arrowNext svg {
+  transform: rotate(180deg);
+}
+
+@media (min-width: 720px) {
+  .arrowPrev {
+    left: 12px;
+  }
+
+  .arrowNext {
+    right: 12px;
+  }
+}
+
+/* Placement for the shared <WaveRule />, inset to the same content width the
+   partners strip's copy of it uses, so the two dividers are identical rather
+   than merely similar — including being wider than the 1100px carousel above
+   it, which the fading ends make read as a soft band across the page. */
+.platformRule {
+  width: calc(100% - var(--edge) * 2);
+}
+
+/* Figma 1965:25962 — 1069 wide. Its own gap opens up a little too, so the CTA
+   is not crowded under the last line of the paragraph; still tighter than the
+   section gap above, because these two belong together. */
+.platformCopy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(20px, 2.22vw, 32px);
+  width: min(1069px, 100% - var(--edge) * 2);
+  text-align: center;
+}
+
+/* Figma 1965:25915 — the mark and the two-line wordmark, 6.562px apart. */
+.lockup {
+  display: flex;
+  align-items: center;
+  gap: 6.5px;
+}
+
+.lockupMark {
+  flex: none;
+  width: clamp(58px, 6.04vw, 86.944px);
+  height: auto;
+  aspect-ratio: 1;
+}
+
+/* Inter, not the site's --font-flex: this is the product's own lockup rather
+   than page typography. #4a4a4a is Figma's literal — a neutral grey that is
+   deliberately not one of the site's forest inks, because the lockup belongs to
+   Antz rather than to the Foundation's palette. */
+.lockupText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: #4a4a4a;
+  font-family: var(--font-inter);
+  line-height: 1.1;
+  text-align: left;
+}
+
+.lockupSmall {
+  font-size: clamp(16px, 1.59vw, 22.966px);
+  font-weight: 500;
+}
+
+.lockupLarge {
+  font-size: clamp(27px, 2.73vw, 39.371px);
+  font-weight: 600;
+}
+
+/* Figma 18.433px/1.7. No wf-* utility is this size — the scale jumps 16 to 27
+   — so it is written out, fluid to the design width. */
+.platformBody {
+  width: 100%;
+  font: 400 clamp(15px, 1.28vw, 18.433px) / 1.7 var(--font-flex);
+  color: var(--ink-1);
+}
+
+/* The pagination dots.
+
+   Figma had four pill-shaped steps with a cyan-to-yellow gradient on the active
+   one. These are round instead, all one size, with the active dot simply filled
+   dark — the treatment asked for, and the same geometry the Antz Systems site
+   uses for its own carousel: 12px circles, 10px apart.
+
+   Colours come from the palette rather than new literals: --line-1 is the pale
+   sage this page already uses for the closing band, and --color-green-950 is
+   the green of the platform CTA directly below these dots.
+
+   One per slide, and buttons rather than spans — they page the carousel. */
+.dots {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--line-1);
+  cursor: pointer;
+  /* Only the fill changes now — the previous pills also animated their width,
+     which is why that transition named it. */
+  transition: background-color 260ms ease;
+}
+
+.dot:hover {
+  background: var(--ink-2);
+}
+
+.dot:focus-visible {
+  outline: 2px solid var(--color-teal-950);
+  outline-offset: 3px;
+}
+
+.dotActive,
+.dotActive:hover {
+  background: var(--color-green-950);
+}
+
+/* ---------------------------------------------------------------------------
+   Platform parallax. Three planes over the mesh: the lockup and the copy ride
+   the full lift while the carousel takes less than half of it, so the heavy
+   object in the middle of the section lags the light text around it. That is
+   the whole effect — matching rates would just slide the section.
+
+   The lockup and the copy share one keyframe, so the two text blocks stay in
+   lockstep and only the carousel breaks away.
+
+   `cover 15% cover 85%` rather than the full pass, as the education statement
+   does: holding the last 15% at each end packs the same travel into 70% of the
+   pass, which reads as parallax rather than as drift, and leaves each plane
+   still while it enters and leaves the viewport.
+   --------------------------------------------------------------------------- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .lockup,
+    .stage,
+    .platformCopy {
+      animation-duration: 1ms; /* superseded by the timeline */
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --antz-platform;
+      animation-range: cover 15% cover 85%;
+    }
+
+    .lockup,
+    .platformCopy {
+      animation-name: antzPlatformCopyRise;
+    }
+
+    .stage {
+      animation-name: antzStageRise;
+    }
+  }
+}
+
+/* Symmetric about zero, so every plane sits at its design position in the
+   middle of the pass and the section is never seen displaced as a whole. */
+@keyframes antzPlatformCopyRise {
+  from {
+    transform: translateY(var(--antz-lift));
+  }
+  to {
+    transform: translateY(calc(var(--antz-lift) * -1));
+  }
+}
+
+@keyframes antzStageRise {
+  from {
+    transform: translateY(calc(var(--antz-lift) * 0.42));
+  }
+  to {
+    transform: translateY(calc(var(--antz-lift) * -0.42));
+  }
+}
+
+/* The divider is deliberately absent: it closes the section against the next
+   one, and a rule that drifted off that join would read as a misalignment. */
+
+/* --- disclosure rows, node 1965:18358 ----------------------------------- */
+
+/* Figma's 1438x1245 white block, padding 78px 172px. The same frame as the
+   education rows, so the same numbers. */
+.rows {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--antz-block) clamp(var(--edge), 11.94vw, 172px);
+  /* Transparent for the same reason as .platform above. This one already
+     carried `position: relative` for its own inner stacking. */
+  background: transparent;
+
+  /* This section's own view() progress drives the parallax below, so the
+     motion stays tied to the section wherever it lands on the page rather than
+     to a document offset. */
+  view-timeline-name: --antz-rows;
+}
+
+/* Figma's 1118; the accordion's own list caps at 1101, as on the other two
+   boards. */
+.rowsInner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: min(1101px, 100%);
+}
+
+/* The board rises as one plane against the mesh behind it. One plane and not
+   two, because the rows are a single list — staggering them would break the
+   numbered column's alignment, which is the thing holding the board together. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .rowsInner {
+      animation-name: antzRowsRise;
+      animation-duration: 1ms; /* superseded by the timeline */
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --antz-rows;
+      animation-range: cover 15% cover 85%;
+    }
+  }
+}
+
+@keyframes antzRowsRise {
+  from {
+    transform: translateY(calc(var(--antz-lift) * 0.85));
+  }
+  to {
+    transform: translateY(calc(var(--antz-lift) * -0.85));
+  }
+}
+
+/* --- closing band, node 1974:33649 -------------------------------------- */
+
+.cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  /* --antz-block rather than Figma's 56, so the closing band keeps the same
+     rhythm as the two sections above it. Figma's 274px section becomes ~320px;
+     the alternative was one gap in the page being 22px tighter than the rest. */
+  padding: var(--antz-block) clamp(var(--edge), 8.33vw, 120px);
+  background: var(--surface-deep);
+
+  /* This section's own view() progress drives the parallax below, so the
+     motion stays tied to the section wherever it lands on the page rather than
+     to a document offset. */
+  view-timeline-name: --antz-cta;
+}
+
+/* .wf-display-s is Figma's WF/Display S exactly — 27px, 1.15, 5% tracking. */
+.ctaTitle {
+  /* Figma's measure is 402px, which is exactly one line there. At 1440 this
+     site renders the same string at 27px with 5% tracking and it wraps to two
+     — measured — so the measure is widened until it holds one line. Below
+     ~1300 the fluid type shrinks and 402 would have been enough anyway; the
+     cap only matters at the top of the range. */
+  width: min(470px, 100%);
+  color: var(--line-1);
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.ctaBody {
+  width: min(560px, 100%);
+  color: var(--ink-on-dark-1);
+  text-align: center;
+}
+
+/* Figma's btn-row — 12px apart, pushed 12px clear of the copy. */
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  padding-block-start: 12px;
+}
+
+/* Same geometry as <PillCta> — 100px radius, 12px/22px padding, 13px medium —
+   so the two read as one family of button. Written here rather than as two more
+   variants of that component because this sage-on-dark pair appears nowhere
+   else, and PillCta's job is the green/white pair with the hover wipe. */
+.ctaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 22px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font: 500 13px/1.3 var(--font-flex);
+  white-space: nowrap;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.ctaBtnFilled {
+  background: var(--line-1);
+  color: var(--color-green-950);
+}
+
+.ctaBtnFilled:hover {
+  background: var(--white);
+}
+
+.ctaBtnOutline {
+  border-color: var(--line-1);
+  color: var(--line-1);
+}
+
+.ctaBtnOutline:hover {
+  background: var(--line-1);
+  color: var(--color-green-950);
+}
+
+.ctaBtn:focus-visible {
+  outline: 2px solid var(--line-1);
+  outline-offset: 3px;
+}
+
+@media (max-width: 560px) {
+  .ctaRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ctaBtn {
+    justify-content: center;
+  }
+}
+
+/* Closing-band parallax. The band's own dark ground stays put while its copy
+   rides up across it — there is no photographic backdrop here to sink, so the
+   fixed band edges are what the motion reads against.
+
+   All three children share one keyframe: the band is a short 321px section and
+   its title, body and button row are one block, so they move together and only
+   the band itself holds still. 0.6 of the lift, because a shorter section has
+   less room to travel before the copy crowds its padding. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .ctaTitle,
+    .ctaBody,
+    .ctaRow {
+      animation-name: antzCtaCopyRise;
+      animation-duration: 1ms; /* superseded by the timeline */
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --antz-cta;
+      animation-range: cover 15% cover 85%;
+    }
+  }
+}
+
+@keyframes antzCtaCopyRise {
+  from {
+    transform: translateY(calc(var(--antz-lift) * 0.6));
+  }
+  to {
+    transform: translateY(calc(var(--antz-lift) * -0.6));
+  }
+}

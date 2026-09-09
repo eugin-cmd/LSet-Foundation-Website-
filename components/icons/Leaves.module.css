@@ -1,10 +1,29 @@
 /* ===========================================================================
-   The leaf's own stir on page load. It lives with the component rather than in
-   either hero's module, so both banners get it from importing <Leaves /> and
-   neither has to know about it — the two heroes style this mark identically
-   (68px, white, 0.9 opacity), so there was nothing to diverge on anyway.
+   The leaf flourish: its size, its colour and its stir on load, all owned by
+   the component so a banner only has to render <Leaves /> and know nothing
+   else.
+
+   The styling was previously written out per hero, and the two copies were
+   byte-identical — 68px, white, 0.9 opacity, 2px of top margin, and hidden
+   below 700px. Adding it to the Antz banner would have made a third copy, so
+   it moved here instead. If a banner ever needs to diverge, it can still
+   override through its own class; nothing does today.
    =========================================================================== */
 .leaf {
+  flex: none;
+  width: 68px;
+  height: auto;
+  margin-top: 2px;
+  color: var(--white);
+  /* This 0.9 is the REDUCED-MOTION value, not what most people see. The stir
+     below fills forwards with `opacity: 1` at its last keyframe, and an
+     animation outranks a plain declaration, so with motion allowed the leaf
+     settles fully opaque — measured, 1 with motion and 0.9 with
+     prefers-reduced-motion: reduce. That was true before this rule moved here
+     too; it is written down now so the number is not read as the shipped one. */
+  opacity: 0.9;
+
+
   /* The two sprigs' stems converge at the left edge, a little below the middle
      — rendered and measured off the artwork. Rotating there makes the spray
      sway from where a branch would be held, rather than pivoting about the
@@ -78,5 +97,14 @@
   100% {
     opacity: 1;
     transform: translateY(0) rotate(0deg);
+  }
+}
+
+/* Purely decorative, and every phone block is already dense — icons, a wrapped
+   heading and a multi-line lede leave little room above the scroll cue. Both
+   heroes hid it at exactly this width before this rule was shared. */
+@media (max-width: 700px) {
+  .leaf {
+    display: none;
   }
 }

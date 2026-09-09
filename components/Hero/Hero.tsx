@@ -66,7 +66,7 @@ export default function Hero() {
             </p>
 
             {/* Decorative flourish under the subtext. */}
-            <Leaves className={s.leaves} />
+            <Leaves />
           </div>
         </div>
 

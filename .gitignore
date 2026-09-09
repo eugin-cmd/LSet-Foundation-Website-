@@ -12,3 +12,4 @@ preview/
 # 50MB warning and would sit in the history permanently; the frames actually
 # used are already committed under public/assets.
 References/*.mp4
+References/*.mov

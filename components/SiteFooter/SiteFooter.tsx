@@ -6,9 +6,12 @@ const COLUMNS = [
   {
     label: "What we do",
     links: [
-      { label: "Technology", href: "#" },
+      /* Both point at /technology: it is the pillar's name in the site's
+         vocabulary and Antz Systems is the same page under its product name,
+         which is also how the nav's third brand chip is wired. */
+      { label: "Technology", href: "/technology" },
       { label: "Education", href: "/education" },
-      { label: "Antz Systems", href: "#" },
+      { label: "Antz Systems", href: "/technology" },
       { label: "The model", href: "#" },
     ],
   },

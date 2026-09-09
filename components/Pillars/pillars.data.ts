@@ -30,6 +30,6 @@ export const PILLARS: Pillar[] = [
     key: "technology",
     title: "Technology",
     description: "Antz Systems, computer vision, drones, field-ready hardware.",
-    href: "#technology",
+    href: "/technology",
   },
 ];

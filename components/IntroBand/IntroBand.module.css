@@ -1,15 +1,24 @@
-/* Figma Frame 1984078023 — mint band, 1440x161, padding 40px 59px. */
+/* Figma Frame 1984078023 — mint band, 1440x161, padding 40px 59px. The same
+   node appears in all three page frames. */
 .band {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 40px 59px;
+  padding: 40px clamp(var(--edge), 4.1vw, 59px);
   background: var(--surface-band);
 }
 
+/* Figma's literal mint. --surface-band was this colour once and now resolves to
+   white, because the homepage and education bands were taken white by
+   direction; the Antz frame still wants the mint, so it asks for it explicitly
+   rather than moving the token back and changing the other two pages. */
+.mint {
+  background: #edffe8;
+}
+
 .copy {
-  width: 964px;
+  width: min(var(--intro-measure, 964px), 100%);
   color: var(--ink-on-band);
   text-align: center;
 }

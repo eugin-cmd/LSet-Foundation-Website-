@@ -1,0 +1,93 @@
+/* Figma `Frame 1984078220` node 2124:9475 — 1440x482, a 768px centred column.
+
+   Figma's 84px top and bottom are (482 - 314.35) / 2, i.e. the content block
+   centred in the section rather than a chosen pad; it is written as a fluid
+   clamp here so the section can shrink with the viewport like its neighbours.
+
+   No background: this section sits on the <MeshField> that starts under the
+   banner, and anything opaque here paints the mesh out. */
+.who {
+  /* Above the field's mesh. That pseudo-element is `position: absolute` with
+     `z-index: 0`, and a positioned element paints above static in-flow content
+     whatever the document order — so without a position here the mesh painted
+     OVER this section's copy and washed it out. Measured before the fix: the
+     darkest rendered pixel of pure-black text was rgb(92,114,107). */
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: clamp(52px, 5.83vw, 84px) var(--edge);
+  background: transparent;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Figma's 6px, between the copy block and the leaf. The 24px above the
+     paragraphs and 12px between them are set on their own elements below, so
+     each gap keeps the value the design gives it. */
+  gap: 6px;
+  width: min(768px, 100%);
+  text-align: center;
+}
+
+/* Figma's `Frame 1171276338` — the kicker and the paragraphs, 24px apart. Its
+   own frame, so this gap and the 6px to the leaf below cannot add together;
+   as a margin on the kicker the two stacked and the section came out 488
+   against the designed 482. */
+.head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.kicker {
+  /* .wf-subtitle is Figma's WF/Subtitle exactly — 17px, 600, -0.5% tracking.
+     Only the colour belongs to this section. */
+  color: var(--ink-black);
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Figma sets DM Sans 20/28 here. The site has no DM Sans — every other block
+   of body copy substitutes Google Sans Flex through --font-flex — so this one
+   does too rather than pulling in a seventh family for two paragraphs.
+   20px at the 1440 design width is 1.39vw, with a 16px floor so the measure
+   stays readable on a phone. Line height is Figma's 28/20. */
+.para {
+  width: 100%;
+  font: 400 clamp(16px, 1.39vw, 20px) / 1.4 var(--font-flex);
+  /* Figma's #000000, MD3_Antz/neutralPrimary. This section was first built with
+     --ink-1 (#0c3b2a) for consistency with the headings either side of it, but
+     against the pastel mesh that forest green read as washed out at 20px/400 —
+     so the design's own black stands, here and on the kicker and leaf. It is
+     the one place on the site that uses pure black for copy. */
+  color: var(--ink-black);
+}
+
+/* 80.819 x 81.352 in Figma — the leaf's own box, unrotated. See LeafSprig for
+   why there is no rotation despite the export carrying one. */
+.sprig {
+  flex: none;
+  width: 80.819px;
+  height: 81.352px;
+  /* The leaf is drawn in currentColor, so it takes the same black as the copy
+     rather than being tinted separately. */
+  color: var(--ink-black);
+}
+
+@media (max-width: 560px) {
+  .sprig {
+    width: 62px;
+    height: 62.4px;
+  }
+}

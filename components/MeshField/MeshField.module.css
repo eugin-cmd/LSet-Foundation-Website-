@@ -1,0 +1,89 @@
+/* ---------------------------------------------------------------------------
+   The page's light surface: white carrying the holographic mesh, wrapped
+   around whatever sections sit on it.
+
+   It is a wrapper rather than a per-section backdrop because the mesh has to
+   be CONTINUOUS across adjacent light sections. Each mesh is anchored to its
+   own box, so two neighbouring sections each painting their own produced a
+   visible step where they met — measured at the Approach/Pillars boundary as a
+   26.9 row-to-row colour jump against a 2.0 median, which read as a hard line
+   straight across the page. One field spanning both has nothing to line up.
+
+   It also means the eight-blob gradient has ONE definition instead of a copy
+   per section. Sections that sit on it must leave their own background
+   transparent, or they paint over it.
+   --------------------------------------------------------------------------- */
+.field {
+  position: relative;
+  width: 100%;
+  background: var(--surface-white);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* usePointerMesh writes raw pointer values with no easing of its own; this
+     is what makes the mesh trail the cursor and settle. Each new value
+     restarts the transition from wherever the last reached, which is a lerp by
+     another name — and it needs no rAF loop, so nothing runs while the pointer
+     is still.
+
+     340ms: the floor is around 250ms, where the mesh stops trailing and the
+     blobs read as attached to the cursor; past ~600ms it lags far enough
+     behind a fast sweep to look broken rather than heavy.
+
+     Both properties are registered in globals.css. An unregistered custom
+     property cannot transition, so this line would silently do nothing. */
+  .field {
+    transition: --mesh-mx 340ms ease-out, --mesh-my 340ms ease-out;
+  }
+}
+
+.field::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  /* The shared paint, defined with its full rationale in app/globals.css. */
+  background-image: var(--mesh-paint);
+  pointer-events: none;
+  content: "";
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .field::before {
+      animation-name: meshSwirl;
+      /* Explicit: the `animation` shorthand defaults duration to 0s, which
+         leaves a scroll-driven animation pinned to its first frame. */
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+  }
+}
+
+/* One revolution of the mesh per pass of the field.
+
+   Every blob centre is `base + radius * cos/sin(--mesh-swirl + phase)`, so
+   sweeping this angle 0 -> 360deg walks each centre once around its own small
+   circle. The phases are spread unevenly, so the eight never travel as a
+   block — the field turns instead of sliding.
+
+   360deg exactly, not less, because it is the only sweep that closes: the
+   field looks identical entering the viewport and leaving it, so scrolling
+   past twice cannot accumulate a drift.
+
+   Direction comes free from the timeline. A view() progress animation is a
+   position on a range, not a clock, so scrolling up walks the angle back down
+   and the field unwinds — no listener, no direction flag, nothing to get out
+   of sync with the scroll. This is the motion on touch, under reduced motion,
+   and anywhere the pointer script does not run; the cursor is the primary
+   driver everywhere else. */
+@keyframes meshSwirl {
+  from {
+    --mesh-swirl: 0deg;
+  }
+  to {
+    --mesh-swirl: 360deg;
+  }
+}

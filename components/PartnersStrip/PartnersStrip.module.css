@@ -1,6 +1,13 @@
 /* Figma `section` — originally overlaid on the dark proof wall; now a
    standalone band directly under the hero, on the page ground. */
 .strip {
+  /* Above the field's mesh. That pseudo-element is `position: absolute` with
+     `z-index: 0`, and a positioned element paints above static in-flow content
+     whatever the document order — so without a position here the mesh painted
+     OVER this section's copy and washed it out. Measured before the fix: the
+     darkest rendered pixel of pure-black text was rgb(92,114,107). */
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -11,7 +18,23 @@
      the section that follows. */
   padding: clamp(34px, 3.54vw, 50.935px) var(--edge)
     calc(clamp(34px, 3.54vw, 50.935px) * 1.5);
-  background: var(--surface-band);
+  /* Transparent, not white: the holographic mesh is painted by the <MeshField>
+     wrapper that starts here, directly under the banner, and any background on
+     this section paints over it. */
+  background: transparent;
+}
+
+/* Placement for the shared <WaveRule />. The paint — tile, weight, fading ends
+   — lives in that component; this only pins it to the section's bottom edge and
+   insets it to the content width. A border-bottom on .strip would have run the
+   full viewport and read as a page-wide rule instead of one belonging to this
+   band. It lands 76px below the logos, which is the strip's own bottom padding,
+   so there is no separate spacing to keep in step. */
+.rule {
+  position: absolute;
+  right: var(--edge);
+  bottom: 0;
+  left: var(--edge);
 }
 
 .label {

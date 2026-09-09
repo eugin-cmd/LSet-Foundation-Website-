@@ -1,0 +1,38 @@
+/* ---------------------------------------------------------------------------
+   The squiggle divider's paint, in one place.
+
+   The component owns what the rule *is* — the tiled tile, its height, its
+   weight and its fading ends — and the caller owns where it goes, because the
+   two current users place it differently: the partners strip pins it absolutely
+   to its own bottom edge, while the Antz platform section drops it in flow
+   between the carousel and the copy.
+
+   One 12px period lives in /assets/logo-rule-wave.svg. See the README for the
+   geometry: rx is always a quarter of the period, and rx/ry is the roundness.
+   --------------------------------------------------------------------------- */
+.rule {
+  /* 5px is the tile's own box: +/-2px of amplitude around its centreline.
+     background-size is pinned to the natural 12x5 so one SVG unit stays one CSS
+     pixel and the 0.5 stroke cannot be scaled off half a pixel. */
+  height: 5px;
+  background-image: url("/assets/logo-rule-wave.svg");
+  background-repeat: repeat-x;
+  background-position: center bottom;
+  background-size: 12px 5px;
+  opacity: 0.59;
+  /* Both ends fade out, so the rule merges into the page instead of stopping at
+     two visible ends. A mask rather than a gradient painted over the top: these
+     sections sit on the holographic mesh, so anything overpainted would have to
+     match a ground that is both tinted and moving. Masking removes the ink
+     itself and works against whatever is behind it.
+
+     16% each side, with the core held fully opaque between the two ramps so the
+     middle keeps the weight it was tuned to. */
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 16%,
+    #000 84%,
+    transparent 100%
+  );
+}
