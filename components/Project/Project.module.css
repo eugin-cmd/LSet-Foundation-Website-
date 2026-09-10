@@ -1,0 +1,1022 @@
+/* ---------------------------------------------------------------------------
+   Project detail — Figma frame `White-Bellied Heron`, node 1738:184704.
+
+   The banner and the content area only. The nav bar and the footer come from
+   the root layout unchanged; Figma draws both inside this frame, but they are
+   the site's own and are not rebuilt here.
+
+   Written against a `Project` rather than the heron specifically — the other
+   four species on Our Work are the same template with different words.
+   --------------------------------------------------------------------------- */
+
+/* --- banner, node 1738:184705 ------------------------------------------- */
+
+.hero {
+  /* The cue's own slot offset, its 47px height, and 20px of air — derived, so
+     the reserve follows the cue rather than being a typed constant. The same
+     expression the Our Work and Antz banners use. */
+  --cue-reserve: calc(clamp(36px, 5vw, 72px) + 47px + 20px);
+
+  /* How far the photograph overscans the band top and bottom, and so how far
+     it may sink before an edge would show. The other four banners give their
+     video the same allowance. */
+  --video-overscan: 72px;
+
+  /* The site's shared banner height rather than Figma's shorter 723px, by
+     direction, so all five banners open at one size. The copy still anchors to
+     the bottom of the band — that is what distinguishes a project record from
+     the four section banners, which centre their titles. */
+  min-height: var(--banner-height);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  /* The foot padding is the cue's reserve: the copy is bottom-anchored and the
+     cue is centred low, so without it the title would run under the mouse. */
+  padding: clamp(64px, 8vw, 112px) var(--edge) var(--cue-reserve);
+  overflow: hidden;
+  background-color: var(--scrim-base);
+}
+
+/* The photograph's own plane, so it can move independently of the copy above
+   it. Overscanned by --video-overscan top and bottom — the same allowance the
+   other four banners give their video — so sinking on scroll never drags a
+   cut edge into the band. Painted first, which puts it under the tint, the
+   scrim and the copy without needing a z-index of its own. */
+.hero::before {
+  content: "";
+  position: absolute;
+  top: calc(var(--video-overscan) * -1);
+  right: 0;
+  bottom: calc(var(--video-overscan) * -1);
+  left: 0;
+  background-image: var(--hero-image);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+/* The shared banner furniture: flat tint under the gradients so those keep
+   full strength, then the same two stops the other banners take.
+
+   28.75%, not the 25% the other four banners carry: a further 5% black was
+   asked for on the project banners, and stacking a second flat layer over this
+   one would paint 1 - (1 - 0.25)(1 - 0.05) = 0.2875 anyway. One layer at that
+   figure is pixel-identical and leaves the banner with the single tint element
+   it was built with. Put the 25% back and the extra 5% goes with it. */
+.heroTint {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 28.75%);
+  pointer-events: none;
+}
+
+.heroScrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, #01120c 3.381%, rgba(0, 0, 0, 0) 25.943%),
+    linear-gradient(0deg, #01120c 0%, rgba(0, 0, 0, 0) 58.071%);
+}
+
+.heroInner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 2.2vw, 32px);
+  align-items: flex-start;
+  width: min(1280px, 100%);
+}
+
+/* Figma's "← All projects", 18px medium white. */
+.back {
+  font: 500 clamp(15px, 1.25vw, 18px) / 1.3 var(--font-flex);
+  color: var(--white);
+  text-decoration: none;
+}
+
+.back:hover,
+.back:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* The same 3px lift the Our Work rows give "View project", so the two ways
+   between these pages answer the pointer identically. Plain `transform` is
+   safe here: the parallax animates .heroInner, this link's parent, and a
+   child's own transform composes with its parent's rather than being
+   overridden by it — unlike the figure on Our Work, where the settle owns the
+   element's own transform and the lift had to use `translate`.
+
+   Motion only is gated: the underline above still carries the hover state for
+   anyone who has asked for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .back {
+    transition: transform 200ms ease-out;
+  }
+
+  .back:hover,
+  .back:focus-visible {
+    transform: translateY(-3px);
+  }
+}
+
+.heroCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+  /* Figma's title box was 627px for a 75px name. The name is now half again as
+     large, so the measure scales with it, and the value is pinned between two
+     measured limits rather than chosen by eye. At the 112.5px cap:
+
+       longest single word   "Broad-toothed"           1050px
+                             "Mediterranean"           1042px
+       shortest whole title  "Siamang Gibbon"          1094px
+
+     So the measure has to clear 1050 — under it, "Broad-toothed" breaks at its
+     hyphen — and stay under 1094, or "Siamang Gibbon" collapses onto one line
+     and that banner stops matching the other four. 1080px sits in that window
+     with ~28px of slack on the longest word.
+
+     **Re-measure before changing this**, and re-measure if a sixth species is
+     added: a longer word or a shorter title closes the window. */
+  max-width: min(1080px, 100%);
+}
+
+.meta {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+}
+
+/* The IUCN chip. 50% up from Figma's 8px by direction — the padding scales
+   with the type, or the pill keeps its old proportions around bigger letters
+   and reads as a tight box rather than a chip. Tracking is an em, so it grows
+   on its own.
+
+   This no longer matches the Our Work row's chip, which stays at Figma's size.
+   The two are the same record seen twice and were deliberately identical; if
+   the row should follow, it is the same two values in Work.module.css. */
+.status {
+  flex: none;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--color-brick);
+  font: 500 12px/1 var(--font-inter);
+  color: var(--white);
+  letter-spacing: 0.15em;
+}
+
+/* 50% up from Figma's 14px and a step bolder, by direction. Every term of the
+   clamp is scaled, not just the ceiling, so the whole fluid curve moves rather
+   than jumping once the viewport clears the breakpoint.
+
+   The tracking stays 0.4em — an em, so it grows with the size and the letters
+   keep the same relative spacing they were drawn with. */
+.location {
+  font: 700 clamp(16.5px, 1.455vw, 21px) / 1.3 var(--font-flex);
+  color: var(--white);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+}
+
+/* Figma sets 75px; .wf-display-xl tops out at 52 and carries the family, the
+   5.5% tracking and the uppercase, so only the size is overridden. It wraps to
+   two lines at the design width, as Figma's own frame does.
+
+   Bold by direction, against Figma's SF Pro Light. Worth knowing that the 300
+   this carried before was never real: the app loads Google Sans Flex at
+   `wght@400..900`, so anything under 400 was clamped to 400 and the "light"
+   heading rendered at the same weight as the Our Work row it came from. */
+.heroHeading {
+  margin: 0;
+  /* 50% up from Figma's 75px, by direction — every term scaled, so the whole
+     fluid curve moves rather than just its ceiling: a bigger cap with the old
+     floor and slope would leave narrow screens unchanged and then jump. */
+  font-size: clamp(51px, 7.8vw, 112.5px);
+  font-weight: 700;
+  color: var(--white);
+  text-wrap: balance;
+}
+
+/* ---------------------------------------------------------------------------
+   Parallax, as the other four banners run it: the copy rises faster than the
+   photograph sinks, so the two planes separate as the page scrolls. Driven by
+   the document's own scroll timeline rather than a listener, so it needs no JS
+   and survives the static export. Browsers without `animation-timeline` get the
+   banner standing still, which is the design either way.
+
+   The distances are the site's: 150px of rise against 72px of sink. They are
+   not tuned per page — a banner that drifted at its own rate would read as a
+   different site the moment a reader moved between two of them.
+   --------------------------------------------------------------------------- */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero::before,
+    .heroInner {
+      animation-duration: 1ms; /* superseded by the timeline */
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(root block);
+      /* The band is exactly --banner-height, so the range spans it precisely. */
+      animation-range: 0 var(--banner-height);
+    }
+
+    .hero::before {
+      animation-name: projectPhotoSink;
+    }
+
+    .heroInner {
+      animation-name: projectCopyRise;
+    }
+  }
+}
+
+@keyframes projectPhotoSink {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(var(--video-overscan));
+  }
+}
+
+@keyframes projectCopyRise {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-150px);
+  }
+}
+
+/* The species name drifts through --species-ramp. Guarded: without
+   background-clip the transparent fill would leave an invisible name, so the
+   solid colour above stays in force instead. */
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .heroHeading {
+    /* A 50% white layer over the ramp, so half the gradient reads through.
+       It was 75% (a quarter through) and came up 25 points from there. The
+       banner only — the Our Work rows and the homepage arc cards keep the ramp
+       at full strength.
+
+       A layer rather than paler stops, because --species-ramp is shared with
+       those two: weakening the stops would weaken it everywhere. Two layers
+       now, so background-size names one value each — the veil is flat and
+       needs no tile, the ramp keeps the seamless one. */
+    background-image: linear-gradient(
+        rgb(255 255 255 / 50%),
+        rgb(255 255 255 / 50%)
+      ),
+      var(--species-ramp-banner);
+    background-size: auto,
+      var(--species-tile-banner) var(--species-tile-banner);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .heroHeading {
+      animation: speciesDrift var(--species-drift-banner) linear infinite;
+    }
+  }
+}
+
+/* The keyframe is declared here rather than shared from globals.css: CSS
+   Modules rewrites `animation-name` to a scoped identifier whether or not the
+   keyframe is local, so a module naming a global keyframe resolves to nothing
+   and the animation silently never runs. Three small copies is the cost of
+   that; if this ever moves to a shared file it has to move as `:global`. */
+@keyframes speciesDrift {
+  to {
+    background-position: var(--species-shift-banner)
+      var(--species-shift-banner);
+  }
+}
+
+/* --- the closing frond ---------------------------------------------------- */
+
+.leaf {
+  display: block;
+  /* 450x209 after the quarter turn, so it is now wider than it is tall and the
+     height is what has to be held: sized by width it would be a thin band, and
+     sized by height it keeps the weight it was drawn with. Width follows. */
+  width: auto;
+  /* Half the size it was drawn at here, by direction. Every term of the clamp
+     halved, so the whole fluid curve comes down rather than only its ceiling. */
+  height: clamp(26px, 2.8vw, 41px);
+  color: var(--white);
+  opacity: 0.9;
+}
+
+.leaf svg {
+  display: block;
+  width: auto;
+  height: 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Rises, shakes, settles — one keyframe track rather than three chained
+     animations, because a chain re-triggers its own easing at every handover
+     and the shake would arrive with a bump.
+
+     `transform-origin` is the foot of the stem: a frond pivots where it is
+     rooted, and rotating about its centre would swing the base out from under
+     the heading it hangs from.
+
+     The delay lets the <Blinder> open and the heading land first — the leaf is
+     the last thing to arrive, which is what makes it read as a flourish rather
+     than as part of the title. */
+  .leaf {
+    transform-origin: 50% 100%;
+    animation: leafRise 1500ms 560ms both;
+  }
+}
+
+@keyframes leafRise {
+  /* Up from below, decelerating hard into place. */
+  0% {
+    transform: translateY(38px) rotate(0deg);
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  42% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.9;
+    animation-timing-function: ease-in-out;
+  }
+
+  /* The shake: four beats, each about 45% of the one before, so it damps out
+     instead of stopping dead. */
+  55% {
+    transform: translateY(0) rotate(-5deg);
+    animation-timing-function: ease-in-out;
+  }
+
+  68% {
+    transform: translateY(0) rotate(2.3deg);
+    animation-timing-function: ease-in-out;
+  }
+
+  80% {
+    transform: translateY(0) rotate(-1deg);
+    animation-timing-function: ease-in-out;
+  }
+
+  90% {
+    transform: translateY(0) rotate(0.45deg);
+    animation-timing-function: ease-out;
+  }
+
+  100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.9;
+  }
+}
+
+/* --- content area, node 1738:184735 ------------------------------------- */
+
+.body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: var(--antz-block) var(--edge);
+  background: transparent;
+}
+
+.bodyInner {
+  display: flex;
+  gap: clamp(28px, 4.44vw, 64px);
+  align-items: flex-start;
+  width: min(1280px, 100%);
+}
+
+/* --- the fact card ------------------------------------------------------ */
+
+.card {
+  /* Figma's 404 of its 1160 content width, against the prose column's 680.
+     Proportional so the pair stays in ratio, with 404 as the ceiling. */
+  flex: none;
+  width: min(404px, 36%);
+  padding: clamp(20px, 2.1vw, 30px);
+  /* Figma draws this at 3px. Hairline by direction — the same 0.5px the Our
+     Work badge takes, so the two rules read as one family. */
+  border: 0.5px solid var(--color-orange);
+  border-radius: 10px;
+}
+
+.facts {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(22px, 2.2vw, 32px);
+  margin: 0;
+}
+
+.fact {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+/* Figma's 14px medium orange at 5.6px tracking — 40% of the size. */
+.factLabel {
+  display: flex;
+  align-items: center;
+  /* The label's own 0.4em tracking already pads its right side, so the gap
+     here is what separates the mark from the first letter only. */
+  gap: 8px;
+  font: 500 clamp(11px, 0.97vw, 14px) / 1.3 var(--font-flex);
+  color: var(--color-orange);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+}
+
+/* The mark takes the label's colour through `fill: currentColor` on each icon,
+   so the pair can never drift apart. Sized a shade above the cap height so it
+   reads as a sibling of the text rather than a superscript. */
+.factIcon {
+  display: inline-flex;
+  flex: none;
+  width: 14px;
+  height: 14px;
+}
+
+.factIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.factValue {
+  margin: 0;
+  color: rgb(0 0 0 / 70%);
+  text-wrap: pretty;
+}
+
+/* The partner name. Figma sets every fact at 20px regular; this one is raised
+   and weighted by direction, so the card leads on the organisation rather than
+   on the four labels. Its own type rather than .wf-body-l, which tops out at
+   16px and would have to be overridden in both size and weight. */
+.factValueLead {
+  font: 600 clamp(17px, 1.53vw, 22px) / 1.45 var(--font-inter-tight);
+}
+
+.factLogo {
+  margin: 0;
+}
+
+/* The box is set per project from the data — Figma draws the heron's disc at
+   83x81, the seal's at 81x81 and the Aspinall wordmark at 180x80, and one
+   fixed square would crush the landscape one. `contain` keeps each mark's own
+   proportions inside whatever box it is given; `max-width` is the only guard
+   this rule needs, so a wide mark cannot outgrow a narrow column. */
+.logoImg {
+  display: block;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+/* --- the prose column --------------------------------------------------- */
+
+.prose {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: clamp(36px, 4.44vw, 64px);
+  min-width: 0;
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 1.67vw, 24px);
+  align-items: flex-start;
+}
+
+/* Same geometry as .factLabel, in the darkblue Figma gives the section
+   kickers rather than the card's orange. */
+.blockKicker {
+  margin: 0;
+  font: 500 clamp(11px, 0.97vw, 14px) / 1.3 var(--font-flex);
+  color: var(--color-darkblue);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+}
+
+/* Figma's 32px — the page's primary reading copy, a step above the card's 20.
+   Not .wf-body-l, which tops out at 16. */
+.blockBody {
+  margin: 0;
+  font: 400 clamp(18px, 2.22vw, 32px) / 1.55 var(--font-inter-tight);
+  color: rgb(0 0 0 / 70%);
+  text-wrap: pretty;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The chip is carried by its fill — the site's holographic ramp, drifting —
+   with a white hairline around it. Figma's grey #e6ecee outline is gone; this
+   one is white and half a pixel, so it reads as a lit edge on the sheen rather
+   than as a drawn box around it. Same 0.5px the fact card takes, so the page
+   has one hairline weight.
+
+   The bands lie at 45 degrees and drift along that diagonal. At the headings'
+   115deg the bands stand almost upright, which in a pill this short and wide
+   reads as sliding sideways however the shift is expressed.
+
+   The ink stays the section kicker's darkblue. Every stop in the ramp is pale
+   — its darkest channel is 191 — so the text holds better than 8:1 against
+   whichever part of the sweep is under it at the time. */
+.chip {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 16px;
+  border: 0.5px solid var(--white);
+  border-radius: 999px;
+  /* The sheen at three quarters strength, by direction. A flat 25% white veil
+     over the ramp rather than a softer set of stops: --holo-stops is shared
+     with `.wf-iridescent`, so toning the stops themselves down here would tone
+     down the banner headings on all five pages with it. The veil is local, and
+     blending a colour 25% toward white is exactly what "25% less" means for a
+     sheen — hue and rhythm untouched, only the saturation.
+
+     Two layers now, so background-size names one value each: the veil is flat
+     and needs no tile, the ramp keeps the seamless one. */
+  background-image: linear-gradient(
+      rgb(255 255 255 / 25%),
+      rgb(255 255 255 / 25%)
+    ),
+    var(--holo-ramp-diagonal);
+  background-size: auto,
+    var(--holo-tile-diagonal) var(--holo-tile-diagonal);
+  color: var(--color-darkblue);
+  font-weight: 500;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Slow: 22s against the banner headings' 9s. A heading is read once and the
+     sheen is part of its entrance; these sit in the reader's periphery while
+     they read the column beside them, and anything quicker pulls the eye off
+     the prose. */
+  .chip {
+    animation: chipIridescence 22s linear infinite;
+  }
+
+  /* Out of phase, so the row shimmers rather than pulsing in unison — four
+     chips animating as one would read as a flashing block. Negative delays
+     start each mid-sweep instead of waiting. */
+  .chip:nth-child(2) {
+    animation-delay: -5.5s;
+  }
+
+  .chip:nth-child(3) {
+    animation-delay: -11s;
+  }
+
+  .chip:nth-child(4) {
+    animation-delay: -16.5s;
+  }
+}
+
+/* Diagonal travel: one period along the ramp's own 135deg axis, which is the
+   same distance in x and y. The headings shift horizontally instead — see
+   --holo-shift-diagonal in tokens.css. */
+@keyframes chipIridescence {
+  to {
+    background-position: var(--holo-shift-diagonal)
+      var(--holo-shift-diagonal);
+  }
+}
+
+/* The line-art set is drawn unstroked on a 32 grid; the caller supplies the
+   paint, as the hero and the Antz board do. 1.5 is that shared weight. */
+.chipIcon {
+  display: inline-flex;
+  flex: none;
+  width: 17px;
+  height: 17px;
+}
+
+.chipIcon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* --- photo carousel, node 1738:184772 ----------------------------------- */
+
+.gallery {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 0 var(--edge) clamp(64px, 7.7vw, 100px);
+  background: transparent;
+}
+
+/* Placement only for the shared <WaveRule />; the paint — tile, height, weight
+   and fading ends — lives in that component. In flow above the rail, as the
+   Antz platform section drops it, rather than pinned like the partners strip's.
+   Figma draws a plain 1px hairline here; the squiggle replaces it by direction
+   so the site keeps one divider. */
+.rule {
+  width: min(1280px, 100%);
+  margin-bottom: 42px;
+}
+
+.carousel {
+  /* Figma's frame is 619 wide in a 1280 shell, where two of them plus the gap
+     fill the row exactly and a third would be invisible. The card is set
+     narrower than that so the next frame always breaks the right edge — the
+     peek is the affordance, and without it the rail looks like a static pair. */
+  --card: min(560px, 74vw);
+  --rail-gap: 42px;
+
+  display: flex;
+  flex-direction: column;
+  width: min(1280px, 100%);
+  outline: none;
+}
+
+.carousel:focus-visible {
+  outline: 2px solid var(--color-teal-600);
+  outline-offset: 8px;
+  border-radius: 8px;
+}
+
+/* The window the rail slides behind. `pan-y` leaves vertical gestures to the
+   page while horizontal ones reach the drag handler. */
+.viewport {
+  width: 100%;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.rail {
+  display: flex;
+  gap: var(--rail-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The same firm ease-out the Antz stack settles on, so the site's two
+     carousels move at one speed. Kept in step with SLIDE_MS in the component,
+     which is what times the loop's rebase. */
+  .rail {
+    transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+/* NB: not `.card` — that name is already the fact card's in this module, and
+   CSS Modules scope per class name, so the two would merge into one rule. */
+.frame {
+  flex: none;
+  width: var(--card);
+  /* Figma's 16px radius, the same the Our Work photographs take. */
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.frame img {
+  display: block;
+  /* Figma's 619x356 frame. The aspect box holds the height so a photograph
+     cannot stretch the rail. */
+  aspect-ratio: 619 / 356;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  user-select: none;
+}
+
+/* --- the arrows, bottom right ------------------------------------------- */
+
+.controls {
+  display: flex;
+  gap: 12px;
+  /* Bottom right of the rail, as the reference runs them. */
+  align-self: flex-end;
+  margin-top: 24px;
+}
+
+/* Not the Antz arrow: that one floats over its stage, so it needs a white
+   scrim disc to stay legible against whatever is behind it. These sit on the
+   page, so they can be outlined discs in the page's own ink. */
+.arrow {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid rgb(0 0 0 / 20%);
+  border-radius: 50%;
+  background: transparent;
+  color: rgb(0 0 0 / 70%);
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .arrow {
+    transition: background-color 160ms ease, border-color 160ms ease,
+      color 160ms ease;
+  }
+}
+
+.arrow:hover {
+  border-color: var(--color-orange);
+  background: var(--color-orange);
+  color: var(--white);
+}
+
+.arrow:focus-visible {
+  outline: 2px solid var(--color-teal-600);
+  outline-offset: 3px;
+}
+
+/* One chevron glyph serves both buttons; the next arrow is that path mirrored,
+   rather than a second copy that could drift from the first. */
+.arrowNext svg {
+  transform: scaleX(-1);
+}
+
+/* --- the projects either side ---------------------------------------------- */
+
+.neighbours {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: clamp(16px, 2.2vw, 32px);
+  justify-content: space-between;
+  width: min(1280px, 100%);
+  /* Centred in the section flow like every other block on the page; the
+     gallery above closes with its own padding, so this only needs its own
+     foot. */
+  margin-inline: auto;
+  padding: 0 var(--edge) clamp(48px, 5.5vw, 78px);
+}
+
+.neighbour {
+  display: flex;
+  gap: clamp(10px, 1.1vw, 16px);
+  align-items: center;
+  /* Half each, less the gap, so the two are equal columns however long the
+     species names are — otherwise "Mediterranean Monk Seal" makes one card
+     twice the width of "Siamang Gibbon". */
+  flex: 1 1 0;
+  min-width: 0;
+  text-decoration: none;
+}
+
+/* The forward card mirrors: text, thumbnail, arrow. Reversing the row rather
+   than writing the markup twice keeps one DOM order, which is the order a
+   screen reader and the tab sequence should follow either way. */
+.neighbourNext {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.neighbourArrow {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  color: var(--color-darkblue);
+}
+
+.neighbourArrow svg {
+  width: 100%;
+  height: 100%;
+}
+
+.neighbourNext .neighbourArrow svg {
+  transform: scaleX(-1);
+}
+
+.neighbourThumb {
+  flex: none;
+  /* Figma's gallery frame ratio at thumbnail size, so these read as the same
+     photographs seen smaller rather than as a different crop. */
+  width: clamp(72px, 7.5vw, 108px);
+  aspect-ratio: 619 / 356;
+  height: auto;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.neighbourText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* The section kickers' treatment, a size down: same family, same tracking, same
+   darkblue, so this reads as page furniture rather than as new copy. */
+.neighbourKicker {
+  font: 500 clamp(9px, 0.76vw, 11px) / 1.3 var(--font-flex);
+  color: var(--color-darkblue);
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+}
+
+.neighbourTitle {
+  font: 600 clamp(14px, 1.32vw, 19px) / 1.25 var(--font-flex);
+  color: var(--ink-1);
+  text-wrap: balance;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .neighbour {
+    transition: translate 220ms ease-out;
+  }
+
+  .neighbourThumb {
+    transition: filter 220ms ease;
+  }
+
+  /* The same lift the rest of the page answers a pointer with. `translate`
+     rather than a transform, because the forward card's arrow is mirrored with
+     one and the two would fight. */
+  .neighbour:hover,
+  .neighbour:focus-visible {
+    translate: 0 -3px;
+  }
+}
+
+.neighbour:hover .neighbourThumb,
+.neighbour:focus-visible .neighbourThumb {
+  filter: brightness(1.08);
+}
+
+.neighbour:focus-visible {
+  outline: 2px solid var(--color-teal-600);
+  outline-offset: 6px;
+  border-radius: 12px;
+}
+
+/* Below this the two cards and their thumbnails cannot both hold a readable
+   name, so the thumbnails go and the pair becomes two text links. */
+@media (max-width: 700px) {
+  .neighbourThumb {
+    display: none;
+  }
+}
+
+/* --- closing band, node 1738:184778 ------------------------------------- */
+
+.cta {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: clamp(48px, 4.86vw, 70px) var(--edge) clamp(96px, 11.11vw, 160px);
+  background: transparent;
+}
+
+.ctaInner {
+  display: flex;
+  gap: clamp(28px, 4.44vw, 64px);
+  align-items: flex-start;
+  width: min(1280px, 100%);
+}
+
+/* Figma's 48px teal. .wf-display-l carries the family, tracking and uppercase
+   and tops out at 38, so only the size is raised. */
+.ctaTitle {
+  flex: none;
+  width: min(560px, 46%);
+  margin: 0;
+  font-size: clamp(26px, 3.33vw, 48px);
+  color: var(--color-teal-600);
+  text-wrap: balance;
+}
+
+.ctaCol {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: clamp(16px, 1.67vw, 24px);
+  align-items: flex-start;
+  min-width: 0;
+  max-width: 500px;
+}
+
+.ctaBody {
+  margin: 0;
+  color: rgb(0 0 0 / 70%);
+  text-wrap: pretty;
+}
+
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Figma's 24px/14px at a pill radius, 18px medium label. Same family as the
+   shared <PillCta>, but this is the orange/outline pair rather than that
+   component's green-and-white wipe, so it is written here. */
+.ctaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 24px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font: 500 clamp(15px, 1.25vw, 18px) / 1.2 var(--font-flex);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ctaBtn {
+    transition: background-color 200ms ease, color 200ms ease,
+      border-color 200ms ease;
+  }
+}
+
+.ctaBtnFilled {
+  background: var(--color-orange);
+  color: var(--white);
+}
+
+.ctaBtnFilled:hover,
+.ctaBtnFilled:focus-visible {
+  background: var(--color-orange-bright);
+}
+
+.ctaBtnOutline {
+  border-color: rgb(0 0 0 / 25%);
+  color: #000;
+}
+
+.ctaBtnOutline:hover,
+.ctaBtnOutline:focus-visible {
+  border-color: rgb(0 0 0 / 60%);
+  background: rgb(0 0 0 / 4%);
+}
+
+/* --- narrow ------------------------------------------------------------- */
+
+/* Figma has no small-screen frame for this page. The content area's two
+   columns hold while the 404 card and a readable measure coexist; below that
+   the card leads and the prose follows it, matching how the Our Work rows
+   reflow. */
+@media (max-width: 900px) {
+  .bodyInner,
+  .ctaInner {
+    flex-direction: column;
+  }
+
+  .card,
+  .ctaTitle {
+    width: 100%;
+  }
+
+  .ctaCol {
+    max-width: none;
+  }
+}
+
+/* Visually hidden, still read. Not display:none, which would take it out of
+   the accessibility tree along with everything else. */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

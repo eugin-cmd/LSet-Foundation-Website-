@@ -41,8 +41,9 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  /* The shared paint, defined with its full rationale in app/globals.css. */
-  background-image: var(--mesh-paint);
+  /* The paint itself comes from the global .wf-mesh::before rule, which this
+     element opts into by carrying that class — see app/globals.css for why it
+     cannot be a custom property. This rule owns only geometry. */
   pointer-events: none;
   content: "";
 }

@@ -19,7 +19,7 @@ export const PROOF_CARDS: ProofCard[] = [
     description: "Drones flying bird diverters onto live power lines in Himalayan terrain.",
     image: "/assets/proof-1.jpg",
     crop: { top: "-21.95%", left: "-0.03%", width: "100%", height: "124%" },
-    href: "#white-bellied-heron",
+    href: "/the-work/white-bellied-heron",
   },
   {
     location: "CAP BLANC, MAURITANIA",
@@ -27,7 +27,7 @@ export const PROOF_CARDS: ProofCard[] = [
     description: "Computer vision identifying every seal in the colony, week over week.",
     image: "/assets/proof-2.jpg",
     crop: { top: "-21.95%", left: "-0.03%", width: "100%", height: "124%" },
-    href: "#mediterranean-monk-seal",
+    href: "/the-work/mediterranean-monk-seal",
   },
   {
     // Figma repeated the Monk Seal name and copy here, which the arc now shows
@@ -38,17 +38,7 @@ export const PROOF_CARDS: ProofCard[] = [
     description: "Camera traps and acoustics mapping a retreating alpine heath population.",
     image: "/assets/proof-3.jpg",
     crop: { top: "-13.13%", left: "-12.1%", width: "114.71%", height: "113.06%" },
-    href: "#barrington-tops",
-  },
-  {
-    // PLACEHOLDER: not in Figma. Copy is written to the established voice and the
-    // photo is cropped from approach-photo.jpg. Replace both before launch.
-    location: "MOUNT KENYA, KENYA",
-    titleLines: ["Somali", "Ostrich"],
-    description: "Keepers logging welfare observations in the field, onto one shared record.",
-    image: "/assets/proof-4.jpg",
-    crop: { ...COVER },
-    href: "#somali-ostrich",
+    href: "/the-work/broad-toothed-rat",
   },
   {
     // PLACEHOLDER: not in Figma. Photo is a frame lifted from the hero footage.

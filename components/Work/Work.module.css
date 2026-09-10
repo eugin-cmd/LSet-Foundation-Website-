@@ -1,0 +1,486 @@
+/* ---------------------------------------------------------------------------
+   The Work — Figma frame `Our Work — Desktop 1444`, node 1738:184516.
+
+   Only the content area is taken from that frame. The nav and footer come from
+   the root layout, and the banner is the shared one the other three pages use
+   rather than Figma's white header block — both by direction.
+   --------------------------------------------------------------------------- */
+
+/* --- banner ------------------------------------------------------------- */
+
+.hero {
+  /* The cue's own slot offset, its 47px height, and 20px of air — derived, so
+     the reserve follows the cue rather than being a typed constant. Matches
+     the Antz banner, which has no --cue-lift of its own either. */
+  --cue-reserve: calc(clamp(36px, 5vw, 72px) + 47px + 20px);
+
+  /* Ready for footage. The other three banners overscan their video by this so
+     it can sink on scroll; this band carries a still for now, so nothing reads
+     it yet — it is here so swapping in a video is the same change it was on
+     the education banner, and not a re-derivation. */
+  --video-overscan: 72px;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--banner-height);
+  padding: var(--cue-reserve) var(--edge);
+  overflow: hidden;
+  /* Stand-in: the first project's own photograph. Explicitly temporary. */
+  background: url("/assets/work-hero.jpg") center / cover no-repeat;
+  background-color: var(--scrim-base);
+}
+
+.heroTint {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 25%);
+  pointer-events: none;
+}
+
+/* The same two stops the other banners take from their Figma nodes. */
+.heroScrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, #01120c 3.381%, rgba(0, 0, 0, 0) 25.943%),
+    linear-gradient(0deg, #01120c 0%, rgba(0, 0, 0, 0) 58.071%);
+}
+
+.heroTitle {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.heroInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 23px;
+  width: min(1276px, 100%);
+  text-align: center;
+}
+
+/* The only banner kicker on the site — the other three open on their icon row.
+   Only the colour belongs here: .wf-subtitle carries Figma's WF/Subtitle
+   exactly and .wf-dotted carries the dots, which take currentColor, so white
+   sets the text and both dots in one declaration. The 23px column gap is
+   already Figma's 24px between its kicker and title, near enough. */
+.heroKicker {
+  margin: 0;
+  color: var(--white);
+}
+
+/* The banner's mark, on the same terms as the other three banners' icon rows:
+   the same size curve, the same 1.5 stroke taken from currentColor, and the
+   same drop on load. One icon rather than a row of them, as asked. */
+.heroIcons {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 2.08vw, 30px);
+  margin-bottom: 6px;
+  color: var(--white);
+}
+
+.heroIcons svg {
+  flex: none;
+  width: clamp(26px, 2.36vw, 34px);
+  height: auto;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* Drops in once on load. `both` holds the first frame until the delay
+     elapses, so it does not sit in place beforehand. 1320ms is the first
+     delay the other banners use: it waits out the blinder, whose last slat
+     lands at 11 x 55ms + 760ms = 1365ms, so the drop is actually seen rather
+     than played behind a closed blind.
+
+     The name comes through a custom property because css-loader hashes
+     `animation-name` inside a *.module.css, and these keyframes are global —
+     naming them directly here would compile to something matching nothing and
+     silently not run. */
+  animation-name: var(--anim-icon-drop);
+  animation-duration: 940ms;
+  animation-delay: 1320ms;
+  animation-fill-mode: both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroIcons svg {
+    animation: none;
+  }
+}
+
+.heroHeading {
+  width: 100%;
+  margin: 0;
+  /* 900 and 80px, matching the Foundation hero exactly. Available here where
+     it was not on the education banner: "PROOF WALL" is two short words on one
+     line, measured at 596px in the 1276px column, so there is no wrap to
+     manage and no reason to step down. */
+  font-size: clamp(34px, 5.56vw, 80px);
+  font-weight: 900;
+  /* Fallback for no background-clip support; .wf-iridescent replaces it. */
+  color: var(--white);
+  text-wrap: balance;
+}
+
+.heroLede {
+  width: min(760px, 100%);
+  color: var(--white);
+  text-wrap: pretty;
+}
+
+/* The copy rises as the page scrolls, the same -150px the other three take.
+   No footage sink to pair with it while this band carries a still — the
+   background is painted on the section itself and has nothing to translate. */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .heroInner {
+      animation-name: workCopyRise;
+      animation-duration: 1ms; /* superseded by the timeline */
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 var(--banner-height);
+    }
+  }
+}
+
+@keyframes workCopyRise {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-150px);
+  }
+}
+
+/* --- project rows, node 1738:184542 ------------------------------------- */
+
+.rows {
+  /* Above the field's mesh: that pseudo-element is positioned, and a
+     positioned element paints over static in-flow content whatever the
+     document order. Without this the mesh would wash out every row. */
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  /* Figma pads the list 160px at the foot and nothing at the head, because its
+     white header block sat directly above. The banner does not, so the head
+     takes the same --antz-block rhythm the other content pages open on and the
+     foot keeps Figma's deeper close. */
+  padding: var(--antz-block) var(--edge) clamp(96px, 11.11vw, 160px);
+  /* Transparent, not white: the mesh is painted by the <MeshField> wrapper
+     behind this section and any background here paints over it. */
+  background: transparent;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  width: min(1280px, 100%);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Figma's separator is a border-top on each row, not a divider element, so the
+   first row opens without a rule and the list cannot end on one. */
+.row {
+  display: flex;
+  gap: clamp(24px, 3.75vw, 54px);
+  align-items: flex-start;
+  justify-content: center;
+  padding-block: 42px 28px;
+  border-top: 1px solid rgb(0 0 0 / 20%);
+}
+
+.row:first-child {
+  border-top: 0;
+  /* The rule is what gave the first row its top padding in Figma; without one
+     the copy would sit tight under the banner. */
+  padding-top: 0;
+}
+
+.copy {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  /* Figma's 11px between the copy block and the CTA, with the block stretching
+     so the CTA sits at the foot of the taller of the two columns. */
+  gap: 11px;
+  align-self: stretch;
+  min-width: 0;
+}
+
+.copyInner {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+}
+
+.meta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* The IUCN chip. Figma's px is 7.731/3.092 at a 772px radius — a scaled
+   component instance; rounded to whole pixels and a pill radius here. */
+.status {
+  flex: none;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--color-brick);
+  font: 500 8px/1 var(--font-inter);
+  color: var(--white);
+  letter-spacing: 0.15em;
+}
+
+.location {
+  font: 500 clamp(11px, 0.97vw, 14px) / 1.3 var(--font-flex);
+  color: rgb(0 0 0 / 70%);
+  /* Figma's 5.6px on 14px — kept as an em so it tracks the fluid size. */
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  /* .wf-display-l is 400 at up to 38px; Figma sets 48. The utility carries the
+     family, the 5.5% tracking and the uppercase, so only the size is overridden
+     — one value rather than a second copy of the type style. */
+  font-size: clamp(26px, 3.33vw, 48px);
+  /* Bold by direction. The species name is the row's subject, and at 400 it
+     sat at the same weight as the paragraph under it. */
+  font-weight: 700;
+  color: var(--color-teal-600);
+  text-wrap: balance;
+}
+
+.body {
+  margin: 0;
+  /* Figma's 20px at 1.55. Larger than --wf-body-l's 16px ceiling, because this
+     is the page's primary reading copy rather than a supporting lede. */
+  font: 400 clamp(15px, 1.39vw, 20px) / 1.55 var(--font-inter-tight);
+  color: rgb(0 0 0 / 70%);
+  text-wrap: pretty;
+}
+
+.cta {
+  align-self: flex-start;
+  font: 500 clamp(15px, 1.25vw, 18px) / 1.3 var(--font-flex);
+  color: var(--color-orange);
+  text-decoration: none;
+}
+
+.cta:hover,
+.cta:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* The lift, on every row's CTA at once — they all share .cta. Motion is the
+   only thing gated here: the underline above still carries the hover state for
+   anyone who has asked for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .cta {
+    transition: transform 200ms ease-out;
+  }
+
+  .cta:hover,
+  .cta:focus-visible {
+    transform: translateY(-3px);
+  }
+}
+
+/* The species name drifts through --species-ramp. Guarded: without
+   background-clip the transparent fill would leave an invisible name, so the
+   solid colour above stays in force instead. */
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .title {
+    background: var(--species-ramp);
+    background-size: var(--holo-tile-diagonal) var(--holo-tile-diagonal);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .title {
+      animation: speciesDrift var(--species-drift) linear infinite;
+    }
+  }
+}
+
+/* The keyframe is declared here rather than shared from globals.css: CSS
+   Modules rewrites `animation-name` to a scoped identifier whether or not the
+   keyframe is local, so a module naming a global keyframe resolves to nothing
+   and the animation silently never runs. Three small copies is the cost of
+   that; if this ever moves to a shared file it has to move as `:global`. */
+@keyframes speciesDrift {
+  to {
+    background-position: var(--holo-shift-diagonal) var(--holo-shift-diagonal);
+  }
+}
+
+/* --- the photograph ----------------------------------------------------- */
+
+.figure {
+  position: relative;
+  /* An <a> since the photograph leads to the project too; block so it boxes
+     the image rather than sitting on a text baseline. */
+  display: block;
+  flex: none;
+  /* Figma's 619 of a 1280 row. Proportional rather than fixed so the pair
+     stays in ratio as the row narrows, with 619 as the ceiling. */
+  width: min(619px, 48.36%);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.photo {
+  display: block;
+  /* 619x356 in Figma. The aspect box is what holds the row's height, so the
+     image cannot stretch it. */
+  aspect-ratio: 619 / 356;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* Hover elevation.
+
+   Deliberately the independent `translate` property, not `transform`. The
+   figure's transform belongs to the scroll settle below, which runs with
+   `animation-fill-mode: both` — so its transform is animation-controlled at
+   every scroll position, and an animation beats a normal declaration. A
+   `:hover { transform }` here would simply never apply. `translate` is a
+   separate property the settle does not touch, and the two compose: the card
+   can be mid-settle and lifted at once.
+
+   The shadow is what makes it read as elevation rather than as a nudge. */
+@media (prefers-reduced-motion: no-preference) {
+  .figure {
+    transition: translate 280ms ease-out, box-shadow 280ms ease-out;
+  }
+
+  .figure:hover,
+  .figure:focus-visible {
+    translate: 0 -8px;
+    box-shadow: 0 18px 38px -16px rgb(1 18 12 / 45%);
+  }
+}
+
+/* Figma places this at left 468 / top 28 on the first card and flex-ends it at
+   28px on the rest — the same top-right inset either way, so it is one rule. */
+.badge {
+  position: absolute;
+  top: 28px;
+  right: 28px;
+  display: flex;
+  align-items: center;
+  height: 29px;
+  padding-inline: 12px;
+  border: 0.5px solid var(--color-orange-bright);
+  border-radius: 45px;
+  background: var(--color-orange-bright);
+  font: 500 clamp(12px, 0.97vw, 14px) / 1 var(--font-inter);
+  color: var(--white);
+  white-space: nowrap;
+}
+
+/* Each photograph settles into place as its row enters: it drops the last 34px
+   steeply tipped and slightly askew, then straightens onto the page — a card
+   tossed down rather than lowered. The rotateZ is what makes it read as play
+   instead of machinery; the rotateX alone was too well-behaved to notice.
+   `view()` rather than a named timeline because every figure is
+   timed by its own progress through the viewport, not the section's — five
+   rows, five independent settles, no listener and nothing to name.
+
+   The perspective lives inside the transform so the 3D only applies to this
+   element; putting it on .row would flatten-project every child it has.
+
+   Scroll-linked, so it reverses as the row leaves upward. Without `view()`
+   support, or with reduced motion asked for, the figure is simply already at
+   the `to` state — which is the untouched Figma layout. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .figure {
+      animation-name: workFigureSettle;
+      animation-duration: 1ms; /* superseded by the timeline */
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      /* Deliberately NOT an `entry` range. `entry` completes the moment the
+         figure has fully cleared the viewport's bottom edge, which for a card
+         this tall is while it is still down in the last 300px of the screen —
+         the settle would be over before it was properly in view. Measuring
+         against `cover` instead stretches it across roughly half a screen of
+         scroll and lands it flat once the card sits about 45% up. */
+      animation-range: cover 5% cover 40%;
+    }
+  }
+}
+
+@keyframes workFigureSettle {
+  from {
+    transform: perspective(800px) translateY(-34px) rotateX(16deg)
+      rotateZ(-2.5deg) scale(0.965);
+    opacity: 0.45;
+  }
+  to {
+    transform: perspective(800px) translateY(0) rotateX(0deg) rotateZ(0deg)
+      scale(1);
+    opacity: 1;
+  }
+}
+
+/* --- narrow ------------------------------------------------------------- */
+
+/* Figma has no small-screen frame for this page. The row's two columns are
+   side by side down to the width where the 619px photo and a readable measure
+   stop coexisting; below that the photo leads and the copy follows it, which
+   keeps the species' picture and its name adjacent. */
+@media (max-width: 860px) {
+  .row {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .figure {
+    order: -1;
+    width: 100%;
+  }
+
+  .badge {
+    top: 16px;
+    right: 16px;
+  }
+}
+
+/* Visually hidden, still read. Not display:none, which removes it from the
+   accessibility tree along with everything else. */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

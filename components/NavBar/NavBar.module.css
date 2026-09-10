@@ -156,7 +156,15 @@
      label above it is white like its siblings — teal ink would all but vanish. */
   background: rgb(255 255 255 / 25%);
   transform: translateX(calc(var(--brand-index, 0) * 100%));
+  /* Hidden on a route no brand owns, so the plate cannot mis-signal the
+     current page. visibility rather than display: the element still occupies
+     its column, so nothing reflows and its travel is unaffected when it
+     returns. */
   pointer-events: none;
+}
+
+.brandHighlight[data-claimed="false"] {
+  visibility: hidden;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -490,8 +498,8 @@
 }
 
 /* The drawer's interior wears the same holographic mesh as the pages' content
-   areas — one shared --mesh-paint, defined in app/globals.css, so the two
-   surfaces cannot drift apart.
+   areas. The paint comes from the global .wf-mesh::before rule this panel
+   carries, so the two surfaces cannot drift apart.
 
    `inset: 0` resolves against .drawer's padding box, so this fills the
    interior and stops cleanly at the 4px ring; .drawer's own overflow:hidden
@@ -506,8 +514,6 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  background-repeat: no-repeat;
-  background-image: var(--mesh-paint);
   /* Inner shadow, 5% black, hugging the inside of the ring.
 
      It lives on this layer rather than on .drawer itself because an element's

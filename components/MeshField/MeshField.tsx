@@ -20,7 +20,7 @@ export default function MeshField({ children }: { children: React.ReactNode }) {
   const meshRef = usePointerMesh<HTMLDivElement>();
 
   return (
-    <div ref={meshRef} className={s.field}>
+    <div ref={meshRef} className={`${s.field} wf-mesh`}>
       {children}
     </div>
   );

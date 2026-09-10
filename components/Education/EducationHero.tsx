@@ -1,5 +1,7 @@
 import Blinder from "@/components/Blinder/Blinder";
 import ScrollCue from "@/components/ScrollCue/ScrollCue";
+import BannerPager from "@/components/BannerPager/BannerPager";
+import { BRANDS } from "@/components/NavBar/nav.data";
 import WaveText from "@/components/WaveText/WaveText";
 import Leaves from "@/components/icons/Leaves";
 import PawPrint from "@/components/icons/PawPrint";
@@ -73,6 +75,14 @@ export default function EducationHero() {
           <Leaves />
         </div>
       </div>
+
+      {/* Paging between the three brand pages, from the nav's own list so the
+          two can never disagree about what they are or where they live. */}
+      <BannerPager
+        label="Sections"
+        current="/education"
+        items={BRANDS.map((b) => ({ href: b.href, title: b.label }))}
+      />
 
       <ScrollCue href="#edu-partners" label="Scroll to our education partners" />
     </section>

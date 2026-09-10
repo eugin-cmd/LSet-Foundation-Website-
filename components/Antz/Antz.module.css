@@ -502,12 +502,39 @@
   font-weight: 600;
 }
 
-/* Figma 18.433px/1.7. No wf-* utility is this size — the scale jumps 16 to 27
-   — so it is written out, fluid to the design width. */
+/* Figma sets 18.433px/1.7 here. By direction this now takes the homepage's
+   WHO WE ARE treatment instead — 20px on 1.4 — which is what makes that block
+   read compact: the size is barely up, the leading is what closes.
+
+   The colour follows it to pure black for the same reason WHO WE ARE gives:
+   --ink-1 is a forest green, and against the pastel mesh both sections sit on
+   it washes out at this size and weight. These are the two places on the site
+   that use black for copy, and they use it for the same reason. */
 .platformBody {
   width: 100%;
-  font: 400 clamp(15px, 1.28vw, 18.433px) / 1.7 var(--font-flex);
-  color: var(--ink-1);
+  font: 400 clamp(16px, 1.39vw, 20px) / 1.4 var(--font-flex);
+  color: var(--ink-black);
+}
+
+/* The paragraph and its leaf. 768px, the WHO WE ARE measure, rather than the
+   1069 the CTA and the carousel above it use — a compact block is as much
+   about the line length as the leading, and 1069px of 20px copy runs long. */
+.platformStatement {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Figma's 6px between copy and leaf, as on the homepage. */
+  gap: 6px;
+  width: min(768px, 100%);
+}
+
+/* The leaf's own 80.819 x 81.352 box, and the copy's colour, exactly as WHO WE
+   ARE sets them — it is the same mark doing the same job. */
+.platformSprig {
+  flex: none;
+  width: 80.819px;
+  height: 81.352px;
+  color: var(--ink-black);
 }
 
 /* The pagination dots.

@@ -1,0 +1,191 @@
+/* ===========================================================================
+   Banner paging — the arrows at the margins and the dots at the foot.
+
+   Lifted out of Project.module.css when the brand banners took the same
+   controls; the numbers below are the ones measured there, and the note on the
+   rail's inset is the reason it is as tight as it is.
+   =========================================================================== */
+
+/* The two arrows sit against the viewport edges rather than the 1280 shell:
+   the copy already occupies the shell's left half, and a disc parked inside it
+   would collide with the species name at the widths where the name is longest.
+   Out at the margin they read as page furniture, which is what they are. */
+.pager {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  /* Tighter than it was, because the discs are bigger. The shell leaves an 80px
+     margin at 1440 and the species name starts at its edge; at the old 32px
+     inset a 78px box put its glyph at x 54-87, seven pixels into the first
+     letter. 16px pulls it back to x 38-71, clear of the heading with room. */
+  padding-inline: clamp(8px, 1.1vw, 16px);
+  /* The bar itself is a zero-height rail; only the discs take the pointer, so
+     nothing invisible sits over the banner catching clicks. */
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* The glyph alone — no disc, by direction. The frosted circle that was here
+   was doing legibility work as well as decoration, so the shadow replaces it:
+   a bare white chevron disappears wherever the photograph behind happens to be
+   pale, and this keeps its edge without putting a shape back.
+
+   The box keeps its size. It is the hit target, and shrinking it to the glyph
+   would leave a 22px thing to hit at the edge of the screen. */
+.pagerBtn {
+  display: grid;
+  place-items: center;
+  /* The box came *down* while the glyph went up, which looks backwards until
+     you check the clearance: the glyph is centred in this box, so growing the
+     box pushes the glyph's inner edge toward the title it has to stay clear of.
+     At the old 78px, a glyph 45% larger would have ended 1px short of the
+     species name. A 64px box puts the same glyph at x 24-72, back to a
+     comfortable 8px. The box is still the hit target and still generous. */
+  width: clamp(52px, 4.4vw, 64px);
+  height: clamp(52px, 4.4vw, 64px);
+  border: 0;
+  /* No visible effect without a background; kept so the focus ring is round. */
+  border-radius: 50%;
+  background: none;
+  color: rgb(255 255 255 / 82%);
+  text-decoration: none;
+  filter: drop-shadow(0 1px 6px rgb(1 18 12 / 55%));
+  pointer-events: auto;
+}
+
+/* 74% of the box, up from 42% — the arrow 45% larger, by direction, without
+   the box growing with it. */
+.pagerBtn svg {
+  width: 74%;
+  height: 74%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pagerBtn {
+    transition: color 200ms ease, scale 200ms ease-out,
+      translate 200ms ease-out;
+  }
+
+  /* A 4px lift with the scale, the same gesture the Our Work links and their
+     photographs answer with. `translate` and `scale` rather than one transform:
+     .pagerNext carries `transform: scaleX(-1)` to mirror the shared glyph, and
+     a transform here would fight it — the independent properties compose with
+     it instead. The curve decelerates, so the arrow arrives and settles rather
+     than stopping dead. */
+  .pagerBtn:hover,
+  .pagerBtn:focus-visible {
+    translate: 0 -4px;
+    scale: 1.08;
+  }
+}
+
+/* With the disc gone the hover has to live in the glyph itself: it comes up to
+   full white and takes the same 1.08 scale it always did. */
+.pagerBtn:hover,
+.pagerBtn:focus-visible {
+  color: var(--white);
+}
+
+.pagerBtn:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 3px;
+}
+
+/* One glyph serves both; the forward arrow is it mirrored, so the two can
+   never drift apart. */
+.pagerNext svg {
+  transform: scaleX(-1);
+}
+
+/* Below the width where the banner copy fills the band, the discs would sit on
+   top of the species name. The wall itself is one tap away in the nav. */
+@media (max-width: 860px) {
+  .pager {
+    display: none;
+  }
+}
+
+/* The dots. Bottom right, on the scroll cue's own line: the copy holds the
+   bottom left and the cue holds the centre, so the right is the only corner
+   free — and sharing the cue's offset and height puts the two on one axis
+   rather than at two arbitrary heights.
+
+   `height` matched to the cue's 47px with the row centred inside it is what
+   does that alignment; a bare `bottom` would sit them 20px low. */
+.dots {
+  position: absolute;
+  right: max(var(--edge), calc((100% - 1280px) / 2));
+  /* The cue's own offset *including* --cue-lift, which the education banner
+     sets to 50px to clear its taller copy column. Without the lift the dots
+     stayed at the base offset and sat 50px below the cue they are meant to
+     line up with — measured, on that page only. */
+  bottom: calc(clamp(36px, 5vw, 72px) + var(--cue-lift, 0px));
+  z-index: 2;
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  height: 47px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Subtle: a 6px dot at a third opacity, so the row reads as a position
+   indicator rather than as five buttons competing with the arrows. The hit
+   area is padded out to 20px around it — the dot is well under any reasonable
+   target size, and growing the dot itself would cost the subtlety. */
+.dot {
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      rgb(255 255 255 / 38%) 0 3px,
+      transparent 3px
+    );
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dot {
+    transition: background 240ms ease;
+  }
+}
+
+.dot:hover {
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      rgb(255 255 255 / 72%) 0 3px,
+      transparent 3px
+    );
+}
+
+/* The page you are on: solid white and a shade larger, which is the whole
+   difference — a colour change alone is too quiet at 6px over a photograph. */
+.dotHere,
+.dotHere:hover {
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      var(--white) 0 4px,
+      transparent 4px
+    );
+}
+
+.dot:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 1px;
+}
+
+@media (max-width: 860px) {
+  .dots {
+    display: none;
+  }
+}
+

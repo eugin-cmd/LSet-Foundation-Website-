@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import PillCta from "@/components/PillCta/PillCta";
 import NavDrawer from "@/components/NavDrawer/NavDrawer";
+import { BRANDS } from "./nav.data";
 import s from "./NavBar.module.css";
 
 /** The highlight's column index travels through a custom property so the
@@ -16,18 +17,13 @@ const DRAWER_ID = "nav-drawer";
 const DRAWER_PANEL_ID = "nav-drawer-panel";
 const BURGER_ID = "nav-open";
 
-const BRANDS = [
-  { label: "FOUNDATION", href: "/" },
-  { label: "EDUCATION", href: "/education" },
-  /* The product name for the Technology pillar; /technology is the route,
-     matching the drawer and footer, which both call it Technology. */
-  { label: "ANTZ SYSTEMS", href: "/technology" },
-];
 
 const LINKS = [
-  /* Absolute, not "#the-work": the nav is on both pages and that section only
-     exists on the homepage, so a bare hash was a dead link from /education. */
-  { label: "The Work", href: "/#the-work", caret: false, drawer: false },
+  /* Its own page now, at /the-work. It was "/#the-work" — the homepage's
+     <ProofWall> arc — which the nav had to address absolutely because it is on
+     every page and that section is only on one. The arc stays where it is and
+     keeps its id; this link goes to the full wall instead. */
+  { label: "Our Work", href: "/the-work", caret: false, drawer: false },
   /* The drawer's own label column reads WHAT WE DO, so this is its control and
      needs no href of its own. */
   { label: "What We Do", href: "#", caret: true, drawer: true },
@@ -76,10 +72,16 @@ export default function NavBar() {
     if (drawerRef.current) drawerRef.current.checked = false;
     if (burgerRef.current) burgerRef.current.checked = false;
   };
-  /* -1 for a route no brand claims; the highlight then rests on the first
-     column rather than vanishing. */
+  /* -1 for a route no brand claims — /the-work is the first of those. The
+     highlight used to rest on the first column in that case, which was
+     harmless while every route WAS a brand and is not any more: the plate under
+     FOUNDATION reads as "you are here" from a page that is not the Foundation
+     page. It is hidden instead, so no brand claims a route it does not own.
+     The index still resolves to 0 so the plate has somewhere to sit while
+     invisible, and its travel is unchanged when a brand is active. */
   const activeIndex = BRANDS.findIndex((b) => b.href === pathname);
   const brandIndex = activeIndex === -1 ? 0 : activeIndex;
+  const brandClaimed = activeIndex !== -1;
 
   return (
     <div className={s.sticky}>
@@ -138,7 +140,11 @@ export default function NavBar() {
                     and one column's travel is a flat 100% — no measuring the
                     labels, which is what keeps this working with scripts
                     stripped and before the webfont has loaded. */}
-                <span className={s.brandHighlight} aria-hidden="true" />
+                <span
+                  className={s.brandHighlight}
+                  data-claimed={brandClaimed}
+                  aria-hidden="true"
+                />
 
                 {BRANDS.map(({ label, href }, i) => (
                   <Link
@@ -194,7 +200,7 @@ export default function NavBar() {
           </div>
         </header>
 
-        <div ref={meshRef} className={s.drawer}>
+        <div ref={meshRef} className={`${s.drawer} wf-mesh`}>
           <NavDrawer id={DRAWER_PANEL_ID} onNavigate={closeMenus} />
         </div>
       </div>

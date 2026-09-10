@@ -11,14 +11,106 @@
      reuse of the forest greens, and the band is still its only consumer. */
   --color-teal-700: #1f415b;
   --color-orange: #eb5d37;
+  /* The Work / proof wall page, Figma node 1738:184516. Its own palette slots:
+     `color/teal/default` heads every project row, `color/brick/default` fills
+     the IUCN status chip, and the green pair is what Figma draws the "Active
+     Project" badge in — the badge takes --color-orange-bright here instead, so
+     the pair stays only as the mirror of those two Figma variables.
+     --color-orange was already here and carries the row CTA. */
+  --color-teal-600: #177654;
+  --color-brick: #c1442f;
+  --color-green-200: #bae2cf;
+  --color-green-300: #a9dbc4;
+  /* Project detail pages, Figma node 1738:184704. `color/darkblue/default`
+     is the kicker over each prose block — distinct from the fact card's
+     orange, which is why it is its own slot rather than a reuse of --ink-1.
+     `line/chip` is the hairline around the tech-deployed pills. */
+  --color-darkblue: #024152;
+  /* Figma's own hairline here is #e6ecee, which all but disappears against the
+     holographic mesh the content run sits on. Toned up by direction to a tint
+     of the kicker's darkblue, so the chips belong to the section that heads
+     them instead of floating grey. */
+  --line-chip: rgb(2 65 82 / 30%);
   /* Antz Systems palette. `line/1` is the sage the closing band's title and its
      two pills are drawn in; the cyan and yellow are the product's own gradient,
      used on the platform indicator's active step. */
   --line-1: #b5ceb9;
   --color-antz-cyan: #0faec3;
   --color-antz-yellow: #ffcc00;
-  /* Brighter than Figma's Color/Orange/Default; used for the scroll cue. */
+  /* Brighter than Figma's Color/Orange/Default; the scroll cue and the
+     "Active Project" badge. */
   --color-orange-bright: #fa6140;
+
+  /* The holographic palette, in one place: four hues at a 480px period with a
+     white pass between each, which is what keeps it a sheen rather than a
+     spectrum. The stops are separate from the axis because the two consumers
+     tilt them differently — `.wf-iridescent` clips them to the banner headings
+     at 115deg, the project pages' tech chips fill with them at 45deg. */
+  --holo-stops: #ffffff 0px, #bff3ff 60px, #ffffff 120px, #ffc8dc 180px,
+    #ffffff 240px, #ffd9c2 300px, #ffffff 360px, #c8ffe4 420px, #ffffff 480px;
+
+  /* The headings' ramp and its travel. --holo-shift is one full period measured
+     *along the horizontal*, 480 / sin(115deg); a flat 480px shift would not
+     move one period on a tilted gradient and the loop would visibly jump. */
+  --holo-ramp: repeating-linear-gradient(115deg, var(--holo-stops));
+  --holo-shift: 529.62px;
+
+  /* The chips' ramp: the same stops at 135deg, so the bands lie at 45 degrees.
+     Its travel is a real diagonal rather than a horizontal shift — one period
+     along a 135deg axis is (480*sin135, -480*cos135), which is 339.41px in both
+     x and y. The two components have to match or the bands drift off their own
+     axis and the loop breaks. */
+  --holo-ramp-diagonal: repeating-linear-gradient(135deg, var(--holo-stops));
+  --holo-shift-diagonal: 339.41px;
+
+  /* The tile the diagonal ramp is painted into, and the reason the loop has no
+     visible seam. `background-size: auto` paints the gradient at the element's
+     own size and then repeats *that* box — and an arbitrary box does not end
+     where the 480px period does, so every tile edge is a hard step. At
+     480/sin(135deg) = 678.82px, one repeat in either direction advances the
+     pattern exactly one period along its own axis, so neighbouring tiles meet
+     mid-ramp and the join disappears. */
+  --holo-tile-diagonal: 678.82px;
+
+  /* The species-name ramp: the blue and the green, and nothing else — the pale
+     #afefeb that opened it has been dropped. Same 135deg axis and 480px period
+     as the chips, so it borrows their diagonal travel and their seamless tile
+     wholesale.
+
+     Written blue -> green -> blue rather than as a plain two-stop ramp: the
+     pattern has to close on itself, and one that ended on the green would snap
+     back to the blue at every period boundary. */
+  /* How long one full period of the species ramp takes to travel. A token
+     because the three places a species name appears each declare the animation
+     in their own module, and three copies of a number nobody can tune in one
+     place is how they drift apart. */
+  --species-drift: 13s;
+
+  /* The banner runs the same two colours on a tighter period than the rows and
+     the arc cards do. At the shared 480px only about one and a half bands cross
+     a 1050px heading, so the sweep reads as the whole word changing colour
+     rather than as something travelling; at 260px there are nearly three, and
+     the movement is legible.
+
+     The three numbers are one geometry and must move together: for a 135deg
+     axis, shift = period * cos(45deg) and tile = period / cos(45deg). Break
+     that and the loop either jumps or grows a seam at every tile edge. */
+  --species-ramp-banner: repeating-linear-gradient(
+    135deg,
+    #00afd6 0px,
+    #37bd69 130px,
+    #00afd6 260px
+  );
+  --species-shift-banner: 183.85px;
+  --species-tile-banner: 367.7px;
+  --species-drift-banner: 7s;
+
+  --species-ramp: repeating-linear-gradient(
+    135deg,
+    #00afd6 0px,
+    #37bd69 240px,
+    #00afd6 480px
+  );
 
   /* Figma `brand/forest-800` — drawer headings, darker than --ink-1. */
   --brand-forest-800: #0a1d13;

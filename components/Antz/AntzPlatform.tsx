@@ -1,5 +1,6 @@
 import PillCta from "@/components/PillCta/PillCta";
 import WaveRule from "@/components/WaveRule/WaveRule";
+import LeafSprig from "@/components/icons/LeafSprig";
 import AntzCarousel from "./AntzCarousel";
 import s from "./Antz.module.css";
 
@@ -55,14 +56,22 @@ export default function AntzPlatform() {
       </div>
 
       <div className={s.platformCopy}>
-        <p className={s.platformBody}>
-          Antz brings together animal records, healthcare, nutrition, breeding,
-          transfers, inventory, compliance, and reporting into a single connected
-          system. Keep your teams aligned, automate routine tasks, and access the
-          information you need &ndash; when you need it. Built to help animal care
-          organisations operate more efficiently and deliver exceptional care at
-          every stage.
-        </p>
+        {/* The paragraph and its leaf are their own frame, as WHO WE ARE nests
+            them on the homepage: the 6px between copy and leaf and the wider
+            gap down to the CTA have to stay independent, and as a margin they
+            would add together. */}
+        <div className={s.platformStatement}>
+          <p className={s.platformBody}>
+            Antz brings together animal records, healthcare, nutrition, breeding,
+            transfers, inventory, compliance, and reporting into a single connected
+            system. Keep your teams aligned, automate routine tasks, and access the
+            information you need &ndash; when you need it. Built to help animal care
+            organisations operate more efficiently and deliver exceptional care at
+            every stage.
+          </p>
+
+          <LeafSprig className={s.platformSprig} />
+        </div>
 
         <PillCta href="https://antzsystems.com">
           Visit antzsystems.com for more info

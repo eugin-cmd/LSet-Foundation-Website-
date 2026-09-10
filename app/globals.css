@@ -170,6 +170,124 @@ video {
 }
 
 /* ---------------------------------------------------------------------------
+   The holographic mesh, as ONE definition shared by every surface that wears
+   it: <MeshField> paints the pages' light sections with it and the nav drawer
+   paints its interior with it, so the two cannot drift.
+
+   A global class whose ::before carries the paint — NOT a custom property
+   holding the gradient list, which is what this was first and why it had to
+   change. A var() inside a custom property is substituted at computed-value
+   time on the element where that property is DECLARED. With the list held in
+   `--mesh-paint` on :root, its var(--mesh-swirl) and var(--mesh-mx/my) were
+   baked to :root's values — 0deg and 0 — before any descendant could
+   contribute, and every consumer inherited the already-substituted string.
+   Measured: the resolved centres came back identical with the pointer swept
+   from one edge to the other, and sat exactly at `base + radius * cos(0deg)`.
+   The mesh was static. Declaring the paint here, on the pseudo-element that
+   uses it, is what makes the swirl and the pointer resolve per element.
+
+   The caller owns geometry — position, inset, z-index, radius, and which
+   animation drives --mesh-swirl. This owns only the paint.
+   Mesh gradient — eight overlapping pastel blobs over the field's own white.
+     Seven hues: the four the hero headings use (cyan, rose, peach, mint) plus
+     #FFFCCC pale butter, #FFE3F8 pale lilac-pink and #CCE4FF pale sky, with
+     cyan appearing twice. Each blob fades to its OWN hue at zero alpha rather
+     than to `transparent`: same result, but it states the intent, and it
+     cannot be mistaken for a fade-to-grey bug.
+
+     The three added hues are all very light, which is why widening the palette
+     cost so little weight — measured, mean chroma 16.71 -> 17.39 -> 18.26
+     across the additions, with the deepest pixel moving only 16.1% -> 17.3%
+     off white. They also improved corner coverage (palest corner 249 -> 245),
+     because each went into the thinnest remaining quadrant.
+
+     Every centre is the sum of three terms:
+
+       base            a fixed percentage, unevenly spread so the eight never
+                       read as a regular ring
+       swirl orbit     radius * cos/sin(--mesh-swirl + phase), the
+                       scroll-driven turn; see the keyframe below
+       pointer offset  depth * --mesh-mx / --mesh-my, the cursor term
+
+     The pointer depths differ in BOTH magnitude and sign, which is the whole
+     trick: moving the cursor right pushes some blobs right and others left, so
+     the field parts and converges around the cursor instead of sliding across
+     as one block. A uniform offset is what makes this effect look cheap.
+
+     No repeat and no background-size: every blob is placed by the gradient's
+     own `at`, inside an image that is exactly the box. That is what keeps the
+     geometry readable — `background-position` percentages resolve against
+     (box - image), so with an image larger than the box the same numbers
+     would move the blobs backwards and at a scaled-down rate.
+
+     The blobs are wide (43-60% of the box), so the sum of both offsets stays
+     small against each blob's own falloff. That is why the travel can be this
+     large without any blob edge becoming visible: what moves is where the
+     colour is densest, never where it stops.
+     ---------------------------------------------------------------------
+   --------------------------------------------------------------------------- */
+.wf-mesh::before {
+  background-repeat: no-repeat;
+  background-image:
+  radial-gradient(
+    ellipse 47% 55% at
+    calc(18% + 15% * cos(var(--mesh-swirl, 0deg)) + 42% * var(--mesh-mx, 0))
+    calc(26% + 15% * sin(var(--mesh-swirl, 0deg)) + 32% * var(--mesh-my, 0)),
+    rgb(191 243 255 / 70%),
+    rgb(191 243 255 / 0%) 100%
+  ),
+  radial-gradient(
+    ellipse 42% 51% at
+    calc(76% + 14% * cos(var(--mesh-swirl, 0deg) + 68deg) + -1 * 30% * var(--mesh-mx, 0))
+    calc(16% + 14% * sin(var(--mesh-swirl, 0deg) + 68deg) + 23% * var(--mesh-my, 0)),
+    rgb(255 200 220 / 70%),
+    rgb(255 200 220 / 0%) 100%
+  ),
+  radial-gradient(
+    ellipse 49% 56% at
+    calc(88% + 17% * cos(var(--mesh-swirl, 0deg) + 155deg) + 38% * var(--mesh-mx, 0))
+    calc(66% + 17% * sin(var(--mesh-swirl, 0deg) + 155deg) + -1 * 29% * var(--mesh-my, 0)),
+    rgb(255 217 194 / 70%),
+    rgb(255 217 194 / 0%) 100%
+  ),
+  radial-gradient(
+    ellipse 44% 54% at
+    calc(26% + 15% * cos(var(--mesh-swirl, 0deg) + 232deg) + -1 * 35% * var(--mesh-mx, 0))
+    calc(82% + 15% * sin(var(--mesh-swirl, 0deg) + 232deg) + -1 * 32% * var(--mesh-my, 0)),
+    rgb(200 255 228 / 70%),
+    rgb(200 255 228 / 0%) 100%
+  ),
+  radial-gradient(
+    ellipse 51% 60% at
+    calc(52% + 10% * cos(var(--mesh-swirl, 0deg) + 310deg) + 21% * var(--mesh-mx, 0))
+    calc(46% + 10% * sin(var(--mesh-swirl, 0deg) + 310deg) + 17% * var(--mesh-my, 0)),
+    rgb(191 243 255 / 49%),
+    rgb(191 243 255 / 0%) 100%
+  ),
+  radial-gradient(
+    ellipse 46% 53% at
+    calc(60% + 15% * cos(var(--mesh-swirl, 0deg) + 110deg) + 47% * var(--mesh-mx, 0))
+    calc(88% + 15% * sin(var(--mesh-swirl, 0deg) + 110deg) + -1 * 42% * var(--mesh-my, 0)),
+    rgb(255 252 204 / 70%),
+    rgb(255 252 204 / 0%) 100%
+  ),
+  radial-gradient(
+    ellipse 42% 51% at
+    calc(8% + 14% * cos(var(--mesh-swirl, 0deg) + 285deg) + -1 * 44% * var(--mesh-mx, 0))
+    calc(56% + 14% * sin(var(--mesh-swirl, 0deg) + 285deg) + 38% * var(--mesh-my, 0)),
+    rgb(255 227 248 / 70%),
+    rgb(255 227 248 / 0%) 100%
+  ),
+  radial-gradient(
+    ellipse 44% 51% at
+    calc(46% + 15% * cos(var(--mesh-swirl, 0deg) + 195deg) + -1 * 40% * var(--mesh-mx, 0))
+    calc(6% + 15% * sin(var(--mesh-swirl, 0deg) + 195deg) + -1 * 30% * var(--mesh-my, 0)),
+    rgb(204 228 255 / 70%),
+    rgb(204 228 255 / 0%) 100%
+  );
+}
+
+/* ---------------------------------------------------------------------------
    A utility rather than a copy inside each hero's module, so the palette and
    the 529.62px shift have one definition and the two heroes cannot drift.
 
@@ -200,18 +318,9 @@ video {
        returning to white between every one: the white was diluting the effect.
        Deeper stops too, but each still ≥158 on its lowest channel so the
        heading keeps its contrast over the footage. */
-    background: repeating-linear-gradient(
-      115deg,
-      #ffffff 0px,
-      #bff3ff 60px,
-      #ffffff 120px,
-      #ffc8dc 180px,
-      #ffffff 240px,
-      #ffd9c2 300px,
-      #ffffff 360px,
-      #c8ffe4 420px,
-      #ffffff 480px
-    );
+    /* The stops themselves are --holo-ramp in tokens.css, shared with the
+       project pages' tech chips so the site has one holographic palette. */
+    background: var(--holo-ramp);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -251,110 +360,6 @@ video {
    nothing — the animation silently does not run. A var() is left alone.
    --------------------------------------------------------------------------- */
 :root {
-  /* The holographic mesh, as one paint shared by every surface that wears it.
-     <MeshField> paints the page's light sections with it and the nav drawer
-     paints its interior with it, so the two cannot drift — the same reason
-     MeshField exists at all, one step further out.
-
-     A custom property rather than a class, because the paint lands on a
-     pseudo-element in both places and a class cannot reach one. The three
-     var()s inside resolve against whichever element uses it, so each surface
-     brings its own swirl angle and its own pointer offsets.
-
-     Mesh gradient — eight overlapping pastel blobs over the field's own white.
-     Seven hues: the four the hero headings use (cyan, rose, peach, mint) plus
-     #FFFCCC pale butter, #FFE3F8 pale lilac-pink and #CCE4FF pale sky, with
-     cyan appearing twice. Each blob fades to its OWN hue at zero alpha rather
-     than to `transparent`: same result, but it states the intent, and it
-     cannot be mistaken for a fade-to-grey bug.
-
-     The three added hues are all very light, which is why widening the palette
-     cost so little weight — measured, mean chroma 16.71 -> 17.39 -> 18.26
-     across the additions, with the deepest pixel moving only 16.1% -> 17.3%
-     off white. They also improved corner coverage (palest corner 249 -> 245),
-     because each went into the thinnest remaining quadrant.
-
-     Every centre is the sum of three terms:
-
-       base            a fixed percentage, unevenly spread so the eight never
-                       read as a regular ring
-       swirl orbit     radius * cos/sin(--mesh-swirl + phase), the
-                       scroll-driven turn; see the keyframe below
-       pointer offset  depth * --mesh-mx / --mesh-my, the cursor term
-
-     The pointer depths differ in BOTH magnitude and sign, which is the whole
-     trick: moving the cursor right pushes some blobs right and others left, so
-     the field parts and converges around the cursor instead of sliding across
-     as one block. A uniform offset is what makes this effect look cheap.
-
-     No repeat and no background-size: every blob is placed by the gradient's
-     own `at`, inside an image that is exactly the box. That is what keeps the
-     geometry readable — `background-position` percentages resolve against
-     (box - image), so with an image larger than the box the same numbers
-     would move the blobs backwards and at a scaled-down rate.
-
-     The blobs are wide (43-60% of the box), so the sum of both offsets stays
-     small against each blob's own falloff. That is why the travel can be this
-     large without any blob edge becoming visible: what moves is where the
-     colour is densest, never where it stops.
-     --------------------------------------------------------------------- */
-  --mesh-paint:
-      radial-gradient(
-        ellipse 47% 55% at
-        calc(18% + 15% * cos(var(--mesh-swirl, 0deg)) + 32% * var(--mesh-mx, 0))
-        calc(26% + 15% * sin(var(--mesh-swirl, 0deg)) + 25% * var(--mesh-my, 0)),
-        rgb(191 243 255 / 54%),
-        rgb(191 243 255 / 0%) 100%
-      ),
-      radial-gradient(
-        ellipse 42% 51% at
-        calc(76% + 14% * cos(var(--mesh-swirl, 0deg) + 68deg) + -1 * 23% * var(--mesh-mx, 0))
-        calc(16% + 14% * sin(var(--mesh-swirl, 0deg) + 68deg) + 18% * var(--mesh-my, 0)),
-        rgb(255 200 220 / 54%),
-        rgb(255 200 220 / 0%) 100%
-      ),
-      radial-gradient(
-        ellipse 49% 56% at
-        calc(88% + 17% * cos(var(--mesh-swirl, 0deg) + 155deg) + 29% * var(--mesh-mx, 0))
-        calc(66% + 17% * sin(var(--mesh-swirl, 0deg) + 155deg) + -1 * 22% * var(--mesh-my, 0)),
-        rgb(255 217 194 / 54%),
-        rgb(255 217 194 / 0%) 100%
-      ),
-      radial-gradient(
-        ellipse 44% 54% at
-        calc(26% + 15% * cos(var(--mesh-swirl, 0deg) + 232deg) + -1 * 27% * var(--mesh-mx, 0))
-        calc(82% + 15% * sin(var(--mesh-swirl, 0deg) + 232deg) + -1 * 25% * var(--mesh-my, 0)),
-        rgb(200 255 228 / 54%),
-        rgb(200 255 228 / 0%) 100%
-      ),
-      radial-gradient(
-        ellipse 51% 60% at
-        calc(52% + 10% * cos(var(--mesh-swirl, 0deg) + 310deg) + 16% * var(--mesh-mx, 0))
-        calc(46% + 10% * sin(var(--mesh-swirl, 0deg) + 310deg) + 13% * var(--mesh-my, 0)),
-        rgb(191 243 255 / 38%),
-        rgb(191 243 255 / 0%) 100%
-      ),
-      radial-gradient(
-        ellipse 46% 53% at
-        calc(60% + 15% * cos(var(--mesh-swirl, 0deg) + 110deg) + 36% * var(--mesh-mx, 0))
-        calc(88% + 15% * sin(var(--mesh-swirl, 0deg) + 110deg) + -1 * 32% * var(--mesh-my, 0)),
-        rgb(255 252 204 / 54%),
-        rgb(255 252 204 / 0%) 100%
-      ),
-      radial-gradient(
-        ellipse 42% 51% at
-        calc(8% + 14% * cos(var(--mesh-swirl, 0deg) + 285deg) + -1 * 34% * var(--mesh-mx, 0))
-        calc(56% + 14% * sin(var(--mesh-swirl, 0deg) + 285deg) + 29% * var(--mesh-my, 0)),
-        rgb(255 227 248 / 54%),
-        rgb(255 227 248 / 0%) 100%
-      ),
-      radial-gradient(
-        ellipse 44% 51% at
-        calc(46% + 15% * cos(var(--mesh-swirl, 0deg) + 195deg) + -1 * 31% * var(--mesh-mx, 0))
-        calc(6% + 15% * sin(var(--mesh-swirl, 0deg) + 195deg) + -1 * 23% * var(--mesh-my, 0)),
-        rgb(204 228 255 / 54%),
-        rgb(204 228 255 / 0%) 100%
-      );
 
   --anim-icon-drop-short: icon-drop-short;
   --anim-icon-drop: icon-drop;
