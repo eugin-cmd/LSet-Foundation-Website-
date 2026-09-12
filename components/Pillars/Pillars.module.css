@@ -217,14 +217,37 @@
 }
 
 .more {
+  /* inline-flex so the label and its triangle lift as one object. As inline
+     text the transform would apply to the anchor's box while the arrow sat in
+     its own line box, and the two would shear apart mid-hover. */
+  display: inline-flex;
+  gap: 0.45em;
+  align-items: center;
+  align-self: flex-start;
   margin-top: clamp(20px, 3.06vw, 44px);
   font: 500 14px/normal var(--font-sans);
   color: var(--ink-1);
-  white-space: pre;
 }
 
-.more:hover {
+@media (prefers-reduced-motion: no-preference) {
+  .more {
+    transition: transform 200ms ease-out;
+  }
+
+  /* The same 3px lift every other link on the site answers a pointer with.
+     Plain `transform` is safe here — nothing else animates this element. */
+  .more:hover,
+  .more:focus-visible {
+    transform: translateY(-3px);
+  }
+}
+
+/* Motion only is gated: the underline still carries the hover state for anyone
+   who has asked for reduced motion. */
+.more:hover,
+.more:focus-visible {
   text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 

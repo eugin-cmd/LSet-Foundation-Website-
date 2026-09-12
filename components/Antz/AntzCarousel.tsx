@@ -26,7 +26,7 @@ import s from "./Antz.module.css";
  * mirror in scripts/build_preview.py and keep the two in step.
  */
 
-type Slide = { id: string; label: string; image: string };
+export type Slide = { id: string; label: string; image: string };
 
 const BASE = "/assets/antz-carousel";
 const SLIDES: Slide[] = [
@@ -45,8 +45,26 @@ const RESUME_AFTER_MS = 8000;
 /** Horizontal travel before a drag counts as a swipe. */
 const DRAG_THRESHOLD = 45;
 
-export default function AntzCarousel() {
-  const count = SLIDES.length;
+/**
+ * The slides are a prop, defaulting to the platform modules — exactly as the
+ * original takes them. The EthoStudio page on antzsystems.com calls this same
+ * component with its laptop screens rather than a second carousel, and the
+ * EthoStudio page here does the same.
+ *
+ * `noun` names the thing being paged, for the arrows and the dots. The
+ * script-free mirror in scripts/build_preview.py binds the arrows by the
+ * "previous"/"next" prefix on their labels, so keep those words leading.
+ */
+export default function AntzCarousel({
+  slides = SLIDES,
+  label = "Antz Platform modules",
+  noun = "module",
+}: {
+  slides?: Slide[];
+  label?: string;
+  noun?: string;
+} = {}) {
+  const count = slides.length;
   const [active, setActive] = useState(0);
   const regionRef = useRef<HTMLDivElement>(null);
 
@@ -143,7 +161,7 @@ export default function AntzCarousel() {
       tabIndex={0}
       role="group"
       aria-roledescription="carousel"
-      aria-label="Antz Platform modules"
+      aria-label={label}
       className={s.carousel}
       onMouseEnter={() => { hovered.current = true; }}
       onMouseLeave={() => { hovered.current = false; }}
@@ -161,12 +179,12 @@ export default function AntzCarousel() {
           type="button"
           className={`${s.arrow} ${s.arrowPrev}`}
           onClick={handlePrev}
-          aria-label="Previous module"
+          aria-label={`Previous ${noun}`}
         >
           <Chevron />
         </button>
 
-        {SLIDES.map((slide, i) => {
+        {slides.map((slide, i) => {
           const o = offsetOf(i);
           const abs = Math.abs(o);
           const state = o === 0 ? "active" : abs === 1 ? "side" : "hidden";
@@ -199,7 +217,7 @@ export default function AntzCarousel() {
           type="button"
           className={`${s.arrow} ${s.arrowNext}`}
           onClick={handleNext}
-          aria-label="Next module"
+          aria-label={`Next ${noun}`}
         >
           <Chevron />
         </button>
@@ -209,7 +227,7 @@ export default function AntzCarousel() {
           slide and made operable — it was decoration before there was anything
           to page through. */}
       <div className={s.dots}>
-        {SLIDES.map((slide, i) => (
+        {slides.map((slide, i) => (
           <button
             type="button"
             key={slide.id}

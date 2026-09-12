@@ -1,6 +1,7 @@
 import MapPin from "@/components/icons/MapPin";
 import type { ProofCard as ProofCardData } from "./proofWall.data";
 import s from "./ProofWall.module.css";
+import LinkArrow from "@/components/icons/LinkArrow";
 
 export default function ProofCard({ card }: { card: ProofCardData }) {
   return (
@@ -33,7 +34,9 @@ export default function ProofCard({ card }: { card: ProofCardData }) {
 
           <p className={`${s.cardDesc} wf-body`}>{card.description}</p>
 
-          <span className={`${s.cardLink} wf-small`}>View project &rarr;</span>
+          <span className={`${s.cardLink} wf-small`}>
+            View project <LinkArrow />
+          </span>
         </div>
       </a>
     </article>

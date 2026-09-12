@@ -1,5 +1,6 @@
 import { COURSES } from "./education.data";
 import s from "./Education.module.css";
+import LinkArrow from "@/components/icons/LinkArrow";
 
 /**
  * Figma node 1962:12752 — "Our Courses" on surface/darker. The partner strip
@@ -54,7 +55,7 @@ export default function EducationCourses() {
                         {course.description}
                       </p>
                       <span className={`${s.cardLink} wf-small`}>
-                        View Course &rarr;
+                        View Course <LinkArrow />
                       </span>
                     </div>
                   </a>

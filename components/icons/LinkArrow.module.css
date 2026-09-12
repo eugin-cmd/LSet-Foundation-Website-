@@ -1,0 +1,12 @@
+/* Sized against the link's own type rather than in pixels, so one glyph serves
+   every link on the site. `flex: none` because several of its callers are flex
+   rows and would otherwise let it squash. */
+.arrow {
+  display: inline-block;
+  flex: none;
+  width: 0.5em;
+  height: 0.6em;
+  /* Sits on the text's optical centre rather than its baseline, where a solid
+     shape reads as having dropped. */
+  vertical-align: -0.03em;
+}

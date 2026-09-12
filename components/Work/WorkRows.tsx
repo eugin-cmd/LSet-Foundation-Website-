@@ -1,5 +1,6 @@
 import { WORK_PROJECTS } from "./work.data";
 import s from "./Work.module.css";
+import LinkArrow from "@/components/icons/LinkArrow";
 
 /**
  * Figma node 1738:184542 — five project rows, copy left and photograph right.
@@ -44,7 +45,7 @@ export default function WorkRows() {
               </div>
 
               <a href={p.href} className={s.cta}>
-                View project <span aria-hidden="true">&nbsp;&rarr;</span>
+                View project <LinkArrow />
                 <span className={s.srOnly}>: {p.title}</span>
               </a>
             </div>

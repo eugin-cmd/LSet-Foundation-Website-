@@ -4,6 +4,7 @@ import NodeNetwork from "@/components/icons/NodeNetwork";
 import type { Destination } from "./navDrawer.data";
 import { DESTINATIONS, PROMO } from "./navDrawer.data";
 import s from "./NavDrawer.module.css";
+import LinkArrow from "@/components/icons/LinkArrow";
 
 /**
  * Figma `drawer` node 1959:12496 — the panel that opens under the nav bar.
@@ -66,7 +67,9 @@ export default function NavDrawer({
         <span className={`${s.promoKicker} wf-label`}>{PROMO.kicker}</span>
         <span className={`${s.promoTitle} wf-subtitle`}>{PROMO.title}</span>
         <span className={`${s.promoBody} wf-small`}>{PROMO.body}</span>
-        <span className={`${s.promoCta} wf-meta`}>{PROMO.cta} &rarr;</span>
+        <span className={`${s.promoCta} wf-meta`}>
+          {PROMO.cta} <LinkArrow />
+        </span>
       </a>
     </div>
   );

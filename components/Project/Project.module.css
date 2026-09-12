@@ -60,6 +60,52 @@
   pointer-events: none;
 }
 
+/* The Foundation hero's presentation, where a record asks for it: the stack
+   centred in the band instead of anchored to its foot. The bottom-left anchor
+   is what marks a record page; a billboard is centred, and this is the one
+   product banner carrying footage. */
+.hero[data-hero-centred="true"] {
+  justify-content: center;
+}
+
+.hero[data-hero-centred="true"] .heroInner {
+  align-items: center;
+  text-align: center;
+}
+
+.hero[data-hero-centred="true"] .heroCopy {
+  align-items: center;
+}
+
+/* The meta row centres with the rest, so the location map — which hangs off its
+   right edge — would push the row visually off-centre. No centred mast carries
+   one today; this keeps that true rather than leaving it to chance. */
+.hero[data-hero-centred="true"] .locationMap {
+  display: none;
+}
+
+/* Footage, where a record carries it. Same box as the ::before photo layer —
+   overscanned top and bottom so it can sink without dragging a cut edge into
+   the band — and the parallax below drives the two together. */
+.heroVideo {
+  position: absolute;
+  top: calc(var(--video-overscan) * -1);
+  left: 0;
+  width: 100%;
+  height: calc(100% + var(--video-overscan) * 2);
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+}
+
+/* Mirrored, where a record asks for it. `scale` as its own property, not a
+   transform: the parallax below animates this layer's `transform` to sink it,
+   and a transform here would be overwritten the moment that ran — the two
+   independent properties compose instead. */
+.hero[data-hero-flip="true"]::before {
+  scale: -1 1;
+}
+
 /* The shared banner furniture: flat tint under the gradients so those keep
    full strength, then the same two stops the other banners take.
 
@@ -94,12 +140,18 @@
   width: min(1280px, 100%);
 }
 
-/* Figma's "← All projects", 18px medium white. */
+/* Figma's "← All projects", 18px medium white — with the arrow moved to the
+   trailing edge. Inline-flex so the gap is a real gap rather than a space
+   character, which would let the arrow wrap onto its own line. */
 .back {
+  display: inline-flex;
+  gap: 0.5em;
+  align-items: baseline;
   font: 500 clamp(15px, 1.25vw, 18px) / 1.3 var(--font-flex);
   color: var(--white);
   text-decoration: none;
 }
+
 
 .back:hover,
 .back:focus-visible {
@@ -151,9 +203,59 @@
 }
 
 .meta {
+  position: relative;
   display: flex;
   gap: 9px;
   align-items: center;
+}
+
+/* The place, drawn, beside the place named.
+
+   Anchored to the right edge of this row and to its baseline, then given the
+   height of the whole construct above it — the back link, the gap, and this
+   row, which measures 82px at the design width. So its foot sits on the
+   location's foot and its head reaches the top of "All Projects", and it
+   follows the location text rather than sitting at a hardcoded offset. */
+.locationMap {
+  /* One value, read by the rule and by the entrance keyframe below, which ends
+     on an explicit opacity and fills `both` — a literal in each would drift. */
+  --map-opacity: 0.92;
+
+  position: absolute;
+  bottom: 0;
+  left: calc(100% + clamp(12px, 1.6vw, 24px));
+  width: auto;
+  height: clamp(52px, 5.7vw, 82px);
+  opacity: var(--map-opacity);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Rises and settles, like the frond that closes the copy — the same curve,
+     a beat earlier, so the two arrive in sequence rather than together. */
+  .locationMap {
+    animation: mapRise 900ms cubic-bezier(0.22, 1, 0.36, 1) 640ms both;
+  }
+}
+
+@keyframes mapRise {
+  from {
+    translate: 0 26px;
+    opacity: 0;
+  }
+
+  to {
+    translate: 0 0;
+    opacity: var(--map-opacity);
+  }
+}
+
+/* Below the width where the mast copy fills the band, the map would sit on the
+   species name. */
+@media (max-width: 860px) {
+  .locationMap {
+    display: none;
+  }
 }
 
 /* The IUCN chip. 50% up from Figma's 8px by direction — the padding scales
@@ -220,6 +322,7 @@
 @supports (animation-timeline: scroll()) {
   @media (prefers-reduced-motion: no-preference) {
     .hero::before,
+    .heroVideo,
     .heroInner {
       animation-duration: 1ms; /* superseded by the timeline */
       animation-timing-function: linear;
@@ -229,7 +332,8 @@
       animation-range: 0 var(--banner-height);
     }
 
-    .hero::before {
+    .hero::before,
+    .heroVideo {
       animation-name: projectPhotoSink;
     }
 
@@ -261,7 +365,10 @@
    background-clip the transparent fill would leave an invisible name, so the
    solid colour above stays in force instead. */
 @supports (background-clip: text) or (-webkit-background-clip: text) {
-  .heroHeading {
+  /* Not on a centred mast: that one wears `.wf-iridescent`, the homepage's own
+     sheen, and this rule would win the specificity tie against it — both are
+     single classes and this file loads last. The `:not()` stands it down. */
+  .hero:not([data-hero-centred="true"]) .heroHeading {
     /* A 50% white layer over the ramp, so half the gradient reads through.
        It was 75% (a quarter through) and came up 25 points from there. The
        banner only — the Our Work rows and the homepage arc cards keep the ramp
@@ -285,7 +392,7 @@
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    .heroHeading {
+    .hero:not([data-hero-centred="true"]) .heroHeading {
       animation: speciesDrift var(--species-drift-banner) linear infinite;
     }
   }
@@ -301,6 +408,27 @@
     background-position: var(--species-shift-banner)
       var(--species-shift-banner);
   }
+}
+
+/* The line under the heading. Same treatment the Our Work banner gives its
+   lede — white, a readable measure, `text-wrap: pretty` so the last line is
+   never a single word — with the measure a little wider here because these run
+   to two sentences where that one runs to one.
+
+   Margin rather than the column's gap: the gap between the heading and this is
+   meant to be tighter than the gap between the blocks either side of it. */
+.heroLede {
+  width: min(760px, 100%);
+  margin: 0;
+  color: var(--white);
+  text-wrap: pretty;
+}
+
+/* Centred masts centre their lede with everything else, and pull the measure
+   in: a centred line that runs nearly the width of the heading above it reads
+   as a paragraph rather than a subtitle. */
+.hero[data-hero-centred="true"] .heroLede {
+  width: min(660px, 100%);
 }
 
 /* --- the closing frond ---------------------------------------------------- */
@@ -322,6 +450,13 @@
   display: block;
   width: auto;
   height: 100%;
+}
+
+/* The sprig lies on its side like the frond, but is the denser drawing of the
+   two, so it is held a little taller. Only the size differs here; the animation
+   below drives both. */
+.leaf[data-leaf="sprig"] {
+  height: clamp(36px, 3.8vw, 54px);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -457,6 +592,27 @@
 .factIcon svg {
   width: 100%;
   height: 100%;
+}
+
+/* The site's marks come in two kinds: solid ones that declare
+   `fill="currentColor"` and outline ones that declare `fill="none"` and expect
+   their caller to supply the stroke — which is what `.chipIcon svg` below
+   does for the tech chips.
+
+   This slot did not, so every outline mark used as a fact icon painted
+   nothing at all: it still took its 14px and its 8px gap, which is why
+   "WHAT IT IS" on all four product pages sat a mark's width right of the rest
+   of the card with nothing in front of it. Seven labels across the four were
+   blank this way.
+
+   Matching on the attribute rather than listing the icons keeps a mark drawn
+   next year from arriving invisible; the solid ones are left alone, since
+   stroking a filled shape thickens it and closes its knockouts. */
+.factIcon svg[fill="none"] {
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .factValue {
@@ -626,6 +782,62 @@
   stroke-linejoin: round;
 }
 
+/* --- out to the product's own page ---------------------------------------- */
+
+/* Closes the prose column. An outlined pill rather than the row CTAs' bare
+   orange text: this one leaves the site, and the border is what marks it as a
+   destination rather than another section heading. Same geometry as the
+   closing band's buttons, so the page has one button shape. */
+.external {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  align-self: flex-start;
+  padding: 14px 24px;
+  border: 1px solid rgb(2 65 82 / 30%);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 55%);
+  font: 500 clamp(14px, 1.18vw, 17px) / 1.2 var(--font-flex);
+  color: var(--color-darkblue);
+  text-decoration: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .external {
+    transition: background-color 200ms ease, border-color 200ms ease,
+      translate 200ms ease-out;
+  }
+
+  /* The same 3px lift every other link on these pages answers with. */
+  .external:hover,
+  .external:focus-visible {
+    translate: 0 -3px;
+  }
+}
+
+.external:hover,
+.external:focus-visible {
+  border-color: var(--color-darkblue);
+  background: rgb(255 255 255 / 82%);
+}
+
+.external:focus-visible {
+  outline: 2px solid var(--color-teal-600);
+  outline-offset: 3px;
+}
+
+.externalMark {
+  display: inline-flex;
+  flex: none;
+  width: 15px;
+  height: 15px;
+}
+
+.externalMark svg {
+  width: 100%;
+  height: 100%;
+}
+
 /* --- photo carousel, node 1738:184772 ----------------------------------- */
 
 .gallery {
@@ -705,7 +917,17 @@
   overflow: hidden;
 }
 
-.frame img {
+/* A letterboxed frame keeps the whole screenshot and fills the surround with
+   the banner's own dark, so the panel reads as a device shot rather than as an
+   image that failed to load. */
+.frame > img[data-fit="contain"] {
+  object-fit: contain;
+  background: var(--scrim-base);
+}
+
+/* Direct children only: a card slide carries images of its own, and the
+   letterbox box below is the bare photograph's, not theirs. */
+.frame > img {
   display: block;
   /* Figma's 619x356 frame. The aspect box holds the height so a photograph
      cannot stretch the rail. */
@@ -714,6 +936,120 @@
   height: auto;
   object-fit: cover;
   user-select: none;
+}
+
+/* --- the capability card, antzsystems.com/antz-platform ------------------ */
+
+/* One card a view, as the reference runs it: 80% of its 1280 shell, with the
+   next card's edge past the right. The gap closes to the reference's 24 from
+   the photo rail's 42 — at this width the peek is what signals the rail, and a
+   wide gutter would read as a gap in the page rather than as a next card. */
+.carousel[data-variant="cards"] {
+  --card: min(1024px, 86vw);
+  --rail-gap: 24px;
+}
+
+/* The card draws its own radius and shadow, so the frame stops clipping: the
+   shadow falls outside the box, and the frame's own 16px radius would cut the
+   card's 24px one at four corners. */
+.frame[data-card] {
+  border-radius: 0;
+  overflow: visible;
+}
+
+.cardSlide {
+  display: flex;
+  gap: clamp(24px, 4.4vw, 56px);
+  align-items: stretch;
+  /* The reference fixes 480px. A minimum instead: our type is not its type,
+     and a fixed height would clip the longest card (Husbandry) rather than
+     let it set the rail's height. */
+  min-height: 480px;
+  height: 100%;
+  padding: clamp(24px, 3.1vw, 40px);
+  border-radius: 24px;
+  background: var(--white);
+  box-shadow: 0 2px 2px rgb(0 0 0 / 10%);
+}
+
+/* The picture panel down the left: the reference's 359px, held as a share of
+   the card so it keeps its proportion of the row as the card narrows. */
+.cardArt {
+  position: relative;
+  flex: none;
+  width: min(359px, 35%);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.cardPhoto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+}
+
+/* The reference's 27% black, which is what lets a white mark sit on any of the
+   six photographs without a halo behind it. */
+.cardTint {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 27%);
+}
+
+.cardIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(72px, 7.3vw, 93px);
+  height: auto;
+  /* `translate` rather than a transform, so nothing here collides with an
+     animation that wants the element's transform later. */
+  translate: -50% -50%;
+  user-select: none;
+}
+
+.cardText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: clamp(14px, 1.67vw, 24px);
+  min-width: 0;
+}
+
+/* The reference's 44px bold title and 20px body, in this site's faces: the
+   heading takes the display family every other heading here takes, and the
+   copy takes the prose family and ink the paragraphs beside it use, so the
+   card reads as part of this page rather than as a panel lifted from another
+   site. */
+.cardTitle {
+  margin: 0;
+  font: 700 clamp(26px, 3.1vw, 44px) / 1.1 var(--font-flex);
+  color: var(--color-darkblue);
+  text-wrap: balance;
+}
+
+.cardBody {
+  margin: 0;
+  font: 400 clamp(16px, 1.56vw, 20px) / 1.45 var(--font-inter-tight);
+  color: rgb(0 0 0 / 70%);
+  text-wrap: pretty;
+}
+
+/* Below the width where the two columns each have a fair measure, the card
+   stacks — picture over words, as the reference stacks it. */
+@media (max-width: 760px) {
+  .cardSlide {
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .cardArt {
+    width: 100%;
+    height: 220px;
+  }
 }
 
 /* --- the arrows, bottom right ------------------------------------------- */
@@ -853,13 +1189,33 @@
   text-wrap: balance;
 }
 
+/* Which way each card's photograph tips. Mirrored, so the pair leans away from
+   the middle of the page rather than both the same way, which would read as a
+   list that had come loose. Inherited by the thumbnail, where the keyframes
+   below read it. */
+.neighbourPrev {
+  --tilt: -1;
+}
+
+.neighbourNext {
+  --tilt: 1;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .neighbour {
     transition: translate 220ms ease-out;
   }
 
+  /* The transitions carry the *return*: when the hover ends the animation is
+     removed and the properties fall back to their base values, and without
+     these they would snap rather than settle. */
   .neighbourThumb {
-    transition: filter 220ms ease;
+    transition: filter 220ms ease, rotate 260ms ease-out, scale 260ms ease-out;
+  }
+
+  .neighbour:hover .neighbourThumb,
+  .neighbour:focus-visible .neighbourThumb {
+    animation: thumbJolt 560ms cubic-bezier(0.33, 1, 0.68, 1) both;
   }
 
   /* The same lift the rest of the page answers a pointer with. `translate`
@@ -874,6 +1230,37 @@
 .neighbour:hover .neighbourThumb,
 .neighbour:focus-visible .neighbourThumb {
   filter: brightness(1.08);
+}
+
+/* The jolt: over-rotates, wobbles back through two decaying beats, and comes
+   to rest tilted rather than square — the tilt is the state, the jolt is how it
+   gets there. `rotate` and `scale` as their own properties, not one transform,
+   because the card above animates `translate` and the three compose. */
+@keyframes thumbJolt {
+  0% {
+    rotate: 0deg;
+    scale: 1;
+  }
+
+  32% {
+    rotate: calc(var(--tilt, 1) * 3.6deg);
+    scale: 1.05;
+  }
+
+  58% {
+    rotate: calc(var(--tilt, 1) * -1.3deg);
+    scale: 1.018;
+  }
+
+  80% {
+    rotate: calc(var(--tilt, 1) * 2.6deg);
+    scale: 1.035;
+  }
+
+  100% {
+    rotate: calc(var(--tilt, 1) * 2deg);
+    scale: 1.03;
+  }
 }
 
 .neighbour:focus-visible {

@@ -1,4 +1,5 @@
 import s from "./Antz.module.css";
+import LinkArrow from "@/components/icons/LinkArrow";
 
 /**
  * Figma node 1974:33649 — the closing band.
@@ -19,7 +20,7 @@ export default function AntzCta() {
       </p>
       <div className={s.ctaRow}>
         <a href="#" className={`${s.ctaBtn} ${s.ctaBtnFilled}`}>
-          Submit a challenge <span aria-hidden="true">&rarr;</span>
+          Submit a challenge <LinkArrow />
         </a>
         <a href="#" className={`${s.ctaBtn} ${s.ctaBtnOutline}`}>
           View all projects

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { projectNeighbours, type Project } from "./project.data";
+import { neighboursIn, PROJECT_ORDER, type Project } from "./project.data";
 import s from "./Project.module.css";
 
 /**
@@ -16,13 +16,23 @@ import s from "./Project.module.css";
  * banner: the banner crop is a 2:1 letterbox built to sit behind a title, and
  * at 96px wide it reads as a stripe.
  */
-export default function ProjectNeighbours({ project }: { project: Project }) {
-  const { prev, next } = projectNeighbours(project.slug);
+export default function ProjectNeighbours({
+  project,
+  base = "/the-work",
+  order = PROJECT_ORDER,
+  label = "Nearby projects",
+}: {
+  project: Project;
+  base?: string;
+  order?: Project[];
+  label?: string;
+}) {
+  const { prev, next } = neighboursIn(order, project.slug);
 
   return (
-    <nav className={s.neighbours} aria-label="Nearby projects">
+    <nav className={s.neighbours} aria-label={label}>
       <Link
-        href={`/the-work/${prev.slug}`}
+        href={`${base}/${prev.slug}`}
         className={`${s.neighbour} ${s.neighbourPrev}`}
       >
         <span className={s.neighbourArrow} aria-hidden="true">
@@ -46,7 +56,7 @@ export default function ProjectNeighbours({ project }: { project: Project }) {
       </Link>
 
       <Link
-        href={`/the-work/${next.slug}`}
+        href={`${base}/${next.slug}`}
         className={`${s.neighbour} ${s.neighbourNext}`}
       >
         <span className={s.neighbourArrow} aria-hidden="true">

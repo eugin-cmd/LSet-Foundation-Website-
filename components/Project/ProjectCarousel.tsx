@@ -39,9 +39,15 @@ const DRAG_THRESHOLD = 45;
 export default function ProjectCarousel({
   photos,
   label,
+  /* `cards` is the same rail, one card a view rather than a photograph and a
+     half. Everything below — the loop, the autoplay, the drag, the arrows —
+     is shared; only the width of a slide and what is drawn inside it differ,
+     which is why this is a flag and not a second component. */
+  variant = "photos",
 }: {
   photos: ProjectPhoto[];
   label: string;
+  variant?: "photos" | "cards";
 }) {
   const count = photos.length;
   /* The rail carries the set twice; only the first band is ever a resting
@@ -175,6 +181,7 @@ export default function ProjectCarousel({
       aria-roledescription="carousel"
       aria-label={label}
       className={s.carousel}
+      data-variant={variant}
       onMouseEnter={() => {
         hovered.current = true;
       }}
@@ -201,19 +208,57 @@ export default function ProjectCarousel({
           {rail.map((photo, i) => (
             <li
               className={s.frame}
+              data-card={variant === "cards" ? "true" : undefined}
               key={`${photo.src}-${i}`}
-              /* The second band is the same three photographs again; hiding it
-                 keeps a screen reader from reading the set twice. */
+              /* The second band is the same photographs again; hiding it keeps
+                 a screen reader from reading the set twice. */
               aria-hidden={i >= count ? true : undefined}
             >
-              <img
-                src={photo.src}
-                alt={photo.alt}
-                draggable={false}
-                width={1238}
-                height={712}
-                loading={i === 0 ? "eager" : "lazy"}
-              />
+              {variant === "cards" ? (
+                <article className={s.cardSlide}>
+                  <div className={s.cardArt}>
+                    {/* The picture is atmosphere — the heading beside it names
+                        the card and the paragraph says what it holds — so it
+                        is hidden rather than described twice. The mark on top
+                        of it is decorative for the same reason. */}
+                    <img
+                      className={s.cardPhoto}
+                      src={photo.src}
+                      alt=""
+                      aria-hidden="true"
+                      draggable={false}
+                      loading={i === 0 ? "eager" : "lazy"}
+                    />
+                    <span className={s.cardTint} aria-hidden="true" />
+                    {photo.icon && (
+                      <img
+                        className={s.cardIcon}
+                        src={photo.icon}
+                        alt=""
+                        aria-hidden="true"
+                        draggable={false}
+                        width={93}
+                        height={93}
+                      />
+                    )}
+                  </div>
+
+                  <div className={s.cardText}>
+                    <h3 className={s.cardTitle}>{photo.title}</h3>
+                    <p className={s.cardBody}>{photo.body}</p>
+                  </div>
+                </article>
+              ) : (
+                <img
+                  src={photo.src}
+                  alt={photo.alt}
+                  data-fit={photo.fit ?? "cover"}
+                  draggable={false}
+                  width={1238}
+                  height={712}
+                  loading={i === 0 ? "eager" : "lazy"}
+                />
+              )}
             </li>
           ))}
         </ul>
@@ -225,7 +270,7 @@ export default function ProjectCarousel({
           type="button"
           className={s.arrow}
           onClick={handlePrev}
-          aria-label="Previous photograph"
+          aria-label={variant === "cards" ? "Previous capability" : "Previous photograph"}
         >
           <Chevron />
         </button>
@@ -233,7 +278,7 @@ export default function ProjectCarousel({
           type="button"
           className={`${s.arrow} ${s.arrowNext}`}
           onClick={handleNext}
-          aria-label="Next photograph"
+          aria-label={variant === "cards" ? "Next capability" : "Next photograph"}
         >
           <Chevron />
         </button>
@@ -242,7 +287,9 @@ export default function ProjectCarousel({
       {/* The arrows move a rail rather than swapping a panel, so nothing about
           the change is announced on its own. */}
       <p className={s.srOnly} aria-live="polite">
-        Photograph {shown + 1} of {count}
+        {variant === "cards"
+          ? `${photos[shown].title}, ${shown + 1} of ${count}`
+          : `Photograph ${shown + 1} of ${count}`}
       </p>
     </div>
   );

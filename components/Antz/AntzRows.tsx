@@ -1,11 +1,10 @@
 "use client";
 
 import Accordion, { type AccordionItem } from "@/components/Pillars/Accordion";
-import RecordStack from "@/components/icons/RecordStack";
-import ObservationEye from "@/components/icons/ObservationEye";
-import DailyRounds from "@/components/icons/DailyRounds";
-import ComplianceShield from "@/components/icons/ComplianceShield";
-import TrendBars from "@/components/icons/TrendBars";
+import ConnectedRecords from "@/components/icons/ConnectedRecords";
+import BehaviourModel from "@/components/icons/BehaviourModel";
+import EdgeWatch from "@/components/icons/EdgeWatch";
+import VisitorTrail from "@/components/icons/VisitorTrail";
 import { ANTZ_ROWS, type AntzRow } from "./antz.data";
 import s from "./Antz.module.css";
 
@@ -16,11 +15,9 @@ import s from "./Antz.module.css";
  *
  * Figma ships row 02 expanded.
  *
- * Icons: Figma gives this frame numbers only, where the other two boards each
- * carry a line-art mark beside the number. The marks were added by direction
- * for parity with those boards, drawn on the same 32-unit grid and left
- * unstroked so <Accordion> supplies currentColor at 1.6 — the board, not the
- * icon, owns the weight.
+ * Icons: the four product marks this codebase already carries — they were
+ * drawn for these exact products, and were previously unused here because the
+ * board listed capability areas rather than the products themselves.
  *
  * Looked up by `key` rather than taken from the data file directly, because a
  * component reference cannot cross the data module: these are passed to
@@ -28,11 +25,10 @@ import s from "./Antz.module.css";
  * what lets them.
  */
 const ICONS: Record<AntzRow["key"], React.ComponentType> = {
-  records: RecordStack,
-  observations: ObservationEye,
-  operations: DailyRounds,
-  compliance: ComplianceShield,
-  analytics: TrendBars,
+  platform: ConnectedRecords,
+  ethostudio: BehaviourModel,
+  edge: EdgeWatch,
+  trails: VisitorTrail,
 };
 
 const ITEMS: AccordionItem[] = ANTZ_ROWS.map((row) => ({

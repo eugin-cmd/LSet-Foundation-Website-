@@ -3,12 +3,16 @@
 import { useState } from "react";
 import Chevron from "@/components/icons/Chevron";
 import s from "./Pillars.module.css";
+import LinkArrow from "@/components/icons/LinkArrow";
 
 export type AccordionItem = {
   index: string;
   title: string;
   description: string;
-  href: string;
+  /** Optional: a row whose destination is the page you are already on has
+   *  nowhere to send you, and a "Know More" that goes nowhere is worse than
+   *  none. Omit it and the panel closes on its copy. */
+  href?: string;
   /** Optional line-art mark beside the number. The education rows carry none. */
   icon?: React.ComponentType;
 };
@@ -74,9 +78,11 @@ export default function Accordion({
               >
                 <div className={s.panel}>
                   <p className={`${s.desc} wf-display-s`}>{item.description}</p>
-                  <a href={item.href} className={s.more}>
-                    Know more &nbsp;&rarr;
-                  </a>
+                  {item.href && (
+                    <a href={item.href} className={s.more}>
+                      Know More <LinkArrow />
+                    </a>
+                  )}
                 </div>
               </div>
             </div>

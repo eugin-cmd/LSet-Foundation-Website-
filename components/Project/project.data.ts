@@ -1,7 +1,43 @@
-/** The filled mark beside a fact label. Named rather than imported here so the
- *  data file stays free of components and a project page can be authored
- *  without touching the icon set. */
-export type FactIcon = "partner" | "timeline" | "status" | "next";
+/** One icon vocabulary for both the fact labels and the tech chips.
+ *
+ * They were two unions — facts could only be partner/timeline/status/next, and
+ * chips only the technology marks. The split had no reason behind it beyond the
+ * order the two were built in, and it bit as soon as the Antz product pages
+ * wanted a platform mark against a fact. One list, and every slot can reach
+ * every mark. */
+export type IconKey =
+  | "partner"
+  | "timeline"
+  | "status"
+  | "next"
+  | "drone"
+  | "ai"
+  | "vision"
+  | "payload"
+  | "camera"
+  | "acoustic"
+  | "voiceprint"
+  | "platform"
+  | "board"
+  | "lever"
+  | "iot"
+  /* Added for the product fact cards, where the species vocabulary had
+     nothing that fit: a clock against "Reporting" and a flag against "Reach"
+     were marks doing duty rather than marks meaning anything. Most of these
+     were already drawn for the Antz Systems rows and the education page and
+     only needed naming here. */
+  | "record"
+  | "compliance"
+  | "globe"
+  | "trail"
+  | "behaviour"
+  | "calendar"
+  | "offline"
+  | "brand";
+
+/** @deprecated kept as aliases so existing records read unchanged. */
+export type FactIcon = IconKey;
+export type TechIcon = IconKey;
 
 export type ProjectFact = {
   /** The orange kicker above the value — PARTNER, TIMELINE, STATUS. */
@@ -28,19 +64,7 @@ export type ProjectFact = {
   };
 };
 
-/** The mark beside a tech chip, named for the same reason FactIcon is. */
-export type TechIcon =
-  | "drone"
-  | "ai"
-  | "vision"
-  | "payload"
-  | "camera"
-  | "acoustic"
-  | "voiceprint"
-  | "platform"
-  | "board"
-  | "lever"
-  | "iot";
+
 
 export type ProjectTech = {
   label: string;
@@ -56,23 +80,94 @@ export type ProjectSection = {
 export type ProjectPhoto = {
   src: string;
   alt: string;
+  /** How the frame holds the image. `cover` fills it and is the default, which
+   *  is right for photographs. The product pages carry portrait phone and
+   *  laptop screenshots, and cropping one of those to a landscape frame takes a
+   *  vertical sliver out of the middle — those are letterboxed instead.
+   *
+   *  Read by the rail only. The stack draws each slide whole, at its own
+   *  aspect, so there is no frame to fit it to. */
+  fit?: "cover" | "contain";
+  /** A slide carrying these three is a *card* rather than a photograph: the
+   *  picture becomes a tinted panel down the left with the mark centred on it,
+   *  and the words sit beside it. This is the shape antzsystems.com gives its
+   *  platform capabilities, and the Antz Platform page here runs the same six.
+   *
+   *  All three travel together — a title with no picture would be a card with
+   *  a hole in it — and `galleryStyle: "cards"` is what actually switches the
+   *  rail over, so a half-filled slide cannot change the presentation on its
+   *  own. `icon` is a path, like `src`: these marks are 93px discs that belong
+   *  to the cards, not members of the site's own icon set. */
+  title?: string;
+  body?: string;
+  icon?: string;
 };
 
 export type Project = {
   /** The page's own route segment under /the-work, so a project can name its
    *  neighbours without the components importing five records each. */
   slug: string;
-  /** Matches the row on Our Work, so the two stay recognisably one record. */
-  status: "CR" | "EN";
-  statusLabel: string;
+  /** The IUCN chip, on the species pages only. Optional because the same
+   *  template now carries the Antz product pages, which have no conservation
+   *  status to show — the chip simply does not render for them. */
+  status?: "CR" | "EN";
+  statusLabel?: string;
   location: string;
   title: string;
   /** Banner photograph, used as a CSS background like every other banner. */
   hero: string;
+  /** An outline of the place named in `location`, set beside it in the mast.
+   *  Optional: only the heron carries one so far. Decorative — the location
+   *  text says where this is, so the map is hidden from assistive tech rather
+   *  than announced as a second, vaguer statement of the same fact.
+   *
+   *  The dimensions travel with it: the maps are not one shape — Bhutan is
+   *  landscape and Mauritania portrait — and the <img> needs each one's own
+   *  ratio to reserve the right box before it loads. */
+  locationMap?: { src: string; width: number; height: number };
+  /** Mirrors the banner photograph. Done in CSS rather than by flipping the
+   *  file: the original of this crop is long gone, so flipping the asset would
+   *  mean re-encoding an already-compressed JPEG for a transform the browser
+   *  does for free — and this way it is one word to undo. */
+  heroFlip?: boolean;
+  /** Footage for the mast, layered over `hero` — which stays, and becomes the
+   *  poster and the paint before the first frame arrives. The same arrangement
+   *  the other four banners use. */
+  heroVideo?: string;
+  /** Presents the mast the way the Foundation hero does: the whole stack
+   *  centred in the band rather than anchored bottom-left, and the heading in
+   *  `.wf-iridescent` — the homepage's pastel sheen — rather than the species
+   *  pages' blue-green ramp. The two travel together because they are one
+   *  treatment, not two choices. */
+  heroCentred?: boolean;
+  /** A line or two under the heading in the mast, as the other four banners
+   *  carry. On the Antz products this is the same sentence the accordion on
+   *  /technology lists them by — and that board reads it from here, so the two
+   *  cannot drift apart. */
+  lede?: string;
+  /** Which flourish closes the copy. The species masts take the frond, turned
+   *  on its side because it hangs under a heading in a bottom-anchored column;
+   *  the Antz masts take the upright sprig under their lede. Defaults to the
+   *  frond, so the five species records say nothing. */
+  heroLeaf?: "frond" | "sprig";
   facts: ProjectFact[];
   sections: ProjectSection[];
   tech: ProjectTech[];
+  /** An outbound link, closing the prose column. Only the Antz product pages
+   *  carry one — each points at its own page on antzsystems.com, which holds
+   *  the full version of what this page condenses. */
+  external?: { href: string; label: string };
   gallery: ProjectPhoto[];
+  /** Which carousel the gallery runs. The rail is the default and is what the
+   *  species pages take. `stack` is the Antz Systems one — the active slide
+   *  centred, its neighbours pushed back and blurred — which is where device
+   *  mockups belong, and is what antzsystems.com runs on the page a product's
+   *  screens are taken from. `cards` is the same rail widened to one card a
+   *  view, for slides that carry words as well as a picture.
+   *
+   *  All three come from antzsystems.com; which one a product page takes is
+   *  the one its own page over there takes. */
+  galleryStyle?: "rail" | "stack" | "cards";
 };
 
 /**
@@ -93,6 +188,7 @@ export const WHITE_BELLIED_HERON: Project = {
   location: "BHUTAN",
   title: "White-Bellied Heron",
   hero: "/assets/heron-hero.jpg",
+  locationMap: { src: "/assets/heron-map-bhutan.png", width: 569, height: 328 },
 
   facts: [
     {
@@ -195,6 +291,7 @@ export const MEDITERRANEAN_MONK_SEAL: Project = {
   location: "CAP BLANC, MAURITANIA",
   title: "Mediterranean Monk Seal",
   hero: "/assets/seal-hero.jpg",
+  locationMap: { src: "/assets/seal-map-mauritania.png", width: 299, height: 328 },
 
   facts: [
     {
@@ -286,6 +383,11 @@ export const SIAMANG_GIBBON: Project = {
   location: "SUMATRA, INDONESIA",
   title: "Siamang Gibbon",
   hero: "/assets/gibbon-hero.jpg",
+  /* The gibbon faces out of the band; mirrored, it looks into the copy. */
+  heroFlip: true,
+  /* Named for the place rather than the species: the siamang and Orangutan
+     Haven are both in Sumatra and share this one file. */
+  locationMap: { src: "/assets/map-indonesia.png", width: 885, height: 328 },
 
   facts: [
     {
@@ -370,6 +472,7 @@ export const ORANGUTAN_HAVEN: Project = {
   location: "SUMATRA, INDONESIA",
   title: "Orangutan Haven",
   hero: "/assets/oh-hero.jpg",
+  locationMap: { src: "/assets/map-indonesia.png", width: 885, height: 328 },
 
   facts: [
     {
@@ -462,6 +565,7 @@ export const BROAD_TOOTHED_RAT: Project = {
   location: "BARRINGTON TOPS, AUSTRALIA",
   title: "Broad-toothed Rat",
   hero: "/assets/rat-hero.jpg",
+  locationMap: { src: "/assets/rat-map-australia.png", width: 357, height: 328 },
 
   facts: [
     {
@@ -541,13 +645,10 @@ export const PROJECT_ORDER: Project[] = [
   BROAD_TOOTHED_RAT,
 ];
 
-/** The record before and after `slug`, wrapping at both ends so neither arrow
- *  is ever a dead end. */
-export function projectNeighbours(slug: string) {
-  const i = PROJECT_ORDER.findIndex((p) => p.slug === slug);
-  const n = PROJECT_ORDER.length;
-  return {
-    prev: PROJECT_ORDER[(i - 1 + n) % n],
-    next: PROJECT_ORDER[(i + 1) % n],
-  };
+/** The record before and after `slug` within any ordered set, wrapping at both
+ *  ends so neither direction is ever a dead end. */
+export function neighboursIn(order: Project[], slug: string) {
+  const i = order.findIndex((p) => p.slug === slug);
+  const n = order.length;
+  return { prev: order[(i - 1 + n) % n], next: order[(i + 1) % n] };
 }

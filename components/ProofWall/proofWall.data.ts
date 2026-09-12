@@ -30,6 +30,22 @@ export const PROOF_CARDS: ProofCard[] = [
     href: "/the-work/mediterranean-monk-seal",
   },
   {
+    /* Replaces a "Bornean Orangutan" placeholder that was never in Figma and
+       led nowhere. Ahead of the rat, which puts the arc in the same order as
+       the Our Work rows — the siamang is the only one of the five the arc does
+       not carry.
+
+       The photograph is this project's own page banner, cropped to the card's
+       portrait box around the animal rather than centred: the banner is a 2:1
+       landscape and a straight centre crop cuts the orangutan in half. */
+    location: "SUMATRA, INDONESIA",
+    titleLines: ["Orangutan", "Haven"],
+    description: "Sanctuary records on one system, and music the orangutans choose themselves.",
+    image: "/assets/proof-orangutan-haven.jpg",
+    crop: { ...COVER },
+    href: "/the-work/orangutan-haven",
+  },
+  {
     // Figma repeated the Monk Seal name and copy here, which the arc now shows
     // side by side with the real Monk Seal card. PLACEHOLDER copy in its place,
     // matched to the photo and the location — replace with the real programme.
@@ -39,15 +55,5 @@ export const PROOF_CARDS: ProofCard[] = [
     image: "/assets/proof-3.jpg",
     crop: { top: "-13.13%", left: "-12.1%", width: "114.71%", height: "113.06%" },
     href: "/the-work/broad-toothed-rat",
-  },
-  {
-    // PLACEHOLDER: not in Figma. Photo is a frame lifted from the hero footage.
-    // Replace both before launch.
-    location: "KUTAI, INDONESIA",
-    titleLines: ["Bornean", "Orangutan"],
-    description: "Canopy microphones separating individual long calls across the reserve.",
-    image: "/assets/proof-5.jpg",
-    crop: { ...COVER },
-    href: "#bornean-orangutan",
   },
 ];

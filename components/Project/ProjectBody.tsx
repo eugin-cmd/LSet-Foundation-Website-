@@ -12,22 +12,27 @@ import Voiceprint from "@/components/icons/Voiceprint";
 import ConnectedRecords from "@/components/icons/ConnectedRecords";
 import IotNode from "@/components/icons/IotNode";
 import Lever from "@/components/icons/Lever";
-import type { FactIcon, Project, TechIcon } from "./project.data";
+import RecordStack from "@/components/icons/RecordStack";
+import ComplianceShield from "@/components/icons/ComplianceShield";
+import Globe from "@/components/icons/Globe";
+import VisitorTrail from "@/components/icons/VisitorTrail";
+import BehaviourModel from "@/components/icons/BehaviourModel";
+import DailyRounds from "@/components/icons/DailyRounds";
+import NoSignal from "@/components/icons/NoSignal";
+import BrandTag from "@/components/icons/BrandTag";
+import type { IconKey, Project } from "./project.data";
 import s from "./Project.module.css";
 
 /** The data names a mark; this is where the name becomes a component, so the
  *  data file stays free of imports and a new project page is words only. */
-const FACT_ICONS: Record<FactIcon, () => React.JSX.Element> = {
+/** The data names a mark; this is where the name becomes a component, so the
+ *  data files stay free of imports and a new page is words only. One registry
+ *  for the fact labels and the tech chips alike. */
+const ICONS: Record<IconKey, () => React.JSX.Element> = {
   partner: Handshake,
   timeline: ClockFilled,
   status: CheckFilled,
   next: FlagFilled,
-};
-
-/** The tech marks are the site's existing line-art set, not new drawings: the
- *  drone and the chip are already paired in the Foundation hero, and the eye is
- *  the Antz board's observation row. Only the payload clamp had to be drawn. */
-const TECH_ICONS: Record<TechIcon, () => React.JSX.Element> = {
   drone: Drone,
   ai: AiChip,
   vision: ObservationEye,
@@ -42,6 +47,17 @@ const TECH_ICONS: Record<TechIcon, () => React.JSX.Element> = {
   board: AiChip,
   lever: Lever,
   iot: IotNode,
+  /* The product cards. Six of these were already drawn for the Antz Systems
+     rows — this is the first time they have been named in the shared
+     vocabulary, so a fact can ask for one. */
+  record: RecordStack,
+  compliance: ComplianceShield,
+  globe: Globe,
+  trail: VisitorTrail,
+  behaviour: BehaviourModel,
+  calendar: DailyRounds,
+  offline: NoSignal,
+  brand: BrandTag,
 };
 
 /**
@@ -63,7 +79,7 @@ export default function ProjectBody({ project }: { project: Project }) {
         <aside className={s.card}>
           <dl className={s.facts}>
             {project.facts.map((fact) => {
-              const Icon = FACT_ICONS[fact.icon];
+              const Icon = ICONS[fact.icon];
               return (
               <div className={s.fact} key={fact.label}>
                 {/* The mark is decorative: the label beside it already names
@@ -126,7 +142,7 @@ export default function ProjectBody({ project }: { project: Project }) {
                 things, and the chips are its items. */}
             <ul className={s.chips}>
               {project.tech.map((item) => {
-                const Icon = TECH_ICONS[item.icon];
+                const Icon = ICONS[item.icon];
                 return (
                   <li className={`${s.chip} wf-body`} key={item.label}>
                     <span className={s.chipIcon} aria-hidden="true">
@@ -138,8 +154,44 @@ export default function ProjectBody({ project }: { project: Project }) {
               })}
             </ul>
           </section>
+
+          {/* Out to the product's own page. `rel="noreferrer"` alongside
+              noopener because this leaves the site: the target has no reason
+              to be told where its visitor came from. */}
+          {project.external && (
+            <a
+              className={s.external}
+              href={project.external.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {project.external.label}
+              <span className={s.externalMark} aria-hidden="true">
+                <ExternalArrow />
+              </span>
+              <span className={s.srOnly}>(opens in a new tab)</span>
+            </a>
+          )}
         </div>
       </div>
     </section>
+  );
+}
+
+/** The outbound mark: a shaft leaving a corner, which is the convention for a
+ *  link that leaves the site. Its own glyph rather than the pager chevron —
+ *  that one means "along", and this one means "away". */
+function ExternalArrow() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+      <path
+        d="M8.5 15.5 15.5 8.5M9.8 8.5h5.7v5.7"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        vectorEffect="non-scaling-stroke"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }

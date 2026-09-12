@@ -1,5 +1,6 @@
 import Link from "next/link";
 import s from "./Project.module.css";
+import LinkArrow from "@/components/icons/LinkArrow";
 
 /**
  * Figma node 1738:184778 — the closing band.
@@ -30,10 +31,10 @@ export default function ProjectCta() {
             {/* Figma points this nowhere; the footer's own "Submit a challenge"
                 is the same dead link, so it stays consistent with it. */}
             <a href="#" className={`${s.ctaBtn} ${s.ctaBtnFilled}`}>
-              Submit a challenge <span aria-hidden="true">&rarr;</span>
+              Submit a challenge <LinkArrow />
             </a>
             <Link href="/the-work" className={`${s.ctaBtn} ${s.ctaBtnOutline}`}>
-              View all projects <span aria-hidden="true">&rarr;</span>
+              View all projects <LinkArrow />
             </Link>
           </div>
         </div>

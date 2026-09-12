@@ -7,7 +7,10 @@ export type Pillar = {
   /** Figma only supplies copy for the open row (Education). The other two are
    *  written in the same voice as placeholders — swap for real copy. */
   description: string;
-  href: string;
+  /** Optional, and absent on Conservation: the homepage is the conservation
+   *  page, so that row has nowhere to send a reader. The other two lead to
+   *  their own pages. */
+  href?: string;
 };
 
 export const PILLARS: Pillar[] = [
@@ -16,7 +19,8 @@ export const PILLARS: Pillar[] = [
     key: "conservation",
     title: "Conservation",
     description: "Species monitoring, habitat protection, partner-led field programmes.",
-    href: "#conservation",
+    /* No href, by direction. It pointed at "#conservation", an anchor that
+       exists nowhere on the page — the row's own copy is the whole answer. */
   },
   {
     index: "02",
