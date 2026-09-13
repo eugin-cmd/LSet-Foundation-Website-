@@ -13,3 +13,4 @@ preview/
 # used are already committed under public/assets.
 References/*.mp4
 References/*.mov
+.vercel
