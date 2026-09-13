@@ -9,10 +9,14 @@ export type AccordionItem = {
   index: string;
   title: string;
   description: string;
-  /** Optional: a row whose destination is the page you are already on has
-   *  nowhere to send you, and a "Know More" that goes nowhere is worse than
-   *  none. Omit it and the panel closes on its copy. */
+  /** Optional: a row with nowhere to send a reader is better closing on its
+   *  copy than carrying a link that goes nowhere. Omit it and it does. */
   href?: string;
+  /** What the link says. "Know More" is the site's standard and the default;
+   *  a row overrides it where the destination is a different kind of thing —
+   *  Conservation sends a reader to the projects themselves, which is reading
+   *  on rather than learning what a pillar is. */
+  moreLabel?: string;
   /** Optional line-art mark beside the number. The education rows carry none. */
   icon?: React.ComponentType;
 };
@@ -80,7 +84,7 @@ export default function Accordion({
                   <p className={`${s.desc} wf-display-s`}>{item.description}</p>
                   {item.href && (
                     <a href={item.href} className={s.more}>
-                      Know More <LinkArrow />
+                      {item.moreLabel ?? "Know More"} <LinkArrow />
                     </a>
                   )}
                 </div>
