@@ -1,3 +1,4 @@
+import ShowcaseFilm from "./ShowcaseFilm";
 import s from "./Education.module.css";
 
 /**
@@ -10,14 +11,9 @@ export default function EducationShowcase() {
       <div className={s.showcasePhoto} aria-hidden="true" />
       <div className={s.showcaseDeep} aria-hidden="true" />
 
-      <div className={s.showcaseFrame}>
-        <img
-          src="/assets/edu-overhang.jpg"
-          alt="A keeper hand-feeding a bird of prey on the farm"
-          width={646}
-          height={438}
-        />
-      </div>
+      {/* The band's two photographic layers are untouched; what overhangs the
+          join is the film rather than the still it used to be. */}
+      <ShowcaseFilm />
     </section>
   );
 }

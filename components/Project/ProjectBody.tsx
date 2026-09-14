@@ -20,6 +20,9 @@ import BehaviourModel from "@/components/icons/BehaviourModel";
 import DailyRounds from "@/components/icons/DailyRounds";
 import NoSignal from "@/components/icons/NoSignal";
 import BrandTag from "@/components/icons/BrandTag";
+import CuppedHands from "@/components/icons/CuppedHands";
+import OpenBook from "@/components/icons/OpenBook";
+import Birds from "@/components/icons/Birds";
 import type { IconKey, Project } from "./project.data";
 import s from "./Project.module.css";
 
@@ -58,6 +61,11 @@ const ICONS: Record<IconKey, () => React.JSX.Element> = {
   calendar: DailyRounds,
   offline: NoSignal,
   brand: BrandTag,
+  /* The education rows' own three, so a row on /education and the page its
+     "Know More" opens are headed by the same mark. */
+  hands: CuppedHands,
+  book: OpenBook,
+  birds: Birds,
 };
 
 /**

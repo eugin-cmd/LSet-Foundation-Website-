@@ -437,7 +437,14 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  overflow: hidden;
+  /* `clip`, not `hidden`, for the same reason the courses section below uses
+     it: `hidden` makes this a scroll container, and the film frame's
+     `animation-timeline: view()` then measures itself against THIS box rather
+     than against the page. Measured with `hidden`, the frame sat at scale
+     1.000 at every scroll position, which is the animation stuck at its fill
+     state — growth that never grew. `clip` clips identically and creates no
+     scrollport. */
+  overflow: clip;
   background: var(--surface-deep);
 }
 
@@ -453,27 +460,138 @@
   background: var(--surface-deep);
 }
 
-/* Figma 1962:18205 — 606.072 x 438.489 at x 417, y 415, clipping an image that
-   is 39.69px wider than the frame. */
+/* Figma 1962:18205 — 606.072 x 438.489 at x 417, y 415. It held a still; it
+   holds the film now, so the box takes the film's own 16:9 rather than the
+   photograph's 1.382. Figma's width is kept, which is what anchors it to the
+   same place over the join; only the height follows the aspect down.
+
+   `transform-origin` is the frame's centre so the growth below opens it from
+   where it sits rather than pushing it off its anchor. */
 .showcaseFrame {
   position: absolute;
-  top: 28.58%;
-  left: 28.96%;
-  width: min(606.072px, 42.09vw);
-  aspect-ratio: 606.072 / 438.489;
+  /* Anchored by its own centre rather than its top-left corner, which is what
+     lets it be resized without moving. Figma's 606.072 wide at x 417 put that
+     centre at 720 of 1440 — dead centre — and 415 down a 1452 band, which is
+     40.32%. Both are kept; only the size has changed.
+
+     `translate` rather than a transform: the growth below owns this element's
+     `transform`, and a transform here would be overwritten the moment it ran.
+     The two independent properties compose instead. */
+  top: 40.32%;
+  left: 50%;
+  translate: -50% -50%;
+  z-index: 1;
+  /* Figma's 606.072, 75% bigger, by direction. The vw term is scaled with it
+     so the frame grows by the same 75% at every width rather than only where
+     the px cap is the one in force. */
+  width: min(1060.626px, 73.66vw);
+  aspect-ratio: 16 / 9;
+  transform-origin: 50% 50%;
+  border-radius: 16px;
   overflow: hidden;
+  /* Black behind the player while it loads, so the frame never flashes the
+     band's photograph through. */
+  background: #000;
+  box-shadow: 0 18px 48px -18px rgb(1 18 12 / 55%);
 }
 
-.showcaseFrame img {
+/* Small at first and growing to full size as the band comes up the screen, by
+   direction. Scroll-driven, so it tracks the scroll position rather than
+   playing once on entry — scroll back up and it closes again.
+
+   `entry 8%` to `cover 42%`: it has finished growing well before the band is
+   centred, which is the point at which a reader stops and the film starts. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .showcaseFrame {
+      animation: filmGrow 1ms linear both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 42%;
+    }
+  }
+}
+
+@keyframes filmGrow {
+  from {
+    transform: scale(0.74);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* The poster state: the film's own frame behind a play mark, as a real button
+   so it is reachable by keyboard and by anyone whose scroll never settles. */
+.filmPoster {
+  position: relative;
   display: block;
-  /* Figma's inner container is 39.69px wider than the 606.072px frame and is
-     clipped by it — 6.55%. `max-width: none` is required: the global
-     `img { max-width: 100% }` was capping this back to the frame width and
-     cancelling the bleed entirely. */
-  width: calc(100% + 6.55%);
-  max-width: none;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.filmPoster img {
+  display: block;
+  width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* Their own 44% black over the poster, which is what the play mark sits on. */
+.filmScrim {
+  position: absolute;
+  inset: 0;
+  background: rgb(11 36 30 / 44%);
+}
+
+.filmPlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 57px;
+  height: 57px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 40%);
+  color: var(--white);
+}
+
+.filmPlay svg {
+  width: 12px;
+  height: 15px;
+  /* Nudged off centre by a third of the triangle's own width: a play triangle
+     centred on its bounding box reads as sitting left of centre in a disc. */
+  margin-left: 3px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .filmPlay {
+    transition: background-color 160ms ease, scale 160ms ease;
+  }
+
+  .filmPoster:hover .filmPlay,
+  .filmPoster:focus-visible .filmPlay {
+    background: rgb(0 0 0 / 55%);
+    scale: 1.08;
+  }
+}
+
+.filmPoster:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: -4px;
+}
+
+.filmPlayer {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 /* --- courses, 1962:12752 ---
@@ -505,7 +623,13 @@
 
 /* Figma's x 129 at 1440 puts this on the same left edge as the proof wall's
    heading, so the same centred 1182 box is used. */
+/* Above the cards, not beside them: in the arc the rail is an absolutely
+   positioned layer, so without a stacking position of its own this heading
+   would be painted over by every card that swings past it. The Proof Wall's
+   heading carries the same two lines for the same reason. */
 .coursesHead {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -513,15 +637,25 @@
   margin: 0 auto;
 }
 
+/* The shadow is legibility, not styling. Once the arc rides up behind this
+   heading, what is behind the white type is no longer the section's own near
+   black: it is whatever photograph is swinging past. Measured across the pin,
+   the brightest backdrop under the title reached L=0.365, which puts white on
+   it at 2.5:1 — under the 3:1 that large text needs. The shadow darkens the
+   few pixels around each glyph, which is where that contrast is decided, and
+   is invisible against the dark ground the heading sits on the rest of the
+   time. Both lines take it, since both sit in the cards' path. */
 .coursesKicker {
   width: min(428px, 100%);
   color: var(--white);
+  text-shadow: 0 1px 3px rgb(1 18 12 / 55%), 0 2px 16px rgb(1 18 12 / 45%);
 }
 
 .coursesTitle {
   margin: 0;
   color: var(--white);
   white-space: nowrap;
+  text-shadow: 0 2px 4px rgb(1 18 12 / 60%), 0 4px 24px rgb(1 18 12 / 50%);
 }
 
 /* Figma starts the row at x 301.77 and lets the third card run off the right
@@ -682,22 +816,53 @@
    rectangles; these are re-sourced from the original uploads in the Figma file
    (six raster, plus Sanjeevan as vector, which is why it alone is an .svg) and
    carry real transparency. See README for the one mark that was recoloured. */
+/* Sits on the <MeshField> that now starts directly under the banner, so it
+   sets no background of its own: an opaque white here paints the mesh out.
+   The same treatment the homepage's partner strip takes, for the same reason.
+
+   `position` is not decoration either. The field's mesh is an absolutely
+   positioned pseudo-element at z-index 0, and a positioned element paints
+   above static in-flow content whatever the document order, so without this
+   the mesh would cover the logos. */
 .partnersBand {
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: center;
   width: 100%;
-  background: var(--surface-white);
+  background: transparent;
 }
 
 .partners {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 34px;
+  /* Figma's own 15.281px, the same figure the homepage's strip uses between
+     its label and its logos. This band carried 34px from when it sat inside
+     the courses section; standing in the homepage's position it takes the
+     homepage's spacing. */
+  gap: 15.281px;
   width: min(1042px, 100% - var(--edge) * 2);
   /* The clamp(64px, 10.56vw, 152px) top margin separated the strip from the
-     course rail above it; standing alone it takes even padding instead. */
-  padding: clamp(32px, 3.54vw, 50.935px) clamp(var(--edge), 3.54vw, 50.935px);
+     course rail above it; standing alone it takes even padding instead —
+     except below, which is that figure at 1.5x, as the homepage's strip takes
+     it: the extra room is what the wave rule sits in, and it opens the join
+     with the band of copy that follows. */
+  padding: clamp(34px, 3.54vw, 50.935px) clamp(var(--edge), 3.54vw, 50.935px)
+    calc(clamp(34px, 3.54vw, 50.935px) * 1.5);
+}
+
+/* Placement only for the shared <WaveRule />; the paint — tile, weight, fading
+   ends — lives in that component. Pinned to the band's bottom edge and inset
+   to the page's gutter, exactly as the homepage's copy of it is, so the two
+   dividers are identical rather than merely similar. A border-bottom here
+   would have run the full viewport and read as a page rule instead of one
+   belonging to this band. */
+.partnersRule {
+  position: absolute;
+  right: var(--edge);
+  bottom: 0;
+  left: var(--edge);
 }
 
 .partnersLabel {
@@ -777,8 +942,14 @@
       --cw-w: min(100vw, 1600px);
       --cw-radius: calc(var(--cw-w) * 1.5);
       --cw-card-w: calc(var(--cw-w) * 0.26667);
-      /* Card centre inside the stage, clear of the pinned heading. */
-      --cw-card-cy: 55%;
+      /* Card centre inside the stage. 55% held the arc clear of the pinned
+         heading, which left a 14px gap and nothing passing behind it; 47%
+         rode the cards up into the heading's own band so they sweep behind
+         it, which is what the z-index above is for. The 50px is a nudge back
+         down, by direction, and is kept as a length rather than folded into
+         the percentage so it stays 50px at every stage height instead of
+         growing with it. */
+      --cw-card-cy: calc(47% + 50px);
       --cw-swing: 30deg;
       --cw-ease: cubic-bezier(0.65, 0, 0.35, 1); /* ease-in-out-cubic */
 
@@ -786,20 +957,21 @@
     }
 
     .coursesTrack {
-      /* 302svh, against the Proof Wall's 380, so both arcs spend the same
-         scroll per card despite their different spans.
+      /* Derived, not chosen: the timeline is the `cover` range, which is the
+         section PLUS a viewport, so a card's own scroll is span * (H + V).
+         Holding that equal to the Proof Wall's 325svh per card gives
 
-         Not the 0.8385 span ratio, which would give 319svh: the timeline is
-         the `cover` range, section PLUS a viewport, so parity solves
-         span_c * (Hc + V) = span_p * (Hp + V) — in svh,
-         0.8072 * (302 + 100) = 0.6768 * (380 + 100) = 325svh per card. Using
-         the bare span ratio once before left this arc 5.4% slower than the
-         Proof Wall rather than equal to it.
+           H = 325 / span - V
 
-         Measured at a 900px viewport, peak rotation at mid-travel is 5.81deg
-         per 100px on both, from 9.26 at the original lengths. The stage holds
-         for (302 - 100) = 202svh while the cards turn. */
-      height: 302svh;
+         At the three-card span of 0.8072 that was 302svh, which is what this
+         track carried while Figma's three cards were in it. At eight cards the
+         span falls to 0.54472 and the same rule gives 497svh.
+
+         It is a long pin, and it is the honest consequence of paging eight
+         cards at the speed the site's other arc pages four. Shortening it does
+         not drop a card; it only makes every card turn faster than the Proof
+         Wall's do. The stage holds for (497 - 100) = 397svh while they turn. */
+      height: 497svh;
       view-timeline-name: --cw-track;
     }
 
@@ -836,9 +1008,23 @@
       will-change: transform;
     }
 
-    .pivot:nth-child(1) { animation-range: cover 0% cover 80.72%; }
-    .pivot:nth-child(2) { animation-range: cover 9.64% cover 90.36%; }
-    .pivot:nth-child(3) { animation-range: cover 19.28% cover 100%; }
+    /* Eight cards now, not Figma's three, so these are re-derived rather than
+       extended by eye. The rule both arcs follow is that each card's stagger
+       is 0.1194 of its own span — the Proof Wall's 8.791/73.627 and this
+       arc's original 9.64/80.72 are the same ratio — and the last card has to
+       finish at 100%:
+
+         span * (1 + 0.1194 * (n - 1)) = 100
+
+       At n = 8 that gives a span of 54.472% and a stagger of 6.504%. */
+    .pivot:nth-child(1) { animation-range: cover 0% cover 54.472%; }
+    .pivot:nth-child(2) { animation-range: cover 6.504% cover 60.976%; }
+    .pivot:nth-child(3) { animation-range: cover 13.008% cover 67.480%; }
+    .pivot:nth-child(4) { animation-range: cover 19.512% cover 73.984%; }
+    .pivot:nth-child(5) { animation-range: cover 26.016% cover 80.488%; }
+    .pivot:nth-child(6) { animation-range: cover 32.520% cover 86.992%; }
+    .pivot:nth-child(7) { animation-range: cover 39.023% cover 93.496%; }
+    .pivot:nth-child(8) { animation-range: cover 45.527% cover 100%; }
 
     .pivot .card {
       position: absolute;

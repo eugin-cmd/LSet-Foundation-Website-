@@ -1,3 +1,4 @@
+import WaveRule from "@/components/WaveRule/WaveRule";
 import { EDU_PARTNERS } from "./education.data";
 import s from "./Education.module.css";
 
@@ -32,6 +33,13 @@ export default function EducationPartners() {
           ))}
         </div>
       </div>
+
+      {/* The squiggle that closes the homepage's partner strip, closing this
+          one for the same reason: the band below it is copy on the same mesh,
+          so without a divider the two run together. Pinned to the band rather
+          than to the column above, so it spans the page the way the homepage's
+          does. */}
+      <WaveRule className={s.partnersRule} />
     </section>
   );
 }

@@ -25,15 +25,21 @@ import s from "./Project.module.css";
  * homepage's partner strip and the Antz platform section, so the site has one
  * divider rather than a second kind that appears only here.
  */
+/** "capability" plus an "s" is "capabilitys". Consonant + y takes -ies; every
+ *  other noun these galleries use takes a plain -s. */
+function plural(noun: string) {
+  return /[^aeiou]y$/.test(noun) ? `${noun.slice(0, -1)}ies` : `${noun}s`;
+}
+
 export default function ProjectGallery({ project }: { project: Project }) {
   const style = project.galleryStyle ?? "rail";
   const cards = style === "cards";
+  /* One noun for the section label, the arrows and the live region, so the
+     three cannot disagree about what is being paged through. */
+  const noun = project.galleryNoun ?? (cards ? "capability" : "photograph");
 
   return (
-    <section
-      className={s.gallery}
-      aria-label={cards ? `${project.title} capabilities` : "Project photographs"}
-    >
+    <section className={s.gallery} aria-label={`${project.title} ${plural(noun)}`}>
       <WaveRule className={s.rule} />
       {style === "stack" ? (
         <AntzCarousel
@@ -48,12 +54,9 @@ export default function ProjectGallery({ project }: { project: Project }) {
       ) : (
         <ProjectCarousel
           photos={project.gallery}
-          label={
-            cards
-              ? `${project.title} capabilities`
-              : `${project.title} photographs`
-          }
+          label={`${project.title} ${plural(noun)}`}
           variant={cards ? "cards" : "photos"}
+          noun={noun}
         />
       )}
     </section>

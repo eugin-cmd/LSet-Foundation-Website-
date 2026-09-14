@@ -44,11 +44,16 @@ export default function ProjectCarousel({
      is shared; only the width of a slide and what is drawn inside it differ,
      which is why this is a flag and not a second component. */
   variant = "photos",
+  /* Names one slide, for the arrows and the live region. */
+  noun,
 }: {
   photos: ProjectPhoto[];
   label: string;
   variant?: "photos" | "cards";
+  noun?: string;
 }) {
+  const item = noun ?? (variant === "cards" ? "capability" : "photograph");
+  const Item = item.charAt(0).toUpperCase() + item.slice(1);
   const count = photos.length;
   /* The rail carries the set twice; only the first band is ever a resting
      position, the second exists so the wrap has somewhere to slide to. */
@@ -270,7 +275,7 @@ export default function ProjectCarousel({
           type="button"
           className={s.arrow}
           onClick={handlePrev}
-          aria-label={variant === "cards" ? "Previous capability" : "Previous photograph"}
+          aria-label={`Previous ${item}`}
         >
           <Chevron />
         </button>
@@ -278,7 +283,7 @@ export default function ProjectCarousel({
           type="button"
           className={`${s.arrow} ${s.arrowNext}`}
           onClick={handleNext}
-          aria-label={variant === "cards" ? "Next capability" : "Next photograph"}
+          aria-label={`Next ${item}`}
         >
           <Chevron />
         </button>
@@ -289,7 +294,7 @@ export default function ProjectCarousel({
       <p className={s.srOnly} aria-live="polite">
         {variant === "cards"
           ? `${photos[shown].title}, ${shown + 1} of ${count}`
-          : `Photograph ${shown + 1} of ${count}`}
+          : `${Item} ${shown + 1} of ${count}`}
       </p>
     </div>
   );

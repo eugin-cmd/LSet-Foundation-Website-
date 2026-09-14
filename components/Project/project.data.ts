@@ -33,7 +33,13 @@ export type IconKey =
   | "behaviour"
   | "calendar"
   | "offline"
-  | "brand";
+  | "brand"
+  /* The education topic pages. These three are the marks the education
+     accordion already carries against its own rows, so a row and the page it
+     opens are headed by the same drawing. */
+  | "hands"
+  | "book"
+  | "birds";
 
 /** @deprecated kept as aliases so existing records read unchanged. */
 export type FactIcon = IconKey;
@@ -168,6 +174,11 @@ export type Project = {
    *  All three come from antzsystems.com; which one a product page takes is
    *  the one its own page over there takes. */
   galleryStyle?: "rail" | "stack" | "cards";
+  /** What the gallery is, for the section's label and its arrows: "capability"
+   *  reads right for the Antz Platform families and wrong for a rail of
+   *  faculty portraits. Defaults to "photograph" on the rail and "capability"
+   *  on cards, which is what every record but the faculty one wants. */
+  galleryNoun?: string;
 };
 
 /**

@@ -35,7 +35,17 @@ export default function EducationCourses() {
                  the pivot swings the card along the arc. */
               <div className={s.pivot} key={course.href}>
                 <article className={s.card}>
-                  <a href={course.href} className={s.cardHit}>
+                  {/* Out to the course's own page on the institute's site,
+                      which holds the syllabus, the intake dates and the
+                      application. Marked the way every other outbound link
+                      here is: new tab, and said so for a screen reader rather
+                      than left to be discovered. */}
+                  <a
+                    href={course.href}
+                    className={s.cardHit}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <div className={s.cardBg} aria-hidden="true">
                       <img src={course.image} alt="" />
                     </div>
@@ -57,6 +67,7 @@ export default function EducationCourses() {
                       <span className={`${s.cardLink} wf-small`}>
                         View Course <LinkArrow />
                       </span>
+                      <span className="sr-only">(opens in a new tab)</span>
                     </div>
                   </a>
                 </article>

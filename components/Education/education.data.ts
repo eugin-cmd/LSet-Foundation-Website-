@@ -1,4 +1,9 @@
 import type { AccordionItem } from "@/components/Pillars/Accordion";
+import {
+  EDU_HANDS_ON,
+  EDU_FACULTY,
+  EDU_SPECIES,
+} from "@/components/Project/educationTopics.data";
 
 /** Figma nodes 1962:18121 / 18127 / 18136. */
 /** The accordion's own item plus the key its icon is looked up by. */
@@ -7,68 +12,121 @@ export type EducationRow = AccordionItem & {
 };
 
 export const EDUCATION_ROWS: EducationRow[] = [
+  /* Each row's sentence is read from the page its "Know More" opens, not
+     repeated here: the two would drift the first time either was edited.
+     The hrefs were dead anchors until those pages existed. */
   {
     index: "01",
     key: "hands",
     title: "Hands-on Training",
-    // PLACEHOLDER: Figma leaves rows 01 and 03 collapsed and supplies no body
-    // copy for them, exactly as the homepage's pillars board does.
-    description:
-      "Daily husbandry, enrichment and handling practised on the farm, not demonstrated on a screen.",
-    href: "#hands-on-training",
+    description: EDU_HANDS_ON.lede!,
+    href: "/education/hands-on-training",
   },
   {
     index: "02",
     key: "faculty",
     title: "Multinational Faculty",
-    description:
-      "Mentored daily by international practitioners from six countries, alongside India's leading zoo directors, veterinarians, and conservation researchers.",
-    href: "#multinational-faculty",
+    description: EDU_FACULTY.lede!,
+    href: "/education/multinational-faculty",
   },
   {
     index: "03",
     key: "species",
     title: "Species Exposure",
-    // PLACEHOLDER: see above.
-    description:
-      "Over 200 species under one roof, from small captive mammals to birds, reptiles and primates.",
-    href: "#species-exposure",
+    description: EDU_SPECIES.lede!,
+    href: "/education/species-exposure",
   },
 ];
 
 export type Course = {
   duration: string;
-  /** Figma sets the second card's name on two explicit lines. */
+  /** Figma sets the second card's name on two explicit lines. Longer names
+   *  carry their own break here rather than being wrapped by the box, which
+   *  would break them differently at every width. */
   titleLines: string[];
   description: string;
   image: string;
   href: string;
 };
 
-/** Figma nodes 1962:12759 / 12760 / 12761. */
+/**
+ * Every course the institute runs, from lifesciencetrust.org/course, in the
+ * order its own courses page lists them: the two long residential diplomas
+ * first, then the certificates.
+ *
+ * Figma nodes 1962:12759 / 12760 / 12761 drew three cards. These are eight,
+ * which is what the institute actually teaches, and the arc's stagger below
+ * is derived for that count rather than the design's three.
+ *
+ * Each card links out to that course's own page, where the full syllabus,
+ * the intake dates and the application live. Those were dead anchors until
+ * now. The snippet is a line drawn from the course's own description; the
+ * photograph is the one its page opens with.
+ */
 export const COURSES: Course[] = [
   {
     duration: "3 MONTHS, RESIDENTIAL",
-    titleLines: ["Zoo Animal Keeper – Small Captive Animals"],
+    titleLines: ["Zoo Animal Keeper", "Small Captive Animals"],
     description:
-      "Entry-level immersion into professional animal care, no prior degree required.",
-    image: "/assets/edu-course-1.jpg",
-    href: "#zoo-animal-keeper",
+      "Entry-level immersion with 150+ exotic species, 6am to 6pm. No prior degree required.",
+    image: "/assets/edu/courses/keeper.webp",
+    href: "https://lifesciencetrust.org/course/animal-zoo-keeper-small-captive-animals",
   },
   {
     duration: "1 YEAR, RESIDENTIAL",
     titleLines: ["Diploma in Animal", "Care & Management"],
     description:
-      "India's only residential research diploma in exotic animal care, culminating in an independent dissertation.",
-    image: "/assets/edu-course-2.jpg",
-    href: "#diploma-animal-care",
+      "Two semesters inside the living laboratory, from taxonomy and nutrition to zoo management.",
+    image: "/assets/edu/courses/dacm.webp",
+    href: "https://lifesciencetrust.org/course/diploma-in-animal-care-management",
   },
   {
     duration: "1 YEAR, RESIDENTIAL",
-    titleLines: ["Advanced Diploma in Animal Care Research"],
-    description: "Research methodology, biostatistics, and ex-situ conservation.",
-    image: "/assets/edu-course-3.jpg",
-    href: "#advanced-diploma",
+    titleLines: ["Advanced Diploma in", "Animal Care Research"],
+    description:
+      "Research design, biostatistics and scientific writing, ending in an independent dissertation.",
+    image: "/assets/edu/courses/research.webp",
+    href: "https://lifesciencetrust.org/course/new-course",
+  },
+  {
+    duration: "3 MONTHS, ON-SITE",
+    titleLines: ["Orientation to", "Zoo Design"],
+    description:
+      "Habitat planning, enclosure design and circulation, for architects and landscape designers.",
+    image: "/assets/edu/courses/zoo-design.webp",
+    href: "https://lifesciencetrust.org/course/orientation-to-zoo-design",
+  },
+  {
+    duration: "3 MONTHS, ON-SITE",
+    titleLines: ["Aquarium", "Technician Programme"],
+    description:
+      "Freshwater and marine systems, from home aquariums to the ornamental fish trade.",
+    image: "/assets/edu/courses/aquarium.webp",
+    href: "https://lifesciencetrust.org/course/aquarium-technician-program",
+  },
+  {
+    duration: "1 MONTH, DAWN TO DUSK",
+    titleLines: ["Basics of Equine", "Care & Management"],
+    description:
+      "Stable management, nutrition, hoof care and equine behaviour, with Bangalore Horse Riding School.",
+    image: "/assets/edu/courses/equine.webp",
+    href: "https://lifesciencetrust.org/course/basics-of-equine-care-management",
+  },
+  {
+    duration: "300 HOURS, ON-SITE",
+    titleLines: ["Assistant", "Gardener Course"],
+    description:
+      "Horticulture, propagation and landscape maintenance, with on-the-job training.",
+    image: "/assets/edu/courses/gardener.webp",
+    href: "https://lifesciencetrust.org/course/assistant-gardener-course",
+  },
+  {
+    duration: "4 SUNDAYS, ON-SITE",
+    titleLines: ["Insect Rearing &", "Culture Techniques"],
+    description:
+      "Insect biology and behaviour through to captive breeding and farm-scale production.",
+    image: "/assets/edu/courses/insects.webp",
+    href: "https://lifesciencetrust.org/course/insect-rearing-culture-techniques",
   },
 ];
 
