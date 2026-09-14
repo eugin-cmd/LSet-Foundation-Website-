@@ -27,7 +27,9 @@ const LINKS = [
   /* The drawer's own label column reads WHAT WE DO, so this is its control and
      needs no href of its own. */
   { label: "What We Do", href: "#", caret: true, drawer: true },
-  { label: "About", href: "#", caret: true, drawer: false },
+  /* A real page now, at /about. It was "#" with a caret, which promised a
+     menu that never existed and went nowhere when clicked. */
+  { label: "About", href: "/about", caret: false, drawer: false },
 ];
 
 /**

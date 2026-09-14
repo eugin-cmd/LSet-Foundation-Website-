@@ -1,0 +1,407 @@
+/* ---------------------------------------------------------------------------
+   About Us.
+
+   No Figma frame of its own: the page is composed from the bands the site
+   already has, so most of what it needs is in shared components. What is here
+   is the banner, which follows the Our Work banner's construction exactly, and
+   the two sections this page alone carries.
+   --------------------------------------------------------------------------- */
+
+/* --- banner ------------------------------------------------------------- */
+
+.hero {
+  /* The cue's own slot offset, its 47px height, and 20px of air — derived, so
+     the reserve follows the cue rather than being a typed constant. The same
+     expression the Our Work and Antz banners use. */
+  --cue-reserve: calc(clamp(36px, 5vw, 72px) + 47px + 20px);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--banner-height);
+  padding: var(--cue-reserve) var(--edge);
+  overflow: hidden;
+  background: url("/assets/about/hero.jpg") center / cover no-repeat;
+  background-color: var(--scrim-base);
+}
+
+.heroTint {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 25%);
+  pointer-events: none;
+}
+
+.heroScrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, #01120c 3.381%, rgba(0, 0, 0, 0) 25.943%),
+    linear-gradient(0deg, #01120c 0%, rgba(0, 0, 0, 0) 58.071%);
+}
+
+.heroTitle {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.heroInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 23px;
+  width: min(1276px, 100%);
+  text-align: center;
+}
+
+.heroKicker {
+  margin: 0;
+  color: var(--white);
+}
+
+/* The banner's mark, on the same terms as the other banners' icon rows: the
+   same size curve, the same 1.5 stroke from currentColor, and the same drop on
+   load. The name comes through a custom property because css-loader hashes
+   `animation-name` inside a *.module.css and these keyframes are global. */
+.heroIcons {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+  color: var(--white);
+}
+
+.heroIcons svg {
+  flex: none;
+  width: clamp(26px, 2.36vw, 34px);
+  height: auto;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation-name: var(--anim-icon-drop);
+  animation-duration: 940ms;
+  animation-delay: 1320ms;
+  animation-fill-mode: both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroIcons svg {
+    animation: none;
+  }
+}
+
+.heroHeading {
+  width: 100%;
+  margin: 0;
+  /* The Foundation hero's 900 at 80px. "One mission, four pillars" measures
+     wider than "The proof wall", so it takes a slightly lower cap to stay on
+     one line in the 1276px column. */
+  font-size: clamp(32px, 5vw, 72px);
+  font-weight: 900;
+  /* Fallback for no background-clip support; .wf-iridescent replaces it. */
+  color: var(--white);
+  text-wrap: balance;
+}
+
+.heroLede {
+  width: min(760px, 100%);
+  color: var(--white);
+  text-wrap: pretty;
+}
+
+/* The copy rises as the page scrolls, the same -150px the other banners take.
+   No footage sink to pair with it: this band carries a still painted on the
+   section itself, which has nothing to translate. */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .heroInner {
+      animation-name: aboutCopyRise;
+      animation-duration: 1ms; /* superseded by the timeline */
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 var(--banner-height);
+    }
+  }
+}
+
+/* Declared here rather than shared: CSS Modules rewrites `animation-name` to a
+   scoped identifier whether or not the keyframe is local, so a module naming a
+   global keyframe resolves to nothing and the animation silently never runs. */
+@keyframes aboutCopyRise {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-150px);
+  }
+}
+
+/* --- mission, vision, values -------------------------------------------- */
+
+/* On the <MeshField>, so no background of its own: an opaque one paints the
+   mesh out. Positioned for the same reason the other sections on it are — the
+   field's mesh is an absolutely positioned pseudo-element at z-index 0, which
+   would otherwise paint over this copy. */
+.creed {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 0 var(--edge) clamp(64px, 7.7vw, 100px);
+  background: transparent;
+}
+
+.creedInner {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(36px, 4.2vw, 60px);
+  width: min(1280px, 100%);
+}
+
+.creedBlocks {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(24px, 3.3vw, 48px);
+}
+
+@media (max-width: 900px) {
+  .creedBlocks {
+    grid-template-columns: 1fr;
+  }
+}
+
+.creedBlock {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1.1vw, 16px);
+}
+
+/* The section kickers' geometry and colour, as the project prose blocks take
+   them, so this page's small caps are the site's rather than its own. */
+.creedKicker {
+  margin: 0;
+  font: 500 clamp(11px, 0.97vw, 14px) / 1.3 var(--font-flex);
+  color: var(--color-darkblue);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+}
+
+.creedBody {
+  margin: 0;
+  font: 400 clamp(16px, 1.39vw, 20px) / 1.5 var(--font-inter-tight);
+  color: rgb(0 0 0 / 70%);
+  text-wrap: pretty;
+}
+
+/* The four the institute states it stands for. A row of labels rather than
+   cards: they summarise the values paragraph above them. */
+.stands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(16px, 2.8vw, 40px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.standsItem {
+  font: 600 clamp(12px, 1.05vw, 15px) / 1.3 var(--font-flex);
+  color: var(--color-darkblue);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+/* --- the team ------------------------------------------------------------ */
+
+.people {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 0 var(--edge) clamp(48px, 5.5vw, 78px);
+  background: transparent;
+}
+
+/* Placement only for the shared <WaveRule />; the paint lives in that
+   component. In flow above the heading, as the Antz platform section drops it,
+   rather than pinned like the partners strip's. */
+.peopleRule {
+  width: min(1280px, 100%);
+  margin-bottom: clamp(36px, 4.2vw, 56px);
+}
+
+/* Centred over the grid, by direction. It sat left while it was mirroring the
+   institute's own team block, which heads its grid from the left with the tab
+   controls opposite; this page has no tabs for it to balance against. */
+.peopleHead {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+  width: min(1280px, 100%);
+  margin-bottom: clamp(28px, 3.3vw, 44px);
+  text-align: center;
+}
+
+.peopleKicker {
+  margin: 0;
+  color: var(--color-darkblue);
+}
+
+.peopleTitle {
+  margin: 0;
+  color: var(--color-darkblue);
+  text-wrap: balance;
+}
+
+/* The institute's own grid: four across, three at tablet width and two on a
+   phone, with the tiles centred in their columns. Its gaps too — 20px across
+   and 40px down, opening to 24 and 48 above the small breakpoint. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 48px 24px;
+  justify-items: center;
+  width: min(1280px, 100%);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 40px 20px;
+  }
+}
+
+/* Their 225.33px tile, as a ceiling rather than a fixed width so the columns
+   can shrink below it. */
+.member {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 225.33px;
+}
+
+/* 225.33 x 281.67 and a 12.61px radius, both theirs. The ratio is what keeps
+   ten portraits shot at different sizes reading as one set. */
+.memberFrame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 225.33 / 281.67;
+  margin-bottom: 16px;
+  border-radius: 12.61px;
+  overflow: hidden;
+  /* Behind a portrait that has not loaded, and behind any that does not fill
+     the tile: the page's own pale green rather than a grey box. */
+  background: var(--color-mint-50, rgb(220 241 231));
+}
+
+.memberFrame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Their 19px name over a 14.19px role. The faces are this site's, not theirs:
+   the display family for the name and the prose family for the title, in the
+   page's own ink. */
+.memberName {
+  margin: 0;
+  font: 600 clamp(16px, 1.32vw, 19px) / 1.2 var(--font-flex);
+  color: var(--color-darkblue);
+}
+
+.memberRole {
+  margin: 2px 0 0;
+  font: 400 clamp(13px, 0.99vw, 14.19px) / 1.25 var(--font-inter-tight);
+  color: rgb(0 0 0 / 60%);
+  text-wrap: pretty;
+}
+
+/* --- the graduate's account ---------------------------------------------- */
+
+.quote {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 0 var(--edge) clamp(64px, 7.7vw, 100px);
+  background: transparent;
+}
+
+.quoteInner {
+  display: flex;
+  gap: clamp(24px, 4.4vw, 56px);
+  align-items: center;
+  width: min(1080px, 100%);
+  margin: 0;
+}
+
+.quotePortrait {
+  flex: none;
+  width: clamp(140px, 18vw, 240px);
+  height: auto;
+  border-radius: 20px;
+  object-fit: cover;
+}
+
+.quoteBody {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 1.67vw, 24px);
+  min-width: 0;
+}
+
+.quoteText {
+  margin: 0;
+}
+
+.quoteText p {
+  margin: 0;
+  font: 400 clamp(20px, 2.22vw, 32px) / 1.45 var(--font-inter-tight);
+  color: var(--color-darkblue);
+  text-wrap: pretty;
+}
+
+.quoteAttr {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quoteName {
+  font: 600 clamp(15px, 1.25vw, 18px) / 1.3 var(--font-flex);
+  color: var(--color-darkblue);
+}
+
+.quoteRole {
+  font: 400 clamp(13px, 1.05vw, 15px) / 1.3 var(--font-inter-tight);
+  color: rgb(0 0 0 / 60%);
+}
+
+@media (max-width: 720px) {
+  .quoteInner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
