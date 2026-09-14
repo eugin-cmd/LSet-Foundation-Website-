@@ -361,54 +361,14 @@
   }
 }
 
-/* The species name drifts through --species-ramp. Guarded: without
-   background-clip the transparent fill would leave an invisible name, so the
-   solid colour above stays in force instead. */
-@supports (background-clip: text) or (-webkit-background-clip: text) {
-  /* Not on a centred mast: that one wears `.wf-iridescent`, the homepage's own
-     sheen, and this rule would win the specificity tie against it — both are
-     single classes and this file loads last. The `:not()` stands it down. */
-  .hero:not([data-hero-centred="true"]) .heroHeading {
-    /* A 50% white layer over the ramp, so half the gradient reads through.
-       It was 75% (a quarter through) and came up 25 points from there. The
-       banner only — the Our Work rows and the homepage arc cards keep the ramp
-       at full strength.
+/* The heading's fill is `.wf-iridescent`, set on the element in ProjectHero:
+   the homepage banner's holographic sheen, which every mast on the site now
+   wears. Two other treatments have stood here — a blue-green species ramp,
+   and a warm-to-periwinkle sweep read off a reference screenshot — and both
+   are gone, by direction, along with the keyframes that drove them.
 
-       A layer rather than paler stops, because --species-ramp is shared with
-       those two: weakening the stops would weaken it everywhere. Two layers
-       now, so background-size names one value each — the veil is flat and
-       needs no tile, the ramp keeps the seamless one. */
-    background-image: linear-gradient(
-        rgb(255 255 255 / 50%),
-        rgb(255 255 255 / 50%)
-      ),
-      var(--species-ramp-banner);
-    background-size: auto,
-      var(--species-tile-banner) var(--species-tile-banner);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .hero:not([data-hero-centred="true"]) .heroHeading {
-      animation: speciesDrift var(--species-drift-banner) linear infinite;
-    }
-  }
-}
-
-/* The keyframe is declared here rather than shared from globals.css: CSS
-   Modules rewrites `animation-name` to a scoped identifier whether or not the
-   keyframe is local, so a module naming a global keyframe resolves to nothing
-   and the animation silently never runs. Three small copies is the cost of
-   that; if this ever moves to a shared file it has to move as `:global`. */
-@keyframes speciesDrift {
-  to {
-    background-position: var(--species-shift-banner)
-      var(--species-shift-banner);
-  }
-}
+   --species-ramp itself stays in tokens.css: the Our Work rows and the
+   homepage arc cards still carry it, and those were never part of this. */
 
 /* The line under the heading. Same treatment the Our Work banner gives its
    lede — white, a readable measure, `text-wrap: pretty` so the last line is

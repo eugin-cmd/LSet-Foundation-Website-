@@ -95,16 +95,6 @@
      The three numbers are one geometry and must move together: for a 135deg
      axis, shift = period * cos(45deg) and tile = period / cos(45deg). Break
      that and the loop either jumps or grows a seam at every tile edge. */
-  --species-ramp-banner: repeating-linear-gradient(
-    135deg,
-    #00afd6 0px,
-    #37bd69 130px,
-    #00afd6 260px
-  );
-  --species-shift-banner: 183.85px;
-  --species-tile-banner: 367.7px;
-  --species-drift-banner: 7s;
-
   --species-ramp: repeating-linear-gradient(
     135deg,
     #00afd6 0px,

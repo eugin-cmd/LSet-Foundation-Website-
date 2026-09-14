@@ -126,10 +126,12 @@ export default function ProjectHero({
               the real string as its accessible name — and it moves the
               characters with `top` rather than a transform, which is what lets
               the species gradient stay clipped to them. */}
+          {/* The homepage banner's own fill, on every mast here: the same
+              `.wf-iridescent` the Foundation hero wears, so a species name and
+              the title on the front page are one treatment rather than two
+              that have to be kept in step. */}
           <h1
-            className={`${s.heroHeading} wf-display-xl${
-              project.heroCentred ? " wf-iridescent" : ""
-            }`}
+            className={`${s.heroHeading} wf-display-xl wf-iridescent`}
             aria-label={project.title}
           >
             <WaveText text={project.title} />
