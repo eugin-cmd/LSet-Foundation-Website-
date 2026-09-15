@@ -1,0 +1,111 @@
+/* ---------------------------------------------------------------------------
+   Legal pages — no Figma node. Built from the site's own parts: the banner
+   furniture the other pages wear, and a single reading column on the mesh.
+
+   A legal notice is read, not browsed, so it gets one narrow measure and
+   nothing else competing with it.
+   --------------------------------------------------------------------------- */
+
+.hero {
+  --cue-reserve: clamp(48px, 5vw, 72px);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 100%;
+  /* Shorter than the site's --banner-height: this page has no photograph to
+     fill a full band, and a legal notice does not need a billboard. */
+  min-height: clamp(300px, 30vw, 420px);
+  padding: clamp(110px, 11vw, 160px) var(--edge) clamp(40px, 4.4vw, 64px);
+  overflow: hidden;
+  background: var(--scrim-base);
+}
+
+/* The band's own light, so it is not a flat rectangle: the site's holographic
+   ramp at low strength, fixed rather than drifting. */
+.hero::before {
+  position: absolute;
+  inset: 0;
+  opacity: 0.16;
+  background: var(--holo-ramp);
+  content: "";
+  pointer-events: none;
+}
+
+.heroInner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: flex-start;
+  width: min(1200px, 100%);
+  margin: 0 auto;
+}
+
+.kicker {
+  margin: 0;
+  color: var(--ink-on-dark-2);
+}
+
+.title {
+  margin: 0;
+  font-weight: 900;
+  color: var(--white);
+  text-wrap: balance;
+}
+
+.updated {
+  margin: 0;
+  color: var(--ink-on-dark-2);
+}
+
+/* --- the notice ---------------------------------------------------------- */
+
+.body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: var(--section-y) var(--edge) var(--section-tail);
+  background: transparent;
+}
+
+.bodyInner {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(32px, 3.6vw, 52px);
+  /* One reading measure. 720px holds about 85 characters at this size, which
+     is the top of the comfortable range and right for a document nobody wants
+     to spend long in. */
+  width: min(720px, 100%);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1.1vw, 16px);
+}
+
+/* The section kickers' own geometry, as the project prose blocks take them. */
+.heading {
+  margin: 0;
+  font: 500 clamp(11px, 0.97vw, 14px) / 1.3 var(--font-flex);
+  color: var(--color-darkblue);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+}
+
+.para {
+  margin: 0;
+  font: 400 clamp(15px, 1.25vw, 17px) / 1.65 var(--font-inter-tight);
+  color: rgb(0 0 0 / 72%);
+  text-wrap: pretty;
+}
+
+.para a {
+  color: var(--color-darkblue);
+  text-underline-offset: 3px;
+}
