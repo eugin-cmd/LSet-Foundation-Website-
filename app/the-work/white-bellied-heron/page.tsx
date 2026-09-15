@@ -8,9 +8,9 @@ import ProjectCta from "@/components/Project/ProjectCta";
 import { WHITE_BELLIED_HERON } from "@/components/Project/project.data";
 
 export const metadata: Metadata = {
-  title: "White-Bellied Heron — LSeT Foundation",
+  title: "White-Bellied Heron | LSeT Foundation",
   description:
-    "Drone-flown bird diverters on live transmission lines in Bhutan, with the Royal Society for the Protection of Nature — protecting the last breeding population of the White-bellied Heron.",
+    "Drone-flown bird diverters on live transmission lines in Bhutan, with the Royal Society for the Protection of Nature, protecting the last breeding population of the White-bellied Heron.",
 };
 
 /**
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
  * Nested under /the-work rather than sitting at /white-bellied-heron, so the
  * banner's "← All projects" is a real parent link and the URL says where the
  * page belongs. It is reached from two places: the heron card on the homepage
- * <ProofWall> arc, and the heron row's "View project" on Our Work — both of
+ * <ProofWall> arc, and the heron row's "View Project" on Our Work — both of
  * which pointed at placeholder anchors until this page existed.
  *
  * One <MeshField> around the light run, as on all four other pages: the banner

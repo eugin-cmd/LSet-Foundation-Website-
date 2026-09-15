@@ -8,9 +8,9 @@ import ProjectCta from "@/components/Project/ProjectCta";
 import { MEDITERRANEAN_MONK_SEAL } from "@/components/Project/project.data";
 
 export const metadata: Metadata = {
-  title: "Mediterranean Monk Seal — LSeT Foundation",
+  title: "Mediterranean Monk Seal | LSeT Foundation",
   description:
-    "A computer-vision model that identifies every Mediterranean Monk Seal by its natural markings at Cap Blanc, Mauritania — the species' last major breeding site — with CBD-Hábitat.",
+    "A computer-vision model that identifies every Mediterranean Monk Seal by its natural markings at Cap Blanc, Mauritania, the species' last major breeding site, with CBD-Hábitat.",
 };
 
 /**

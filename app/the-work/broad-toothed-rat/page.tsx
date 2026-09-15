@@ -8,7 +8,7 @@ import ProjectCta from "@/components/Project/ProjectCta";
 import { BROAD_TOOTHED_RAT } from "@/components/Project/project.data";
 
 export const metadata: Metadata = {
-  title: "Broad-toothed Rat — LSeT Foundation",
+  title: "Broad-toothed Rat | LSeT Foundation",
   description:
     "An AI model automating day-to-day monitoring of the world's first successful captive breeding programme for the Broad-toothed Rat, with Aussie Ark at Barrington Tops.",
 };

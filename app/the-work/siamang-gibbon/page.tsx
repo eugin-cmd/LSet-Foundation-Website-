@@ -8,7 +8,7 @@ import ProjectCta from "@/components/Project/ProjectCta";
 import { SIAMANG_GIBBON } from "@/components/Project/project.data";
 
 export const metadata: Metadata = {
-  title: "Siamang Gibbon — LSeT Foundation",
+  title: "Siamang Gibbon | LSeT Foundation",
   description:
     "Solar-powered forest recorders and SonicDNA voiceprint mapping to find released gibbons by their calls in Southern Sumatra and Java, with The Aspinall Foundation.",
 };

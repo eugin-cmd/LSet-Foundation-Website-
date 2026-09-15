@@ -11,7 +11,7 @@ import {
 } from "@/components/Project/antzProducts.data";
 
 export const metadata: Metadata = {
-  title: "EthoStudio — LSeT Foundation",
+  title: "EthoStudio | LSeT Foundation",
   description:
     "Keeper-trained behaviour and recognition AI: design the study, build the ethogram, label the footage, and train a model on your own species.",
 };

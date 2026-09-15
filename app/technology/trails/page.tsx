@@ -11,7 +11,7 @@ import {
 } from "@/components/Project/antzProducts.data";
 
 export const metadata: Metadata = {
-  title: "Antz Trails — LSeT Foundation",
+  title: "Antz Trails | LSeT Foundation",
   description:
     "The AI companion a visitor carries through the zoo: a planned day before they arrive, and an exhibit that answers for itself at the fence.",
 };

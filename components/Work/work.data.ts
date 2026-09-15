@@ -24,7 +24,7 @@ export type WorkProject = {
  * data, because the arc needs a phrase and this page needs a paragraph.
  *
  * Four of the five now have real project pages. Only the Broad-toothed Rat is
- * still a placeholder: Figma's "View project →" points nowhere and those pages do not
+ * still a placeholder: Figma's "View Project →" points nowhere and those pages do not
  * exist yet. **Replace when they do.**
  */
 export const WORK_PROJECTS: WorkProject[] = [

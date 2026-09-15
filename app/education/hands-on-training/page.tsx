@@ -11,7 +11,7 @@ import {
 } from "@/components/Project/educationTopics.data";
 
 export const metadata: Metadata = {
-  title: "Hands-On Training — LSeT Education",
+  title: "Hands-On Training | LSeT Education",
   description:
     "Daily husbandry, enrichment and handling practised on a working farm in Bengaluru, 6am to 6pm, from the first week.",
 };

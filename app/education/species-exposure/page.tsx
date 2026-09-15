@@ -11,7 +11,7 @@ import {
 } from "@/components/Project/educationTopics.data";
 
 export const metadata: Metadata = {
-  title: "Species Exposure — LSeT Education",
+  title: "Species Exposure | LSeT Education",
   description:
     "Over 200 species on one working farm, from small captive mammals to birds, reptiles and primates, with the breeding and welfare research they support.",
 };

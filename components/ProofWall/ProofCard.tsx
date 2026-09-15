@@ -7,13 +7,13 @@ export default function ProofCard({ card }: { card: ProofCardData }) {
   return (
     <article className={s.card}>
       {/* The anchor is the card's layout column, so the whole card is one hit
-          target and one tab stop. A stretched ::after on the "View project"
+          target and one tab stop. A stretched ::after on the "View Project"
           link would only reach as far as .cardBody, which is itself
           positioned, and would never cover the photo. */}
       <a
         href={card.href}
         className={s.cardHit}
-        aria-label={`View project: ${card.titleLines.join(" ")}`}
+        aria-label={`View Project: ${card.titleLines.join(" ")}`}
       >
         <div className={s.cardBg} aria-hidden="true">
           <img src={card.image} alt="" style={card.crop} />
@@ -35,7 +35,7 @@ export default function ProofCard({ card }: { card: ProofCardData }) {
           <p className={`${s.cardDesc} wf-body`}>{card.description}</p>
 
           <span className={`${s.cardLink} wf-small`}>
-            View project <LinkArrow />
+            View Project <LinkArrow />
           </span>
         </div>
       </a>

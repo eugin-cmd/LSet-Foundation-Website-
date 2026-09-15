@@ -4,7 +4,7 @@ import SiteFooter from "@/components/SiteFooter/SiteFooter";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "LSeT Foundation — Conservation's Technology Partner",
+  title: "LSeT Foundation: Conservation's Technology Partner",
   description:
     "We combine education, conservation expertise and innovative technology to help wildlife organisations solve complex challenges.",
 };

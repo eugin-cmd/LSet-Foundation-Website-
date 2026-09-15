@@ -9,7 +9,7 @@ import EducationShowcase from "@/components/Education/EducationShowcase";
 import EducationCourses from "@/components/Education/EducationCourses";
 
 export const metadata: Metadata = {
-  title: "LSeT Education — Institute of Animal Care & Management",
+  title: "LSeT Education: Institute of Animal Care & Management",
   description:
     "India's only residential institute for exotic animal care education, built on a working farm in Bengaluru.",
 };

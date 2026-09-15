@@ -11,9 +11,9 @@ import {
 } from "@/components/Project/antzProducts.data";
 
 export const metadata: Metadata = {
-  title: "Antz Platform — LSeT Foundation",
+  title: "Antz Platform | LSeT Foundation",
   description:
-    "The operating system a zoo runs on every day — one record per animal, from accession to outcome, with reporting for AZA, EAZA, BIAZA, CITES and studbooks.",
+    "The operating system a zoo runs on every day: one record per animal, from accession to outcome, with reporting for AZA, EAZA, BIAZA, CITES and studbooks.",
 };
 
 /**

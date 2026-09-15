@@ -83,7 +83,7 @@ export default function ProjectHero({
         {/* Figma sets "← All projects"; the arrow is on the right here and the
             label is title case, both by direction.
             direction, which also puts it where every other link on these pages
-            carries one — "View project →", "Submit a challenge →".
+            carries one — "View Project →", "Submit a Challenge →".
 
             It points right with it. A left arrow trailing its label reads as a
             mistake rather than as a direction, and "All Projects →" is a fair

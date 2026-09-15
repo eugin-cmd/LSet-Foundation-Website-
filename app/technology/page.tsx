@@ -6,7 +6,7 @@ import AntzRows from "@/components/Antz/AntzRows";
 import AntzCta from "@/components/Antz/AntzCta";
 
 export const metadata: Metadata = {
-  title: "Antz Systems — One system across the whole institution",
+  title: "Antz Systems: One system across the whole institution",
   description:
     "Animal records, healthcare, nutrition, breeding, transfers, inventory, compliance and reporting in one connected system for animal care organisations.",
 };

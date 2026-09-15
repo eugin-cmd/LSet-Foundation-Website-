@@ -45,7 +45,7 @@ export default function WorkRows() {
               </div>
 
               <a href={p.href} className={s.cta}>
-                View project <LinkArrow />
+                View Project <LinkArrow />
                 <span className={s.srOnly}>: {p.title}</span>
               </a>
             </div>
@@ -55,7 +55,7 @@ export default function WorkRows() {
                 whole subtree out of the accessibility tree with it, silently
                 costing the photograph's alt text and the "Active Project"
                 badge. The <img> alt names this link, so it announces as the
-                species rather than as a second bare "View project". */}
+                species rather than as a second bare "View Project". */}
             <a href={p.href} className={s.figure}>
               {/* Figma's own 619x356 crop per card, exported at 2x. The photos
                   are content here — each names its species — so they carry alt

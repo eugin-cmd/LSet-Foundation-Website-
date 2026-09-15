@@ -8,7 +8,7 @@ import ProjectCta from "@/components/Project/ProjectCta";
 import { ORANGUTAN_HAVEN } from "@/components/Project/project.data";
 
 export const metadata: Metadata = {
-  title: "Orangutan Haven — LSeT Foundation",
+  title: "Orangutan Haven | LSeT Foundation",
   description:
     "The ANTZ Management Platform for sanctuary records and health tracking, with a Raspberry Pi music enrichment system on a tactile lever, at PT Orangutan Haven in Sumatra.",
 };

@@ -108,7 +108,7 @@ export default function NavBar() {
           <Link
             href="/"
             className={s.logo}
-            aria-label="LSeT Foundation — home"
+            aria-label="LSeT Foundation home"
             onClick={closeMenus}
           >
             <img src="/assets/logo-lset-nav.svg" alt="" width={166} height={63} />
@@ -198,7 +198,9 @@ export default function NavBar() {
               })}
             </nav>
 
-            <PillCta variant="inverse">Get in touch</PillCta>
+            <PillCta variant="inverse" href="/contact">
+              Get in touch
+            </PillCta>
           </div>
         </header>
 

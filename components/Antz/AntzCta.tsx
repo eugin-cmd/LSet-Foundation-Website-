@@ -20,7 +20,7 @@ export default function AntzCta() {
       </p>
       <div className={s.ctaRow}>
         <a href="#" className={`${s.ctaBtn} ${s.ctaBtnFilled}`}>
-          Submit a challenge <LinkArrow />
+          Submit a Challenge <LinkArrow />
         </a>
         <a href="#" className={`${s.ctaBtn} ${s.ctaBtnOutline}`}>
           View all projects

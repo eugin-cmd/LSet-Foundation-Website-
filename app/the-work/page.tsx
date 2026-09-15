@@ -4,7 +4,7 @@ import WorkRows from "@/components/Work/WorkRows";
 import MeshField from "@/components/MeshField/MeshField";
 
 export const metadata: Metadata = {
-  title: "Our Work — LSeT Foundation",
+  title: "Our Work | LSeT Foundation",
   description:
     "Every project prototyped, deployed, and in use by the partner who asked for it. Five species programmes across Bhutan, Mauritania, Sumatra and Australia.",
 };

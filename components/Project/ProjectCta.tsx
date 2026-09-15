@@ -31,7 +31,7 @@ export default function ProjectCta() {
             {/* Figma points this nowhere; the footer's own "Submit a challenge"
                 is the same dead link, so it stays consistent with it. */}
             <a href="#" className={`${s.ctaBtn} ${s.ctaBtnFilled}`}>
-              Submit a challenge <LinkArrow />
+              Submit a Challenge <LinkArrow />
             </a>
             <Link href="/the-work" className={`${s.ctaBtn} ${s.ctaBtnOutline}`}>
               View all projects <LinkArrow />
