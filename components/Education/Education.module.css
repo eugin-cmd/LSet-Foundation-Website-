@@ -352,6 +352,43 @@
   text-wrap: balance;
 }
 
+.statementLine {
+  margin: 0;
+}
+
+/* The line under the statement. Narrower than the statement's own 1078px
+   measure, because this is reading copy at a fifth of the size and the full
+   width would run it to 140 characters a line; and `pretty` rather than the
+   statement's `balance`, which is for headlines of a few words.
+
+   Not pure white: the statement is the thing being read first, and a
+   supporting line at the same value would compete with it. 82% against the
+   photograph still clears 4.5:1 wherever the band's 25% tint sits. */
+.statementSub {
+  width: min(680px, 100%);
+  margin: clamp(18px, 2.1vw, 30px) auto 0;
+  font: 400 clamp(15px, 1.39vw, 20px) / 1.5 var(--font-inter-tight);
+  color: rgb(255 255 255 / 82%);
+  text-wrap: pretty;
+}
+
+/* A short rule closing the block. A pseudo-element rather than an element of
+   its own: it is pure decoration, and this way there is nothing in the markup
+   for a screen reader to meet or skip.
+
+   94px and 50px clear of the copy, both by direction. The 50px is measured
+   from the paragraph's box, which sits a couple of pixels below the last
+   line's baseline-to-descender — so the optical gap reads a touch larger than
+   the number, as it does for any type. */
+.statementSub::after {
+  display: block;
+  width: 94px;
+  height: 1px;
+  margin: 50px auto 0;
+  background: rgb(255 255 255 / 90%);
+  content: "";
+}
+
 .statementAccent {
   color: var(--color-orange);
 }
@@ -414,7 +451,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: clamp(48px, 5.42vw, 78px) clamp(var(--edge), 11.94vw, 172px);
+  padding: var(--section-y) clamp(var(--edge), 11.94vw, 172px);
   /* Transparent, not white: the holographic mesh is painted by the <MeshField>
      wrapper behind this section, and any background here paints over it. */
   background: transparent;
@@ -451,7 +488,14 @@
 .showcasePhoto {
   width: 100%;
   height: min(1050px, 72.92vw);
-  background: url("/assets/edu-statement-2.jpg") center / cover no-repeat;
+  /* A flat 15% black over the photograph, by direction, in place of the
+     shadow the title carried. A layer in this element's own background rather
+     than a second element: nothing else needs to sit between the two, and
+     this way there is no stacking order to keep in step with the film frame
+     above it. */
+  background:
+    linear-gradient(rgb(0 0 0 / 15%), rgb(0 0 0 / 15%)),
+    url("/assets/edu-statement-2.jpg") center / cover no-repeat;
 }
 
 .showcaseDeep {
@@ -467,24 +511,42 @@
 
    `transform-origin` is the frame's centre so the growth below opens it from
    where it sits rather than pushing it off its anchor. */
-.showcaseFrame {
-  position: absolute;
-  /* Anchored by its own centre rather than its top-left corner, which is what
-     lets it be resized without moving. Figma's 606.072 wide at x 417 put that
-     centre at 720 of 1440 — dead centre — and 415 down a 1452 band, which is
-     40.32%. Both are kept; only the size has changed.
+/* The title and the film, centred in the band as one stack.
 
-     `translate` rather than a transform: the growth below owns this element's
-     `transform`, and a transform here would be overwritten the moment it ran.
-     The two independent properties compose instead. */
+   Anchored by the stack's own centre rather than a corner, which is what lets
+   the film be resized without moving. Figma's 606.072-wide frame at x 417 put
+   that centre at 720 of 1440 — dead centre — and 415 down a 1452 band, which
+   is 40.32%. Both are kept.
+
+   `translate` rather than a transform, so nothing here collides with a
+   transform an animation may want later. */
+.showcaseStage {
+  position: absolute;
   top: 40.32%;
   left: 50%;
   translate: -50% -50%;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(16px, 1.94vw, 28px);
   /* Figma's 606.072, 75% bigger, by direction. The vw term is scaled with it
-     so the frame grows by the same 75% at every width rather than only where
+     so the film grows by the same 75% at every width rather than only where
      the px cap is the one in force. */
   width: min(1060.626px, 73.66vw);
+}
+
+/* No shadow of its own, by direction: the 15% black over the photograph below
+   is what holds this line legible instead. */
+.showcaseHeading {
+  margin: 0;
+  color: var(--white);
+  text-align: center;
+}
+
+.showcaseFrame {
+  position: relative;
+  width: 100%;
   aspect-ratio: 16 / 9;
   transform-origin: 50% 50%;
   border-radius: 16px;
@@ -618,7 +680,9 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding: clamp(40px, 4.1vw, 59px) 0 clamp(44px, 4.38vw, 63px);
+  /* Top on the rhythm. The bottom belongs to the pinned arc's scroll track,
+     which is measured against it, so it stays where it is. */
+  padding: var(--section-y) 0 clamp(44px, 4.38vw, 63px);
 }
 
 /* Figma's x 129 at 1440 puts this on the same left edge as the proof wall's
@@ -848,8 +912,7 @@
      except below, which is that figure at 1.5x, as the homepage's strip takes
      it: the extra room is what the wave rule sits in, and it opens the join
      with the band of copy that follows. */
-  padding: clamp(34px, 3.54vw, 50.935px) clamp(var(--edge), 3.54vw, 50.935px)
-    calc(clamp(34px, 3.54vw, 50.935px) * 1.5);
+  padding: var(--section-y) clamp(var(--edge), 3.54vw, 50.935px);
 }
 
 /* Placement only for the shared <WaveRule />; the paint — tile, weight, fading

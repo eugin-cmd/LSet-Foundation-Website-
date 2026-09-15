@@ -178,7 +178,7 @@
      white header block sat directly above. The banner does not, so the head
      takes the same --antz-block rhythm the other content pages open on and the
      foot keeps Figma's deeper close. */
-  padding: var(--antz-block) var(--edge) clamp(96px, 11.11vw, 160px);
+  padding: var(--antz-block) var(--edge) var(--section-tail);
   /* Transparent, not white: the mesh is painted by the <MeshField> wrapper
      behind this section and any background here paints over it. */
   background: transparent;

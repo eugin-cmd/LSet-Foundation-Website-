@@ -807,7 +807,7 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  padding: 0 var(--edge) clamp(64px, 7.7vw, 100px);
+  padding: var(--section-y) var(--edge);
   background: transparent;
 }
 
@@ -819,6 +819,36 @@
 .rule {
   width: min(1280px, 100%);
   margin-bottom: 42px;
+}
+
+/* The heading a record brings with a section it has taken wholesale. Centred
+   over the rail, as the other section heads on these pages are. */
+.galleryHead {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+  width: min(1280px, 100%);
+  margin-bottom: clamp(28px, 3.3vw, 44px);
+  text-align: center;
+}
+
+.galleryKicker {
+  margin: 0;
+  color: var(--color-darkblue);
+}
+
+.galleryTitle {
+  margin: 0;
+  color: var(--color-darkblue);
+  text-wrap: balance;
+}
+
+.galleryLede {
+  width: min(680px, 100%);
+  margin: 0;
+  color: rgb(0 0 0 / 70%);
+  text-wrap: pretty;
 }
 
 .carousel {
@@ -867,6 +897,43 @@
   }
 }
 
+/* Slides drawn at a set height and their own width, rather than fitted to the
+   frame. The three heights are antzsystems.com's own --planner-h, at its own
+   breakpoints: 420 below 768, 460 to 1280, 560 above it. Copied rather than
+   re-expressed as a clamp, because "the same size as on that site" is the
+   requirement and a clamp would land between their steps at most widths. */
+.carousel[data-fixed-height] {
+  --slide-h: 420px;
+}
+
+@media (min-width: 768px) {
+  .carousel[data-fixed-height] {
+    --slide-h: 460px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .carousel[data-fixed-height] {
+    --slide-h: 560px;
+  }
+}
+
+.carousel[data-fixed-height] .frame {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.carousel[data-fixed-height] .frame > img {
+  /* Its own proportion at a set height. --slide-scale is the per-screen
+     multiplier; without one it is 1. */
+  width: auto;
+  max-width: 100%;
+  height: calc(var(--slide-h) * var(--slide-scale, 1));
+  aspect-ratio: auto;
+  object-fit: contain;
+}
+
 /* NB: not `.card` — that name is already the fact card's in this module, and
    CSS Modules scope per class name, so the two would merge into one rule. */
 .frame {
@@ -877,12 +944,17 @@
   overflow: hidden;
 }
 
-/* A letterboxed frame keeps the whole screenshot and fills the surround with
-   the banner's own dark, so the panel reads as a device shot rather than as an
-   image that failed to load. */
+/* A letterboxed frame keeps the whole screenshot rather than cropping a
+   vertical sliver out of the middle of it.
+
+   The surround used to be the banner's own dark, which made a black slide of
+   every frame. Its one remaining user is the Trails gallery, and those are
+   transparent cut-outs of the app: they want the page's own ground behind
+   them, not a black panel, by direction. So the surround is nothing at all,
+   and the mesh shows through where the graphic does not reach. */
 .frame > img[data-fit="contain"] {
   object-fit: contain;
-  background: var(--scrim-base);
+  background: transparent;
 }
 
 /* Direct children only: a card slide carries images of its own, and the
@@ -890,8 +962,9 @@
 .frame > img {
   display: block;
   /* Figma's 619x356 frame. The aspect box holds the height so a photograph
-     cannot stretch the rail. */
-  aspect-ratio: 619 / 356;
+     cannot stretch the rail. A record whose pictures are not landscape sets
+     --frame-aspect and the box follows them instead. */
+  aspect-ratio: var(--frame-aspect, 619 / 356);
   width: 100%;
   height: auto;
   object-fit: cover;
@@ -1022,6 +1095,13 @@
   margin-top: 24px;
 }
 
+/* Under the middle instead, where a record asks for it. On the Trails planner
+   the slides are centred in their frames and the heading above is centred too,
+   so arrows hard against the right edge were the only thing on that axis. */
+.carousel[data-controls="centre"] .controls {
+  align-self: center;
+}
+
 /* Not the Antz arrow: that one floats over its stage, so it needs a white
    scrim disc to stay legible against whatever is behind it. These sit on the
    page, so they can be outlined discs in the page's own ink. */
@@ -1062,6 +1142,183 @@
   transform: scaleX(-1);
 }
 
+/* --- "Who it's for", the Antz Edge page only ------------------------------ */
+
+.audience {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: var(--section-y) var(--edge);
+  background: transparent;
+}
+
+/* Centred over the stack, by direction — the kicker, the heading and the line
+   under it together, so the block reads as one centred unit rather than a
+   centred label above left-aligned copy. */
+.audienceHead {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+  width: min(1280px, 100%);
+  margin-bottom: clamp(28px, 3.3vw, 44px);
+  text-align: center;
+}
+
+.audienceKicker {
+  margin: 0;
+  color: var(--color-darkblue);
+}
+
+.audienceTitle {
+  margin: 0;
+  color: var(--color-darkblue);
+  text-wrap: balance;
+}
+
+.audienceLede {
+  width: min(560px, 100%);
+  margin: 0;
+  color: rgb(0 0 0 / 70%);
+  text-wrap: pretty;
+}
+
+.audienceStack {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 2.2vw, 32px);
+  width: min(1280px, 100%);
+  /* Room under the last card for the stack to finish resolving before the
+     section ends, as the reference leaves. */
+  padding-bottom: 6vh;
+}
+
+/* Each card pins a little lower than the one before it and stacks a little
+   higher, so scrolling deals them onto each other instead of scrolling them
+   past. `--i` is the card's index, set on the element, so the steps are one
+   expression rather than five rules.
+
+   `sticky` needs no script and no timeline: where it is unsupported the cards
+   are simply a column, which is the same content in the same order. */
+.audienceCard {
+  position: sticky;
+  /* Clear of the floating nav plate. Measured on this page the plate occupies
+     46..88 from the top, so 64px is its own extent below --nav-offset and 12
+     is the air under it: the first card pins at 100 and the plate's bottom is
+     88. Derived from --nav-offset rather than typed as 100, so the two move
+     together where that clamp narrows.
+
+     --nav-offset alone put the pin at 48px, under the plate; 42 + 16 put it at
+     82, still 6px under it. */
+  top: calc(var(--nav-offset) + 64px + 12px + var(--i) * 22px);
+  z-index: calc(var(--i) + 1);
+  display: flex;
+  overflow: hidden;
+  min-height: clamp(360px, 35vw, 510px);
+  border-radius: clamp(20px, 2.2vw, 32px);
+  background: var(--scrim-base);
+}
+
+.audiencePhoto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Their own left-to-right wash, which is what holds the heading legible over
+   whatever the photograph is doing behind it. */
+.audienceScrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgb(0 0 0 / 65%),
+    rgb(0 0 0 / 35%) 55%,
+    rgb(0 0 0 / 45%)
+  );
+}
+
+.audienceBody {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: clamp(24px, 2.8vw, 32px);
+  align-items: flex-start;
+  width: 100%;
+  padding: clamp(26px, 3.3vw, 48px);
+}
+
+@media (max-width: 980px) {
+  .audienceBody {
+    flex-direction: column;
+  }
+}
+
+.audienceLead {
+  display: flex;
+  flex: 1;
+  gap: clamp(18px, 1.7vw, 24px);
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.audienceIcon {
+  flex: none;
+  width: clamp(56px, 6.2vw, 90px);
+  height: auto;
+}
+
+.audienceEyebrow {
+  margin: 0;
+  color: rgb(255 255 255 / 85%);
+}
+
+.audienceName {
+  max-width: 520px;
+  margin: 8px 0 0;
+  font: 900 clamp(24px, 3.05vw, 44px) / 1.1 var(--font-flex);
+  color: var(--white);
+  text-wrap: balance;
+}
+
+/* The glass panel, built the way the contact page's fields are. */
+.audiencePanel {
+  flex: none;
+  width: min(374px, 100%);
+  padding: clamp(20px, 2.2vw, 32px);
+  border: 1px solid rgb(255 255 255 / 15%);
+  border-radius: 16px;
+  background: rgb(255 255 255 / 12%);
+  color: var(--white);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+@supports not (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  .audiencePanel {
+    background: rgb(4 18 12 / 62%);
+  }
+}
+
+.audiencePanel p {
+  margin: 0;
+}
+
+.audienceRule {
+  display: block;
+  width: 56px;
+  height: 1px;
+  margin-top: 24px;
+  background: rgb(255 255 255 / 50%);
+}
+
 /* --- the projects either side ---------------------------------------------- */
 
 .neighbours {
@@ -1075,7 +1332,7 @@
      gallery above closes with its own padding, so this only needs its own
      foot. */
   margin-inline: auto;
-  padding: 0 var(--edge) clamp(48px, 5.5vw, 78px);
+  padding: var(--section-y) var(--edge);
 }
 
 .neighbour {
@@ -1245,7 +1502,10 @@
   display: flex;
   justify-content: center;
   width: 100%;
-  padding: clamp(48px, 4.86vw, 70px) var(--edge) clamp(96px, 11.11vw, 160px);
+  /* Top on the site's rhythm like every other section. The bottom is the
+     page's tail before the footer, not a gap between two sections, so it
+     keeps its own larger value. */
+  padding: var(--section-y) var(--edge) var(--section-tail);
   background: transparent;
 }
 

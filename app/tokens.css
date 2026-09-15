@@ -164,7 +164,27 @@
      the way the other two pages' photo bands do. 78px at 1440 is Figma's own
      padding on that page's disclosure board, so the rhythm is the design's
      number rather than an invented one. */
-  --antz-block: clamp(48px, 5.42vw, 78px);
+  /* The site's vertical rhythm: the block padding every content section under
+     a banner carries, top and bottom. Two adjacent sections therefore sit
+     2 x this apart — 120px at the design width.
+
+     Chosen against what was already here rather than invented. The sections
+     ran at 47, 56, 78, 84, 100 and 112 depending on which page they were on,
+     so gaps between them ranged from 78 to 156. 60 puts every gap at 120:
+     wider than the tightest pairs were, tighter than the widest, and the same
+     everywhere.
+
+     Banners are not on this rhythm. Their padding is derived from the scroll
+     cue and the band height, and is theirs. */
+  --section-y: clamp(40px, 4.17vw, 60px);
+
+  /* Was its own clamp at 78px. It names the same thing --section-y names, so
+     it is that now; the Antz pages and the project prose keep reading it. */
+  --antz-block: var(--section-y);
+
+  /* The last band on a page sits further off the footer than two sections sit
+     off each other, so the page ends rather than simply continuing. */
+  --section-tail: clamp(96px, 11.11vw, 160px);
 
   /* Antz Systems content parallax. Smaller than the approach and CTA lifts
      because that page's sections are shorter and carry no photographic

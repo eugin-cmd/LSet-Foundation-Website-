@@ -14,3 +14,4 @@ preview/
 References/*.mp4
 References/*.mov
 .vercel
+.env*

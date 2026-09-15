@@ -16,8 +16,9 @@
   width: 100%;
   /* Figma's 50.935px above; below it is that +50%, to open up the join with
      the section that follows. */
-  padding: clamp(34px, 3.54vw, 50.935px) var(--edge)
-    calc(clamp(34px, 3.54vw, 50.935px) * 1.5);
+  /* The site's rhythm, top and bottom. The wave rule is pinned to the foot,
+     so it rides the bottom padding wherever that lands. */
+  padding: var(--section-y) var(--edge);
   /* Transparent, not white: the holographic mesh is painted by the <MeshField>
      wrapper that starts here, directly under the banner, and any background on
      this section paints over it. */

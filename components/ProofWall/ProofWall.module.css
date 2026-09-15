@@ -24,7 +24,7 @@
   flex-direction: column;
   gap: clamp(48px, 7.01vw, 101px);
   width: 100%;
-  padding: clamp(40px, 4.1vw, 59px) 0 clamp(64px, 8.61vw, 124px);
+  padding: var(--section-y) 0 clamp(64px, 8.61vw, 124px);
 }
 
 /* 1182px centred puts the left edge at Figma's x = 129 when the page is 1440. */

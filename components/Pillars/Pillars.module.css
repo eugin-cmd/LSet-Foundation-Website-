@@ -6,7 +6,7 @@
   justify-content: center;
   width: 100%;
   min-height: 913px;
-  padding: clamp(72px, 7.78vw, 112px) var(--edge);
+  padding: var(--section-y) var(--edge);
   /* Transparent, not white: the holographic mesh is painted by the <MeshField>
      wrapper behind this section, and any background here paints over it. */
   background: transparent;
