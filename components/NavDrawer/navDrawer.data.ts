@@ -14,7 +14,7 @@ export const DESTINATIONS: Destination[] = [
     key: "conservation",
     title: "Conservation",
     description:
-      "Drones, edge AI, bioacoustics and sensors — built for the field, repairable on the truck.",
+      "Drones, edge AI, bioacoustics and sensors: built for the field, repairable on the truck.",
     /* The homepage. This row IS the Foundation — conservation is the arm the
        FOUNDATION brand covers — and it had been a bare "#conservation" with no
        target on either page. */
@@ -33,7 +33,7 @@ export const DESTINATIONS: Destination[] = [
     key: "technology",
     title: "Technology",
     description:
-      "The platform our partners run on — animal records, welfare and operations in one place.",
+      "The platform our partners run on: animal records, welfare and operations in one place.",
     href: "/technology",
   },
 ];
@@ -45,9 +45,18 @@ export const PROMO = {
   body:
     "How the heron diverter programme went from a conversation to live transmission lines in Bhutan.",
   cta: "Read the project",
-  href: "#white-bellied-heron",
-  /* The node's fill is the same photograph the Proof Wall already ships as
-     proof-1.jpg — compared pixel by pixel, mean absolute difference 0.39/255,
-     i.e. JPEG recompression only. Reused rather than duplicated. */
-  image: "/assets/proof-1.jpg",
+  /* The project page, which exists now; this was "#white-bellied-heron", an
+     anchor that matched nothing on any page. */
+  href: "/the-work/white-bellied-heron",
+  /* The heron project's own banner photograph, cut to the 278x130 slot this
+     panel draws and shipped at 2x.
+
+     It was proof-1.jpg, the Proof Wall's card image: 786x1060, a PORTRAIT
+     photograph shown in a 2.14:1 landscape frame, so all that reached the
+     drawer was a thin band across its middle. Measured on the crop the panel
+     actually shows, it came out the flattest picture in the set — sharpness
+     28.6 and contrast 10.5, against 46.4 and 55.6 for this one — and at
+     89KB against 30KB, because a 2400px original was being scaled down in
+     the browser rather than cut to size here. */
+  image: "/assets/drawer-heron.jpg",
 } as const;

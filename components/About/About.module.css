@@ -109,6 +109,107 @@
   text-wrap: balance;
 }
 
+/* The four pillars, in a row under the heading. White and solid, against the
+   heading above it, which wears the site's gradient sheen. */
+.heroPillars {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  /* The column gap is the space BEFORE each dot; the item's own gap below is
+     the space after it. Equal values, so a dot sits midway between the words
+     it separates rather than hard against the one on its left. */
+  gap: 10px clamp(12px, 1.53vw, 22px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.heroPillars li {
+  display: flex;
+  align-items: center;
+  /* The dot's own air either side. The mark that follows the word sits closer
+     than that — it belongs to the word, where the dot belongs between two of
+     them — so it sets its own margin below rather than taking this. */
+  gap: clamp(12px, 1.53vw, 22px);
+  font: 500 clamp(12px, 1.11vw, 16px) / 1.4 var(--font-flex);
+  color: var(--white);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* The dot belongs to the item that follows it, so the first has none and the
+   row cannot end on one however it wraps.
+
+   Drawn, not typed. U+00B7 sits where its font puts it: measured against
+   these 16px caps it landed 2.5px low, and the fix would have been a nudge
+   tuned to one font at one size. A box has no such opinion.
+
+   The two offsets are both real. Flex centring aligns it to the LINE box,
+   whose centre sits ~3px below the centre of the capitals because the line
+   carries descender space the caps do not use; 0.1875em lifts it back onto
+   the type's own middle, measured to land dead on it, and stays there at any
+   size. It is dimmer than the words
+   so it separates them rather than competing with them. */
+.heroPillars li + li::before {
+  width: 4px;
+  height: 4px;
+  /* The two gaps either side are the same number, and the dot still measured
+     25px from the word on its left against 22px to the word on its right:
+     a letter's box ends after its right side bearing, so the ink stops before
+     the box does. This is that bearing, measured, moved back. */
+  margin-left: -0.09em;
+  margin-bottom: 0.1875em;
+  border-radius: 50%;
+  background: var(--white);
+  content: "";
+}
+
+/* Each pillar's own mark, to the right of its name. Smaller than the banner's
+   single icon above — that one heads the whole band, these sit inside a line
+   of 16px caps — and stroked from currentColor, so they take the row's white
+   without being coloured separately. */
+.heroPillarIcon {
+  display: inline-flex;
+  flex: none;
+  /* The mark leads its word, by direction, so the tightening moves to the
+     trailing side. The row's gap is the dot's air, which is far too much
+     between a mark and the word it belongs to: left at the full gap the two
+     sat near enough equidistant from the dot to read as an alternating strip
+     rather than as four labelled pillars. -1em brings the word back to ~11px
+     from its mark, against ~23px across the dot to the next pillar. */
+  margin-right: -1em;
+  width: clamp(16px, 1.32vw, 19px);
+  height: auto;
+  color: var(--white);
+}
+
+.heroPillarIcon svg {
+  width: 100%;
+  height: auto;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The same drop the banner's own icon takes: the same keyframe, duration,
+   delay and fill, so all five marks in this band land together rather than
+   the row arriving on its own clock.
+
+   The name comes through a custom property because css-loader hashes
+   `animation-name` inside a *.module.css and these keyframes are global —
+   naming them directly here would compile to something matching nothing and
+   silently not run. */
+@media (prefers-reduced-motion: no-preference) {
+  .heroPillarIcon svg {
+    animation-name: var(--anim-icon-drop);
+    animation-duration: 940ms;
+    animation-delay: 1320ms;
+    animation-fill-mode: both;
+  }
+}
+
 .heroLede {
   width: min(760px, 100%);
   color: var(--white);
@@ -143,6 +244,27 @@
   }
 }
 
+/* Placement only for the shared <WaveRule /> under "Why we exist"; the paint
+   lives in that component. It sits on the <MeshField> with nothing around it,
+   so unlike the team's copy — which is inset by its section's own padding —
+   this one carries the page gutter itself. Measured, the two then match at
+   1280px, which is the width of the content on this page: the creed columns,
+   the leader blocks and the team grid all sit in it.
+
+   The partner strip's rule is wider, 1392px, because it is pinned to that
+   band's own edges rather than to the content. That one belongs to a shared
+   component the homepage uses too, so it is left as it is.
+
+   Positioned for the same reason every other section on the field is: the
+   mesh is an absolutely positioned pseudo-element at z-index 0, and a static
+   element would be painted over by it. */
+.storyRule {
+  position: relative;
+  z-index: 1;
+  width: min(1280px, 100% - var(--edge) * 2);
+  margin: 0 auto clamp(44px, 5.2vw, 72px);
+}
+
 /* --- mission, vision, values -------------------------------------------- */
 
 /* On the <MeshField>, so no background of its own: an opaque one paints the
@@ -155,7 +277,7 @@
   display: flex;
   justify-content: center;
   width: 100%;
-  padding: 0 var(--edge) clamp(64px, 7.7vw, 100px);
+  padding: var(--section-y) var(--edge);
   background: transparent;
 }
 
@@ -182,6 +304,26 @@
   display: flex;
   flex-direction: column;
   gap: clamp(10px, 1.1vw, 16px);
+}
+
+/* The block's mark. Outline drawings, so the stroke is supplied here the way
+   the project fact labels supply theirs — those icons declare `fill="none"`
+   and expect their caller to paint them, and one that is not painted occupies
+   its space and shows nothing. */
+.creedIcon {
+  display: inline-flex;
+  width: clamp(28px, 2.36vw, 34px);
+  height: auto;
+  color: var(--color-darkblue);
+}
+
+.creedIcon svg {
+  width: 100%;
+  height: auto;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* The section kickers' geometry and colour, as the project prose blocks take
@@ -219,6 +361,113 @@
   text-transform: uppercase;
 }
 
+/* --- the founder and the honorary director ------------------------------- */
+
+/* On the <MeshField>, so no background of its own, and positioned for the same
+   reason the other sections on it are: the field's mesh is an absolutely
+   positioned pseudo-element at z-index 0, which would otherwise paint over
+   this copy. */
+.leaders {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: var(--section-y) var(--edge);
+  background: transparent;
+}
+
+.leadersInner {
+  display: flex;
+  flex-direction: column;
+  /* Their 80px, opening to 112 above the medium breakpoint. Wide, because the
+     gap is what stops two mirrored rows reading as one four-column grid. */
+  gap: clamp(56px, 7.8vw, 112px);
+  width: min(1280px, 100%);
+}
+
+.leader {
+  display: flex;
+  gap: clamp(28px, 4.4vw, 64px);
+  align-items: flex-start;
+}
+
+.leader[data-mirrored] {
+  flex-direction: row-reverse;
+}
+
+.leaderText {
+  flex: 1;
+  min-width: 0;
+}
+
+.leaderName {
+  margin: 0;
+  font: 700 clamp(32px, 4vw, 48px) / 1.1 var(--font-flex);
+  color: var(--color-darkblue);
+  text-wrap: balance;
+}
+
+/* Their design gives this line a colour of its own, which is what stops the
+   name and the title reading as one run-on heading. Ours is the site's orange
+   — the ink it already uses for a label above a value on the project fact
+   cards — rather than their mint. */
+.leaderRole {
+  margin: 8px 0 0;
+  font: 500 clamp(14px, 1.11vw, 16px) / 1.2 var(--font-flex);
+  color: var(--color-orange);
+}
+
+.leaderBody {
+  margin-top: clamp(20px, 1.94vw, 28px);
+}
+
+.leaderBody p {
+  margin: 0 0 16px;
+  font: 400 clamp(15px, 1.11vw, 16px) / 1.6 var(--font-inter-tight);
+  color: rgb(0 0 0 / 70%);
+  text-wrap: pretty;
+}
+
+.leaderBody p:last-child {
+  margin-bottom: 0;
+}
+
+/* Their 480px at 4:5 and a 20px radius. The width is a share as well as a cap
+   so the portrait gives ground before the prose does as the row narrows. */
+.leaderPortrait {
+  flex: none;
+  width: min(480px, 38%);
+  aspect-ratio: 4 / 5;
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--color-mint-50, rgb(220 241 231));
+}
+
+.leaderPortrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Below the width where the two columns each have a fair measure, the block
+   stacks into the order the markup already has: the name and the words, then
+   the portrait. The mirror is dropped with it, since a mirrored single column
+   is just a column. */
+@media (max-width: 860px) {
+  .leader,
+  .leader[data-mirrored] {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .leaderPortrait {
+    width: min(480px, 100%);
+    align-self: center;
+  }
+}
+
 /* --- the team ------------------------------------------------------------ */
 
 .people {
@@ -228,7 +477,7 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  padding: 0 var(--edge) clamp(48px, 5.5vw, 78px);
+  padding: var(--section-y) var(--edge);
   background: transparent;
 }
 
@@ -345,7 +594,7 @@
   display: flex;
   justify-content: center;
   width: 100%;
-  padding: 0 var(--edge) clamp(64px, 7.7vw, 100px);
+  padding: var(--section-y) var(--edge);
   background: transparent;
 }
 

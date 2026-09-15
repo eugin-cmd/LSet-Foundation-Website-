@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import AboutHero from "@/components/About/AboutHero";
 import AboutStory from "@/components/About/AboutStory";
 import AboutCreed from "@/components/About/AboutCreed";
+import AboutLeaders from "@/components/About/AboutLeaders";
 import AboutLeadership from "@/components/About/AboutLeadership";
 import AboutQuote from "@/components/About/AboutQuote";
 import PartnersStrip from "@/components/PartnersStrip/PartnersStrip";
@@ -9,7 +10,7 @@ import CtaBand from "@/components/CtaBand/CtaBand";
 import MeshField from "@/components/MeshField/MeshField";
 
 export const metadata: Metadata = {
-  title: "About Us — LSeT Foundation",
+  title: "About Us | LSeT Foundation",
   description:
     "One mission across four pillars: education, technology, conservation and living systems design. The council and faculty behind the Institute of Animal Care and Management, and the work it puts into the field.",
 };
@@ -46,6 +47,10 @@ export default function AboutPage() {
           <PartnersStrip />
           <AboutStory />
           <AboutCreed />
+          {/* The founder and the honorary director before the grid, as the
+              institute's own page runs them: the two who are the reason the
+              place exists, then everyone who runs it. */}
+          <AboutLeaders />
           <AboutLeadership />
           <AboutQuote />
         </MeshField>

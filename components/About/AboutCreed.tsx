@@ -1,5 +1,22 @@
+import OpenBook from "@/components/icons/OpenBook";
+import ObservationEye from "@/components/icons/ObservationEye";
+import ComplianceShield from "@/components/icons/ComplianceShield";
 import { CREED, STANDS_FOR } from "./about.data";
 import s from "./About.module.css";
+
+/** The data names a mark; this is where the name becomes a component, so the
+ *  data file stays free of imports.
+ *
+ *  A book for the mission, because the mission here IS education: training
+ *  practitioners is the whole of it. An eye for the vision, the one mark in
+ *  this set with no straight edges. A shield with a tick for the values, which
+ *  are a statement about standards held rather than about care given. All
+ *  three are outline marks, so the row reads as one set. */
+const ICONS = {
+  mission: OpenBook,
+  vision: ObservationEye,
+  values: ComplianceShield,
+};
 
 /**
  * Mission, vision and values, in the three-block shape the project pages give
@@ -16,12 +33,21 @@ export default function AboutCreed() {
     <section className={s.creed} aria-label="Mission, vision and values">
       <div className={s.creedInner}>
         <div className={s.creedBlocks}>
-          {CREED.map((block) => (
-            <div className={s.creedBlock} key={block.kicker}>
-              <p className={s.creedKicker}>{block.kicker}</p>
-              <p className={s.creedBody}>{block.body}</p>
-            </div>
-          ))}
+          {CREED.map((block) => {
+            const Icon = ICONS[block.key];
+            return (
+              <div className={s.creedBlock} key={block.kicker}>
+                {/* Decorative: the kicker under it names the block, so the
+                    mark is hidden rather than read as a stray noun before
+                    every heading. */}
+                <span className={s.creedIcon} aria-hidden="true">
+                  <Icon />
+                </span>
+                <p className={s.creedKicker}>{block.kicker}</p>
+                <p className={s.creedBody}>{block.body}</p>
+              </div>
+            );
+          })}
         </div>
 
         <ul className={s.stands}>

@@ -17,8 +17,12 @@
   display: flex;
   justify-content: center;
   width: 100%;
-  padding: clamp(52px, 5.83vw, 84px) var(--edge);
+  padding: var(--section-y) var(--edge);
   background: transparent;
+  /* The band's own pass, which the leaf below shakes along. Named on the
+     section rather than taken from the leaf itself: the leaf is 81px tall, so
+     its own view() range would be over almost before it began. */
+  view-timeline-name: --leaf-band;
 }
 
 .inner {
@@ -83,6 +87,74 @@
   /* The leaf is drawn in currentColor, so it takes the same black as the copy
      rather than being tinted separately. */
   color: var(--ink-black);
+  /* The foot of the stem. A sprig pivots where it is held; rotating about its
+     centre would swing the stem out from under itself. The project banners'
+     frond takes the same origin for the same reason. */
+  transform-origin: 50% 100%;
+}
+
+/* It shakes as the band passes, by direction — scroll-driven, so it answers
+   the reader's own scrolling rather than playing once and stopping. The swings
+   decay, 4 degrees down to half of one, which is what makes it read as a leaf
+   settling rather than a metronome.
+
+   `rotate` as its own property, not a transform: nothing else rotates this
+   element today, and keeping the two apart means anything that later wants
+   `transform` here composes with the shake instead of replacing it. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .sprig {
+      animation-name: sprigShake;
+      animation-duration: 1ms; /* superseded by the timeline */
+      /* Eased rather than linear, by direction. The easing applies between
+         every pair of keyframes, so the leaf slows into each turn and whips
+         through the middle of each swing — which is what a thing on a stem
+         actually does, and what makes the movement read at all. Linear swept
+         it at one speed and looked like a dial being turned. */
+      animation-timing-function: cubic-bezier(0.37, 0, 0.23, 1);
+      animation-fill-mode: both;
+      animation-timeline: --leaf-band;
+      animation-range: cover 0% cover 100%;
+    }
+  }
+}
+
+/* Wider than it was, by direction: it opened at 4 degrees and the whole shake
+   was easy to miss. Nine is plainly a shake without becoming a wag, and the
+   swings still decay — each about two thirds of the one before it, so it
+   reads as something settling rather than a metronome. */
+@keyframes sprigShake {
+  0% {
+    rotate: -9deg;
+  }
+
+  16% {
+    rotate: 7deg;
+  }
+
+  32% {
+    rotate: -5deg;
+  }
+
+  48% {
+    rotate: 3.4deg;
+  }
+
+  64% {
+    rotate: -2.2deg;
+  }
+
+  80% {
+    rotate: 1.3deg;
+  }
+
+  92% {
+    rotate: -0.6deg;
+  }
+
+  100% {
+    rotate: 0deg;
+  }
 }
 
 @media (max-width: 560px) {

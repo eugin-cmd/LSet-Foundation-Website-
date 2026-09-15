@@ -89,7 +89,7 @@ export default function ShowcaseFilm() {
         <iframe
           className={s.filmPlayer}
           src={src}
-          title="Hear from our best — the LSeT film"
+          title="Hear from our best: the LSeT film"
           allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
           allowFullScreen
         />

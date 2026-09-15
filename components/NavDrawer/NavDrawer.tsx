@@ -35,7 +35,7 @@ export default function NavDrawer({
       <div className={s.label}>
         <p className={`${s.labelHead} wf-label`}>What we do</p>
         <p className={`${s.labelBody} wf-small`}>
-          Three capabilities. They only matter together — which is the point of
+          Three capabilities. They only matter together, which is the point of
           the model.
         </p>
       </div>
