@@ -54,7 +54,12 @@
   /* Figma's 412px band, which is where the copy sits rather than where the
      picture ends. The clamp keeps its proportion down to a phone. */
   min-height: clamp(320px, 28.6vw, 412px);
-  padding: clamp(96px, 9vw, 130px) var(--edge) clamp(44px, 4.7vw, 68px);
+  /* The foot is deliberately short. Figma's 68 is the copy's inset from the
+     bottom of a band you can see; here the photograph runs on past it, so
+     there is no edge to be inset from and all 68 read as a gap to the form.
+     20 plus the form's own 60 leaves 80 between the lede and the first field,
+     down from 128. */
+  padding: clamp(96px, 9vw, 130px) var(--edge) clamp(14px, 1.4vw, 20px);
 }
 
 .headerInner {
