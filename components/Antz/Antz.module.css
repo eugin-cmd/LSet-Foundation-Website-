@@ -765,19 +765,18 @@
   color: var(--color-green-950);
 }
 
-.ctaBtnFilled:hover {
-  background: var(--white);
-}
+/* No hover repaint: `.wf-holo-hover` fills this with the holographic wash
+   instead. A background change underneath it would still show through the
+   part of the button the wash has not reached yet, so the two cannot both
+   run. */
 
 .ctaBtnOutline {
   border-color: var(--line-1);
   color: var(--line-1);
 }
 
-.ctaBtnOutline:hover {
-  background: var(--line-1);
-  color: var(--color-green-950);
-}
+/* As above. The border stays: the wash paints the padding box, so the outline
+   is what still draws the button's edge while the wash crosses it. */
 
 .ctaBtn:focus-visible {
   outline: 2px solid var(--line-1);

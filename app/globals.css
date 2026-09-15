@@ -514,3 +514,100 @@ video {
   white-space: nowrap;
   border: 0;
 }
+
+/* ---------------------------------------------------------------------------
+   The holographic hover, worn by every button on the site.
+
+   A diagonal wash of the site's own holographic ramp sweeps across the button
+   from its top-left corner, fills it at full opacity, and the label turns
+   black behind it. Easing in, so it starts slowly and arrives.
+
+   The wash is a ::before at z-index -1, which is what makes this work on every
+   button regardless of what its label is made of. Painting order inside a
+   stacking context runs: the element's own background and border, then its
+   NEGATIVE z-index descendants, then its in-flow content. So the wash lands
+   above whatever colour the button is at rest and below its label, without the
+   label needing a z-index of its own — and it cannot be given one, since
+   several of these buttons hold a bare text node rather than a wrapped span.
+   `isolation: isolate` keeps the negative layer inside the button rather than
+   letting it search for a stacking context further up the page.
+
+   The sweep is a clip-path between two four-point polygons, which interpolate
+   because the point counts match. At rest the shape is the zero-area sliver
+   along the leading diagonal; on hover its far edge is past 100% on both rows,
+   so the wash clears the button rather than stopping short inside it.
+
+   The ramp is --holo-ramp-diagonal, the 135deg version the project pages' tech
+   chips already fill with, painted into --holo-tile-diagonal so the repeat has
+   no visible seam. The sheen only travels while the pointer is down on the
+   button: an infinite animation on every button on every page costs more than
+   it returns, and at rest there is nothing to see anyway.
+   --------------------------------------------------------------------------- */
+.wf-holo-hover {
+  position: relative;
+  isolation: isolate;
+}
+
+.wf-holo-hover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background-image: var(--holo-ramp-diagonal);
+  background-size: var(--holo-tile-diagonal) var(--holo-tile-diagonal);
+  clip-path: polygon(0 0, 0 0, -100% 100%, -100% 100%);
+}
+
+.wf-holo-hover:hover::before,
+.wf-holo-hover:focus-visible::before {
+  clip-path: polygon(0 0, 200% 0, 100% 100%, -100% 100%);
+}
+
+/* Black, and it has to be. Every stop in the ramp is a high-luminance pastel:
+   white on them measures 1.00:1 against the white passes and 1.44:1 at worst
+   against the deepest, which is a label that is not there. Black on the same
+   stops runs 8.69:1 to 12.54:1.
+
+   Doubled class, so this outranks the `.ctaBtnOutline:hover` sort of rule the
+   button's own module carries. Those modules load after this file, and at
+   equal specificity the later sheet would win. */
+.wf-holo-hover.wf-holo-hover:hover,
+.wf-holo-hover.wf-holo-hover:focus-visible {
+  color: #000;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .wf-holo-hover {
+    transition: color 420ms ease-in, translate 300ms ease-in,
+      scale 300ms ease-in;
+  }
+
+  .wf-holo-hover::before {
+    transition: clip-path 420ms ease-in;
+  }
+
+  /* The pop: up 4px and 4% larger. The independent `translate` and `scale`
+     properties rather than one `transform`, so these compose with whatever
+     transform a button already owns rather than replacing it. 4px is the
+     site's 3px link lift plus a little, since a button is a larger object and
+     the same distance reads as less on it. */
+  .wf-holo-hover:hover,
+  .wf-holo-hover:focus-visible {
+    translate: 0 -4px;
+    scale: 1.04;
+  }
+
+  .wf-holo-hover:hover::before,
+  .wf-holo-hover:focus-visible::before {
+    animation: holoWash 7s linear infinite;
+  }
+}
+
+/* One period along the ramp's own 135deg axis, which is the same distance in
+   x and y. Shared with the chips' travel; see --holo-shift-diagonal. */
+@keyframes holoWash {
+  to {
+    background-position: var(--holo-shift-diagonal) var(--holo-shift-diagonal);
+  }
+}

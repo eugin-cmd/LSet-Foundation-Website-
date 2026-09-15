@@ -122,7 +122,7 @@ export default function ContactForm() {
       </div>
 
       <div className={s.submitRow}>
-        <button type="submit" className={s.submit}>
+        <button type="submit" className={`${s.submit} wf-holo-hover`}>
           Send message <LinkArrow />
         </button>
       </div>

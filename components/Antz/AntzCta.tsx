@@ -19,10 +19,10 @@ export default function AntzCta() {
         bring it to us. We answer every submission within five working days.
       </p>
       <div className={s.ctaRow}>
-        <a href="#" className={`${s.ctaBtn} ${s.ctaBtnFilled}`}>
+        <a href="#" className={`${s.ctaBtn} ${s.ctaBtnFilled} wf-holo-hover`}>
           Submit a Challenge <LinkArrow />
         </a>
-        <a href="#" className={`${s.ctaBtn} ${s.ctaBtnOutline}`}>
+        <a href="#" className={`${s.ctaBtn} ${s.ctaBtnOutline} wf-holo-hover`}>
           View all projects
         </a>
       </div>

@@ -316,16 +316,9 @@
   cursor: pointer;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .submit {
-    transition: transform 200ms ease-out, background-color 200ms ease-out;
-  }
-
-  .submit:hover,
-  .submit:focus-visible {
-    transform: translateY(-3px);
-  }
-}
+/* The lift and the fill both come from `.wf-holo-hover` now, so neither is
+   repeated here; a second translateY would stack with the utility's and send
+   the button 7px up. */
 
 .submit:focus-visible {
   outline: 2px solid var(--white);

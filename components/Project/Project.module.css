@@ -1576,10 +1576,7 @@
   color: var(--white);
 }
 
-.ctaBtnFilled:hover,
-.ctaBtnFilled:focus-visible {
-  background: var(--color-orange-bright);
-}
+/* No hover repaint: `.wf-holo-hover` carries the hover now. */
 
 .ctaBtnOutline {
   border-color: rgb(0 0 0 / 25%);
@@ -1588,8 +1585,8 @@
 
 .ctaBtnOutline:hover,
 .ctaBtnOutline:focus-visible {
+  /* The edge darkens with the wash; the fill is the wash's. */
   border-color: rgb(0 0 0 / 60%);
-  background: rgb(0 0 0 / 4%);
 }
 
 /* --- narrow ------------------------------------------------------------- */
