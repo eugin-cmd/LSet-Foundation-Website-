@@ -1,0 +1,365 @@
+/* ---------------------------------------------------------------------------
+   Contact — Figma frame `7 · Contact us`, node 1993:3270.
+
+   The one page on this site that is a single photographic surface rather than
+   a dark banner over light content: Figma runs one picture behind the header,
+   the form and the closing band, and the dark footer takes over from there.
+   That is followed as drawn. What is adapted is everything inside it — the
+   type utilities, the tokens, the pill buttons and the banner furniture are
+   the project's own.
+   --------------------------------------------------------------------------- */
+
+.page {
+  position: relative;
+  width: 100%;
+  overflow: clip;
+  /* Figma's 837x1880 photograph, which is the largest the file holds. It is
+     fixed to the top and covers, so the subject stays put as the page grows
+     rather than sliding with the copy. */
+  background: url("/assets/contact-hero.jpg") center top / cover no-repeat;
+  background-color: var(--scrim-base);
+}
+
+/* The flat tint and the two scrim stops the site's banners carry, here spread
+   over the whole surface: the form sits on this picture for two thousand
+   pixels, and white labels on bare foliage would be legible only where the
+   leaves happen to be dark. */
+.page::before,
+.page::after {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: "";
+}
+
+.page::before {
+  background: rgb(0 0 0 / 42%);
+}
+
+.page::after {
+  background:
+    linear-gradient(180deg, #01120c 2%, rgba(0, 0, 0, 0) 22%),
+    linear-gradient(0deg, #01120c 0%, rgba(0, 0, 0, 0) 26%);
+}
+
+/* --- page header, 1993:3271 --------------------------------------------- */
+
+.header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  /* Figma's 412px band, which is where the copy sits rather than where the
+     picture ends. The clamp keeps its proportion down to a phone. */
+  min-height: clamp(320px, 28.6vw, 412px);
+  padding: clamp(96px, 9vw, 130px) var(--edge) clamp(44px, 4.7vw, 68px);
+}
+
+.headerInner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+  width: min(1200px, 100%);
+  margin: 0 auto;
+}
+
+.kicker {
+  margin: 0;
+  color: var(--ink-on-dark-2);
+}
+
+/* Figma's WF/Display XL, which .wf-display-xl already is: 52px, 1.12, 5.5
+   tracking, uppercase. Only the measure, the weight and the fallback colour
+   belong here — the fill comes from .wf-iridescent on the element.
+
+   900 against Figma's Regular, by direction, and it is what every other
+   heading on the site opens at: the Foundation hero, Our Work, the Antz and
+   education banners and About all carry 900. The utility class tops out at
+   400 because it is Figma's own style. */
+.title {
+  width: min(700px, 100%);
+  margin: 0;
+  font-weight: 900;
+  color: var(--white);
+  text-wrap: balance;
+}
+
+.lede {
+  width: min(520px, 100%);
+  margin: 0;
+  color: var(--ink-on-dark-2);
+  text-wrap: pretty;
+}
+
+/* --- the split, 1993:3278 ------------------------------------------------ */
+
+/* One column now the rail has gone. Figma's 1200px shell still sets the page
+   gutter, but the form itself takes a form's measure rather than stretching to
+   it: a 1200px-wide text field is harder to fill in, not easier, because the
+   eye loses the line it is on between the label and the box. */
+.split {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  /* Left, by direction, so the form starts on the same line the heading above
+     it starts on rather than floating in the middle of the band. */
+  justify-content: flex-start;
+  /* The gutter is in the width, not in padding on top of it. The header puts
+     its padding on the outer element and centres a 1200px inner, so its copy
+     starts at 120 on a 1440 screen; this band was 1200 wide AND padded, which
+     counted the gutter twice and started the form at 144. */
+  width: min(1200px, 100% - var(--edge) * 2);
+  margin: 0 auto;
+  padding: var(--section-y) 0;
+}
+
+
+
+/* --- form, 1993:3279 ---------------------------------------------------- */
+
+/* A form's measure, not the page's. It carried `flex: 1` while it shared the
+   row with the rail; with the rail gone that made it 1152px wide, and a text
+   field that long is harder to fill in rather than easier — the eye loses the
+   line it is on between the label and the box. */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: min(620px, 100%);
+}
+
+.formKicker {
+  margin: 0;
+  color: var(--white);
+}
+
+.row {
+  display: flex;
+  gap: 18px;
+}
+
+@media (max-width: 520px) {
+  .row {
+    flex-direction: column;
+  }
+}
+
+.field {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.field label {
+  color: var(--white);
+}
+
+/* Figma draws these as solid white panels; they are glass instead, by
+   direction. Keeping Figma's geometry — 46px tall, 14px inset, the 4px
+   corner — and changing only the surface: a tenth of white over a blur of
+   whatever the photograph is doing behind it.
+
+   The ink turns with the surface. White type on a white panel was the design;
+   on glass the panel IS the photograph, so the type has to read against the
+   picture rather than against the panel. */
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid rgb(255 255 255 / 34%);
+  border-radius: var(--radius-input);
+  background: rgb(255 255 255 / 10%);
+  color: var(--white);
+  font: 400 12.5px/1.7 var(--font-flex);
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+}
+
+/* Where there is no backdrop-filter the glass would be a 10% white wash over
+   raw foliage, which is neither legible nor the effect. Those browsers get a
+   flat dark panel instead — the same read, without the blur. */
+@supports not (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  .field input,
+  .field select,
+  .field textarea {
+    background: rgb(4 18 12 / 62%);
+  }
+}
+
+/* The dropdown's own list is drawn by the platform, not by this page: it has
+   no photograph behind it, so its options keep dark ink on white. Without
+   this they inherit the transparent control and render white on white. */
+.field option {
+  background: var(--surface-white);
+  color: var(--ink-1);
+}
+
+/* A browser paints its own opaque ground on an autofilled field, which would
+   punch a solid rectangle through the glass. The inset shadow is the only way
+   to override it, and the text colour has to be set separately. */
+.field input:-webkit-autofill,
+.field input:-webkit-autofill:hover,
+.field input:-webkit-autofill:focus {
+  box-shadow: inset 0 0 0 1000px rgb(255 255 255 / 10%);
+  -webkit-text-fill-color: var(--white);
+  caret-color: var(--white);
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .field input,
+  .field select,
+  .field textarea {
+    transition: background-color 200ms ease, border-color 200ms ease;
+  }
+}
+
+.field input:hover,
+.field select:hover,
+.field textarea:hover {
+  border-color: rgb(255 255 255 / 52%);
+  background: rgb(255 255 255 / 14%);
+}
+
+.field textarea {
+  /* Figma's 130px. Padding is vertical here where the single-line fields
+     centre their text on a fixed height. */
+  height: 130px;
+  padding: 12px 14px;
+  resize: vertical;
+}
+
+/* Safari draws no caret of its own on a styled select, so one is drawn here
+   and the native appearance is stood down on every browser for consistency. */
+/* The caret is painted as two background layers, so the glass fill has to be
+   named again here as the layer beneath them — a `background-image` on its own
+   would replace it. */
+.field select {
+  appearance: none;
+  background-color: rgb(255 255 255 / 10%);
+  background-image: linear-gradient(45deg, transparent 50%, var(--white) 50%),
+    linear-gradient(135deg, var(--white) 50%, transparent 50%);
+  background-position: calc(100% - 20px) 21px, calc(100% - 14px) 21px;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 38px;
+}
+
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 2px;
+}
+
+/* The browser's own invalid styling only after a submit has been attempted,
+   so a field is not marked wrong before anyone has finished typing in it. */
+.form:not(:focus-within) input:user-invalid,
+.form:not(:focus-within) select:user-invalid,
+.form:not(:focus-within) textarea:user-invalid {
+  border-color: var(--color-orange);
+}
+
+.consent {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.consent input {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  /* White fill when checked, so the box reads on the picture the way the
+     fields around it do. The tick the browser draws inside it is dark, which
+     is the contrast that makes it legible. */
+  accent-color: var(--white);
+}
+
+.consent label {
+  color: var(--white);
+}
+
+.submitRow {
+  display: flex;
+  padding-top: 8px;
+}
+
+/* Figma's white pill with the forest label. Not <PillCta>: that component is
+   an anchor, and this has to be a real submit button inside the form. The
+   geometry is the same pill — 100px radius, 22/12 padding, WF/Nav type. */
+.submit {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 12px 22px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--white);
+  color: var(--ink-1);
+  font: 500 13px/1.3 var(--font-flex);
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .submit {
+    transition: transform 200ms ease-out, background-color 200ms ease-out;
+  }
+
+  .submit:hover,
+  .submit:focus-visible {
+    transform: translateY(-3px);
+  }
+}
+
+.submit:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 3px;
+}
+
+.notice {
+  margin: 0;
+  color: var(--ink-on-dark-2);
+}
+
+.notice a {
+  color: var(--white);
+}
+
+/* --- closing band, 1993:3327 -------------------------------------------- */
+
+.secondary {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  /* Last band before the footer, so it takes the page tail. */
+  padding: var(--section-y) var(--edge) var(--section-tail);
+  text-align: center;
+}
+
+.secondaryTitle {
+  width: min(447px, 100%);
+  margin: 0;
+  color: var(--white);
+  text-wrap: balance;
+}
+
+.secondaryRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}

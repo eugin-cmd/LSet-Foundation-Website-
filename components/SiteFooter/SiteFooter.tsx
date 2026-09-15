@@ -1,35 +1,42 @@
 import s from "./SiteFooter.module.css";
 
-/* `#` is a page that does not exist yet; the two that do are wired. The footer
-   is on every page, so this is what links the sites together from the bottom. */
+/* `#` is a page that does not exist yet; the ones that do are wired. The
+   footer is on every page, so this is what links the sites together from the
+   bottom.
+   
+   Three of Figma's rows have gone, by direction: "The model", "From the
+   field" and "Support the work". All three pointed nowhere. */
 const COLUMNS = [
   {
     label: "What we do",
     links: [
-      /* Both point at /technology: it is the pillar's name in the site's
-         vocabulary and Antz Systems is the same page under its product name,
-         which is also how the nav's third brand chip is wired. */
-      { label: "Technology", href: "/technology" },
+      /* The site's three brands, in the order and under the names the nav's
+         own brand row uses. "Technology" led this column and has gone, by
+         direction: it was the pillar's name for the page Antz Systems already
+         names below, so the column listed one page twice and never named the
+         Foundation at all. */
+      { label: "Foundation", href: "/" },
       { label: "Education", href: "/education" },
       { label: "Antz Systems", href: "/technology" },
-      { label: "The model", href: "#" },
     ],
   },
   {
     label: "The work",
     links: [
       { label: "All projects", href: "/the-work" },
-      { label: "From the field", href: "#" },
-      { label: "Submit a challenge", href: "#" },
+      /* The contact page, by direction: there is no separate challenge form,
+         and its own form asks what a challenge would ask. */
+      { label: "Submit a Challenge", href: "/contact" },
     ],
   },
   {
     label: "About",
     links: [
-      { label: "About & transparency", href: "#" },
-      { label: "Support the work", href: "#" },
-      { label: "Contact", href: "#" },
-      { label: "Privacy", href: "#" },
+      /* "About" rather than Figma's "About & transparency", by direction —
+         and pointed at the page, which exists now; it was a dead `#`. */
+      { label: "About", href: "/about" },
+      { label: "Contact", href: "/contact" },
+      { label: "Privacy", href: "/privacy" },
     ],
   },
 ];
