@@ -757,7 +757,7 @@
   border-radius: var(--radius-pill);
   font: 500 13px/1.3 var(--font-flex);
   white-space: nowrap;
-  transition: background-color 160ms ease, color 160ms ease;
+  /* The hover, and its easing, come from `.wf-holo-hover`. */
 }
 
 .ctaBtnFilled {

@@ -11,7 +11,9 @@
   background: var(--color-green-950);
   color: var(--surface-white);
   white-space: nowrap;
-  transition: background-color 160ms ease, border-color 160ms ease;
+  /* No transition here: `.wf-holo-hover` owns the hover and its own transition
+     list, and a shorthand at this specificity would replace that list rather
+     than add to it. */
 }
 
 /* No hover repaint: `.wf-holo-hover` fills this with the holographic wash.

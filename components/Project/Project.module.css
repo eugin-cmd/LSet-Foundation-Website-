@@ -1564,12 +1564,7 @@
   white-space: nowrap;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .ctaBtn {
-    transition: background-color 200ms ease, color 200ms ease,
-      border-color 200ms ease;
-  }
-}
+/* The hover, and its easing, come from `.wf-holo-hover`. */
 
 .ctaBtnFilled {
   background: var(--color-orange);

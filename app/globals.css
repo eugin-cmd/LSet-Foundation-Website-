@@ -518,9 +518,14 @@ video {
 /* ---------------------------------------------------------------------------
    The holographic hover, worn by every button on the site.
 
-   A diagonal wash of the site's own holographic ramp sweeps across the button
-   from its top-left corner, fills it at full opacity, and the label turns
-   black behind it. Easing in, so it starts slowly and arrives.
+   The site's own holographic ramp opens from the centre of the button and
+   spreads to both ends, fills it at full opacity, and the label turns black
+   behind it. Easing in, so it starts slowly and arrives.
+
+   The ramp's bands stay diagonal while the reveal is horizontal: what travels
+   out to the sides is the edge of the fill, and what lies inside it runs at
+   135 degrees, which is where the iridescence reads as iridescence rather than
+   as stripes.
 
    The wash is a ::before at z-index -1, which is what makes this work on every
    button regardless of what its label is made of. Painting order inside a
@@ -532,8 +537,10 @@ video {
    `isolation: isolate` keeps the negative layer inside the button rather than
    letting it search for a stacking context further up the page.
 
-   The sweep is a clip-path between two four-point polygons, which interpolate
-   because the point counts match. At rest the shape is the zero-area sliver
+   The reveal is a clip-path between two insets: at rest the left and right are
+   both held at 50%, which meets in the middle and leaves a sliver of no width
+   at all, and on hover both go to zero. Two inset() shapes interpolate, which
+   is what lets it travel rather than cut. At rest the shape is the zero-area sliver
    along the leading diagonal; on hover its far edge is past 100% on both rows,
    so the wash clears the button rather than stopping short inside it.
 
@@ -556,12 +563,12 @@ video {
   border-radius: inherit;
   background-image: var(--holo-ramp-diagonal);
   background-size: var(--holo-tile-diagonal) var(--holo-tile-diagonal);
-  clip-path: polygon(0 0, 0 0, -100% 100%, -100% 100%);
+  clip-path: inset(0 50% 0 50%);
 }
 
 .wf-holo-hover:hover::before,
 .wf-holo-hover:focus-visible::before {
-  clip-path: polygon(0 0, 200% 0, 100% 100%, -100% 100%);
+  clip-path: inset(0);
 }
 
 /* Black, and it has to be. Every stop in the ramp is a high-luminance pastel:
@@ -578,12 +585,22 @@ video {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .wf-holo-hover {
+  /* Doubled class again, and for a reason worth stating. `transition` is a
+     shorthand: a button's own module declaring `transition: background-color
+     160ms ease` does not add to this list, it REPLACES it. Those modules load
+     after this file and at equal specificity the later sheet wins, so at
+     (0,1,0) the pop and the resize were being dropped from the transition list
+     altogether and snapping to their hover values with no easing at all. Only
+     the contact submit eased, because that was the one module rule already
+     deleted. Measured, not guessed: transitionProperty came back as
+     "background-color, border-color" on the pill and "background-color, color,
+     border-color" on the project CTA. */
+  .wf-holo-hover.wf-holo-hover {
     transition: color 420ms ease-in, translate 300ms ease-in,
-      scale 300ms ease-in;
+      scale 300ms ease-in, border-color 300ms ease-in;
   }
 
-  .wf-holo-hover::before {
+  .wf-holo-hover.wf-holo-hover::before {
     transition: clip-path 420ms ease-in;
   }
 
