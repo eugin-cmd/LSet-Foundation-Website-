@@ -79,7 +79,7 @@ export const ANTZ_PLATFORM: Project = {
     },
     {
       kicker: "The Result",
-      body: "One record per animal. Veterinary history, behavioural assessments, husbandry decisions, transfer logs, lab results and diet plans in the same place, in the order they happened — so a keeper's observation is visible to the vet, and the registrar's return is drawn from live operational data.",
+      body: "One record per animal. Veterinary history, behavioural assessments, husbandry decisions, transfer logs, lab results and diet plans in the same place, in the order they happened, so a keeper's observation is visible to the vet, and the registrar's return is drawn from live operational data.",
     },
   ],
 
@@ -134,7 +134,7 @@ export const ANTZ_PLATFORM: Project = {
       icon: "/assets/antz/cards/ic-husbandry.svg",
       alt: "Husbandry And Operations",
       title: "Husbandry And Operations",
-      body: "The working life of the zoo — housing, feeding, moving, securing — in one system. Housing across sites, sections, enclosures and clusters; diet from ingredients and recipes through meal groups; in-house, inter-site and external transfers; missing-animal incident handling; requests, announcements, security check-in and check-out.",
+      body: "The working life of the zoo (housing, feeding, moving, securing) in one system. Housing across sites, sections, enclosures and clusters; diet from ingredients and recipes through meal groups; in-house, inter-site and external transfers; missing-animal incident handling; requests, announcements, security check-in and check-out.",
     },
     {
       src: "/assets/antz/cards/compliance.jpg",
@@ -192,11 +192,11 @@ export const ANTZ_ETHOSTUDIO: Project = {
     },
     {
       kicker: "Our Approach",
-      body: "EthoStudio works the other way around. Rather than asking an institution to fit a generic AI, its keepers teach an AI to fit the institution — designing the study, choosing the sampling method, naming the focal animals and building the ethogram themselves.",
+      body: "EthoStudio works the other way around. Rather than asking an institution to fit a generic AI, its keepers teach an AI to fit the institution: designing the study, choosing the sampling method, naming the focal animals and building the ethogram themselves.",
     },
     {
       kicker: "Labelling, The Way Keepers Work",
-      body: "Score live in the field or annotate uploaded footage frame by frame. As the model improves it pre-labels new video, so a team corrects rather than starts from scratch — and audio carries waveform and spectrogram views, so a behaviour and its sound are scored together.",
+      body: "Score live in the field or annotate uploaded footage frame by frame. As the model improves it pre-labels new video, so a team corrects rather than starts from scratch, and audio carries waveform and spectrogram views, so a behaviour and its sound are scored together.",
     },
   ],
 
@@ -220,7 +220,7 @@ export const ANTZ_ETHOSTUDIO: Project = {
     { src: "/assets/antz/ethostudio-1.webp", alt: "The EthoStudio labelling interface, scoring a meerkat observation against a behaviour palette." },
     { src: "/assets/antz/ethostudio-2.webp", alt: "Choosing a sampling method while creating a new study." },
     { src: "/assets/antz/ethostudio-3.webp", alt: "A meerkat ethogram of fifteen behaviours, each with its code and colour." },
-    { src: "/assets/antz/ethostudio-4.webp", alt: "A study's own record — species, sampling method, individuals and research goals." },
+    { src: "/assets/antz/ethostudio-4.webp", alt: "A study's own record: species, sampling method, individuals and research goals." },
     { src: "/assets/antz/ethostudio-5.webp", alt: "A completed session: behaviour breakdown, group distribution, timeline and export." },
   ],
 };
@@ -252,7 +252,7 @@ export const ANTZ_EDGE: Project = {
     {
       label: "Connectivity",
       icon: "offline",
-      value: "None required — every frame is processed on the device",
+      value: "None required: every frame is processed on the device",
     },
     {
       label: "Deployed in",
@@ -328,7 +328,7 @@ export const ANTZ_TRAILS: Project = {
     {
       label: "Branded",
       icon: "brand",
-      value: "As the institution's own — its colours, logo and voice",
+      value: "As the institution's own: its colours, logo and voice",
     },
   ],
 
@@ -339,11 +339,11 @@ export const ANTZ_TRAILS: Project = {
     },
     {
       kicker: "The Visit",
-      body: "It starts before arrival: a five-step flow gathers who is coming, how long they have and what they care about, then builds a route through the zoo. The plan lays the day out as a journey rather than a list — exhibits to reach, feeding times to catch, breaks built in — and completed stops light up as the day unfolds.",
+      body: "It starts before arrival: a five-step flow gathers who is coming, how long they have and what they care about, then builds a route through the zoo. The plan lays the day out as a journey rather than a list (exhibits to reach, feeding times to catch, breaks built in), and completed stops light up as the day unfolds.",
     },
     {
       kicker: "At The Fence",
-      body: "Scan the marker and the exhibit comes alive: its name, its story, what it is doing right now. No typing in the sunlight — the card offers a handful of tappable prompts, including questions a visitor had not thought to ask.",
+      body: "Scan the marker and the exhibit comes alive: its name, its story, what it is doing right now. No typing in the sunlight: the card offers a handful of tappable prompts, including questions a visitor had not thought to ask.",
     },
   ],
 
@@ -359,11 +359,59 @@ export const ANTZ_TRAILS: Project = {
     label: "Antz Trails on antzsystems.com",
   },
 
+  /* The six screens from "HOW IT WORKS — The plan that builds anticipation" on
+     antzsystems.com/antz-trails, which is the section that shows the app being
+     used: the suggested plan, then the five steps that build it.
+
+     Only that section's images, by direction, and all six at one height, which
+     is how that page sets them — its grid gives every screen the same
+     --planner-h and lets the widths fall where they will.
+
+     They are portrait, so the rail's landscape frame follows them instead of
+     the other way round: see galleryAspect below. */
+  /* That section's own heading and both its paragraphs, so the screens are
+     introduced the way they are introduced over there. Their hyphens standing
+     in for dashes are em dashes here, and "A five-step flowgathers" — a span
+     boundary with no space in it — has the space it needs. */
+  galleryHead: {
+    kicker: "HOW IT WORKS",
+    title: "The plan that builds anticipation",
+    body: [
+      "The visit begins days before arrival. Antz Trails turns trip-planning from form-filling into unwrapping a gift, a visual itinerary that previews the adventure ahead.",
+      "A five-step flow gathers who's coming, how long they have, and what they care about, then generates a personalised route through your zoo. No spreadsheets, no guesswork.",
+    ],
+  },
+  /* Their own sizes, not ours: the screens draw at a set height and whatever
+     width that gives them, so the six read as one flow. Two of them are 0.966
+     of the rest, which is how that page sets them. */
+  galleryFixedHeight: true,
+  /* The frame hugs the screens instead of the rail's 560px, which left about
+     87px of empty frame either side of a 385px-wide screen — so the space
+     between two of them read as 216px when the gap itself was 42. 394 is the
+     widest screen at this height (386) plus a hair, which is as tight as a
+     rail can go: every frame is the same width because the rail translates by
+     it, so the leftover air is whatever each screen does not use. 24 is the
+     gap that page's own grid uses.
+
+     The screens themselves are trimmed to their own ink — the files carried up
+     to 57px of transparent margin down the right — and each one's `scale`
+     carries the height that trim removed, so the picture still draws at the
+     size antzsystems.com draws it at rather than growing into the space. */
+  galleryCardWidth: "min(394px, 74vw)",
+  galleryGap: "24px",
+  /* Arrows under the middle, by direction, on this page only. */
+  galleryControlsCentred: true,
+  /* And it keeps turning under the pointer, by direction: this rail is a
+     five-step flow, so watching it run is the point of it. */
+  galleryAutoplayThroughHover: true,
+  galleryAspect: "1 / 1",
   gallery: [
-    { src: "/assets/antz/trails-1.jpg", alt: "A planned day in Antz Trails.", fit: "contain" },
-    { src: "/assets/antz/trails-2.jpg", alt: "A step in the trip planner.", fit: "contain" },
-    { src: "/assets/antz/trails-3.jpg", alt: "The visitor's itinerary.", fit: "contain" },
-    { src: "/assets/antz/trails-4.jpg", alt: "Sage, the operator console's assistant.", fit: "contain" },
+    { src: "/assets/antz/trails-app/plan-preview.webp", alt: "A suggested Family Fun Day plan, with options to use it as it is or customise it first.", fit: "contain", scale: 0.9785 },
+    { src: "/assets/antz/trails-app/step-1.webp", alt: "Step one of five: choosing the visit date, with Today, Tomorrow and This Weekend shortcuts.", fit: "contain", scale: 0.9787 },
+    { src: "/assets/antz/trails-app/step-2.webp", alt: "Step two of five: choosing who is coming, with counts for adults, children and infants.", fit: "contain", scale: 0.9582 },
+    { src: "/assets/antz/trails-app/step-3.webp", alt: "Step three of five: selecting equipment needed, such as a stroller, wheelchair or wagon.", fit: "contain", scale: 0.9779 },
+    { src: "/assets/antz/trails-app/step-4.webp", alt: "Step four of five: setting preferences for visit duration and pace.", fit: "contain", scale: 0.9786 },
+    { src: "/assets/antz/trails-app/step-5.webp", alt: "Step five of five: picking must-see exhibits before generating the plan.", fit: "contain", scale: 0.9576 },
   ],
 };
 

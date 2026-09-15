@@ -94,6 +94,10 @@ export type ProjectPhoto = {
    *  Read by the rail only. The stack draws each slide whole, at its own
    *  aspect, so there is no frame to fit it to. */
   fit?: "cover" | "contain";
+  /** A multiplier on the slide height, where a record draws its slides at a
+   *  fixed height rather than fitting them to the frame. antzsystems.com sets
+   *  two of the six planner screens to 0.966 of the rest; this is that. */
+  scale?: number;
   /** A slide carrying these three is a *card* rather than a photograph: the
    *  picture becomes a tinted panel down the left with the mark centred on it,
    *  and the words sit beside it. This is the shape antzsystems.com gives its
@@ -179,6 +183,37 @@ export type Project = {
    *  faculty portraits. Defaults to "photograph" on the rail and "capability"
    *  on cards, which is what every record but the faculty one wants. */
   galleryNoun?: string;
+  /** The rail's frame shape, where a record's pictures are not the landscape
+   *  photographs Figma drew it for. Trails carries portrait phone mockups: in
+   *  the 619/356 frame each one drew 212px wide inside 560px of empty air.
+   *  Any CSS aspect-ratio value; the rail's own is the default. */
+  galleryAspect?: string;
+  /** Draws every slide at a fixed height, at its own width, instead of fitting
+   *  it inside the frame. For pictures that are a set — the six planner
+   *  screens are one flow, and a flow reads wrong if its screens are different
+   *  sizes. The heights are antzsystems.com's own; see the rail's CSS. */
+  galleryFixedHeight?: boolean;
+  /** Centres the rail's arrows under it instead of setting them at its
+   *  trailing edge. Its own flag rather than a side effect of the fixed-height
+   *  slides above: the two happen to coincide on one record today, and a page
+   *  that wanted one without the other would be stuck. */
+  galleryControlsCentred?: boolean;
+  /** Keeps the rail turning while the pointer is over it. The rail pauses on
+   *  hover everywhere else, which is right for screenshots someone is reading
+   *  — but on a page where the rail is the thing you are meant to watch, it
+   *  means it never advances while you are looking at it. */
+  galleryAutoplayThroughHover?: boolean;
+  /** The width of one slide's frame, and the gap between frames. The rail's
+   *  own 560/42 are built for landscape photographs that fill their frame; a
+   *  record drawing narrow portrait screens inside them ends up with most of
+   *  the space between two pictures being empty frame rather than gap. Any CSS
+   *  length. */
+  galleryCardWidth?: string;
+  galleryGap?: string;
+  /** A heading above the rail, where the pictures need naming. Only the
+   *  records that take a section wholesale from antzsystems.com carry one, and
+   *  the words are that section's own. */
+  galleryHead?: { kicker: string; title: string; body?: string[] };
 };
 
 /**

@@ -15,7 +15,13 @@ import s from "./Project.module.css";
  * The thumbnail is each project's own first gallery photograph rather than its
  * banner: the banner crop is a 2:1 letterbox built to sit behind a title, and
  * at 96px wide it reads as a stripe.
+ *
+ * A record may have no gallery at all — the faculty topic page carries none —
+ * so the banner is the fallback. Without it this component read `.src` off
+ * undefined and took down every page that neighbours such a record, which is
+ * how it was found.
  */
+const thumb = (p: Project) => p.gallery[0]?.src ?? p.hero;
 export default function ProjectNeighbours({
   project,
   base = "/the-work",
@@ -42,7 +48,7 @@ export default function ProjectNeighbours({
             here would have a screen reader read the species twice. */}
         <img
           className={s.neighbourThumb}
-          src={prev.gallery[0].src}
+          src={thumb(prev)}
           alt=""
           width={1238}
           height={712}
@@ -64,7 +70,7 @@ export default function ProjectNeighbours({
         </span>
         <img
           className={s.neighbourThumb}
-          src={next.gallery[0].src}
+          src={thumb(next)}
           alt=""
           width={1238}
           height={712}

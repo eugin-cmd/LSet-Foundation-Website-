@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import MeshField from "@/components/MeshField/MeshField";
 import ProjectHero from "@/components/Project/ProjectHero";
 import ProjectBody from "@/components/Project/ProjectBody";
-import ProjectGallery from "@/components/Project/ProjectGallery";
 import ProjectNeighbours from "@/components/Project/ProjectNeighbours";
 import ProjectCta from "@/components/Project/ProjectCta";
 import {
@@ -11,7 +10,7 @@ import {
 } from "@/components/Project/educationTopics.data";
 
 export const metadata: Metadata = {
-  title: "Multinational Faculty — LSeT Education",
+  title: "Multinational Faculty | LSeT Education",
   description:
     "Mentored daily by practitioners from six countries, alongside India's leading zoo directors, veterinarians and conservation researchers.",
 };
@@ -22,9 +21,12 @@ export const metadata: Metadata = {
  * Condensed from lifesciencetrust.org, the institute's own About page.
  *
  * Built from the same <Project*> components the species pages use, passing the
- * education set instead of the projects, so the mast, the parallax, the pager,
- * the carousel and the neighbour cards are the site's own rather than a third
+ * education set instead of the projects, so the mast, the parallax, the pager
+ * and the neighbour cards are the site's own rather than a third
  * implementation that would drift from them.
+ *
+ * No gallery on this page, by direction: it carried a card carousel of the
+ * mentors, which is the one thing here a reader does not need shown twice.
  */
 export default function MultinationalFacultyPage() {
   const set = {
@@ -40,7 +42,6 @@ export default function MultinationalFacultyPage() {
         <ProjectHero project={EDU_FACULTY} {...set} />
         <MeshField>
           <ProjectBody project={EDU_FACULTY} />
-          <ProjectGallery project={EDU_FACULTY} />
           <ProjectNeighbours
             project={EDU_FACULTY}
             base="/education"

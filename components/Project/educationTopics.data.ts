@@ -147,69 +147,18 @@ export const EDU_FACULTY: Project = {
     },
   ],
 
-  tech: [
-    { label: "Zoo and habitat design", icon: "platform" },
-    { label: "Veterinary practice", icon: "status" },
-    { label: "Ex-situ conservation", icon: "birds" },
-    { label: "Research supervision", icon: "behaviour" },
-  ],
+  /* No chips either, by direction. What this page is about is people, and a
+     row of capability labels under their names read as a second, thinner
+     version of the prose above it. */
+  tech: [],
 
-  external: {
-    href: "https://lifesciencetrust.org/about",
-    label: "The team on lifesciencetrust.org",
-  },
+  /* No outbound link on this page, by direction. The other two topic pages
+     keep theirs; this one's pointed at the same team it already shows. */
 
-  /* Cards rather than the photo rail: each of these is a person, and a
-     portrait in a landscape frame is a crop of someone's face with their name
-     nowhere near it. The card carries the name and what they bring beside the
-     photograph, which is the whole point of showing them. */
-  galleryStyle: "cards",
-  /* Not "capabilities": these cards are people. */
-  galleryNoun: "mentor",
-  gallery: [
-    {
-      src: "/assets/edu/faculty-anil.webp",
-      alt: "Mr. Anil Garg",
-      title: "Mr. Anil Garg",
-      body: "Founder. Four decades of hands-on work with animals rather than study of them, and the builder of one of India's most diverse collections of flora and fauna. Every facility and every training module at LSeT is shaped by that experience.",
-    },
-    {
-      src: "/assets/edu/faculty-meera.webp",
-      alt: "Prof. Meera Deobhakta",
-      title: "Prof. Meera Deobhakta",
-      body: "Honorary Director. An architect, educator and aviculturist whose work in ethical aviculture and responsible bird keeping earned her the institute's Lifetime Achievement Award.",
-    },
-    {
-      src: "/assets/edu/faculty-neetu.webp",
-      alt: "Mrs. Neetu Garg",
-      title: "Mrs. Neetu Garg",
-      body: "Principal. Responsible for the academic programme across the diplomas, the certificate courses and the residential life that holds them together.",
-    },
-    {
-      src: "/assets/edu/faculty-rajesh.webp",
-      alt: "Mr. Rajesh M",
-      title: "Mr. Rajesh M",
-      body: "Director. Runs the institute's day to day operation, where the teaching timetable and the animals' own timetable have to be the same one.",
-    },
-    {
-      src: "/assets/edu/faculty-valentine.webp",
-      alt: "Mr. Iain Valentine",
-      title: "Mr. Iain Valentine",
-      body: "Zoo and habitat design. Teaches how an enclosure is planned around the animal that will live in it, from circulation and enrichment through to the visitor's line of sight.",
-    },
-    {
-      src: "/assets/edu/faculty-mukherjee.webp",
-      alt: "Mr. Soham Mukherjee",
-      title: "Mr. Soham Mukherjee",
-      body: "Zoo specialist. Field and captive management, with an emphasis on the species that Indian collections actually hold and the welfare standards they are held to.",
-    },
-    {
-      src: "/assets/edu/faculty-gounder.webp",
-      alt: "Mr. Subhash Gounder",
-      title: "Mr. Subhash Gounder",
-      body: "Technology and R&D. Brings the instrumentation side of modern animal care into the classroom, from record keeping to the sensing that behavioural research depends on.",
-    },
-  ],
+  /* No gallery, by direction. This page carried a card carousel of the seven
+     mentors; the prose beside it already names what they bring, and the team
+     is shown in full on /about. */
+  gallery: [],
 };
 
 export const EDU_SPECIES: Project = {

@@ -144,6 +144,10 @@ export default function ProjectBody({ project }: { project: Project }) {
             </section>
           ))}
 
+          {/* Only where a record names any. An empty list would leave the
+              heading standing over nothing, which reads as a section that
+              failed to load rather than one that does not apply. */}
+          {project.tech.length > 0 && (
           <section className={s.block}>
             <h2 className={s.blockKicker}>Tech Deployed</h2>
             {/* A list, not a row of divs: this is an enumeration of four
@@ -162,6 +166,7 @@ export default function ProjectBody({ project }: { project: Project }) {
               })}
             </ul>
           </section>
+          )}
 
           {/* Out to the product's own page. `rel="noreferrer"` alongside
               noopener because this leaves the site: the target has no reason

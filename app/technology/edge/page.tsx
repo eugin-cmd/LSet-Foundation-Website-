@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import MeshField from "@/components/MeshField/MeshField";
 import ProjectHero from "@/components/Project/ProjectHero";
 import ProjectBody from "@/components/Project/ProjectBody";
-import ProjectGallery from "@/components/Project/ProjectGallery";
+import EdgeAudience from "@/components/Project/EdgeAudience";
 import ProjectNeighbours from "@/components/Project/ProjectNeighbours";
 import ProjectCta from "@/components/Project/ProjectCta";
 import {
@@ -11,9 +11,9 @@ import {
 } from "@/components/Project/antzProducts.data";
 
 export const metadata: Metadata = {
-  title: "Antz Edge — LSeT Foundation",
+  title: "Antz Edge | LSeT Foundation",
   description:
-    "On-premises AI for wildlife monitoring — species identification and behaviour analysis running locally on a low-power device, with no network required.",
+    "On-premises AI for wildlife monitoring: species identification and behaviour analysis running locally on a low-power device, with no network required.",
 };
 
 /**
@@ -38,7 +38,9 @@ export default function EdgePage() {
         <ProjectHero project={ANTZ_EDGE} {...set} />
         <MeshField>
           <ProjectBody project={ANTZ_EDGE} />
-          <ProjectGallery project={ANTZ_EDGE} />
+          {/* The photo carousel has gone, by direction; this page carries
+              "Who it's for" from antzsystems.com/antz-edge in its place. */}
+          <EdgeAudience />
           <ProjectNeighbours
             project={ANTZ_EDGE}
             base="/technology"

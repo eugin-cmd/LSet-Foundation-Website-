@@ -46,11 +46,30 @@ export default function ProjectCarousel({
   variant = "photos",
   /* Names one slide, for the arrows and the live region. */
   noun,
+  /* The frame's shape, where the rail's own landscape box is wrong for what
+     this record carries. */
+  aspect,
+  /* Draws the slides at a fixed height rather than fitting them to the frame. */
+  fixedHeight = false,
+  /* Puts the arrows under the middle of the rail rather than at its end. */
+  centredControls = false,
+  /* Keeps turning while the pointer is over the rail. */
+  autoplayThroughHover = false,
+  /* The frame's width and the space between frames, where the rail's own are
+     wrong for what this record carries. */
+  cardWidth,
+  gap,
 }: {
   photos: ProjectPhoto[];
   label: string;
   variant?: "photos" | "cards";
   noun?: string;
+  aspect?: string;
+  fixedHeight?: boolean;
+  centredControls?: boolean;
+  autoplayThroughHover?: boolean;
+  cardWidth?: string;
+  gap?: string;
 }) {
   const item = noun ?? (variant === "cards" ? "capability" : "photograph");
   const Item = item.charAt(0).toUpperCase() + item.slice(1);
@@ -133,12 +152,14 @@ export default function ProjectCarousel({
     /* Reduced motion gets no autoplay at all: the rail moves only when asked. */
     if (reduced) return;
     const id = setInterval(() => {
-      if (hovered.current) return;
+      /* A rail that is meant to be watched keeps going under the pointer;
+         everywhere else hovering holds it, so a screenshot can be read. */
+      if (hovered.current && !autoplayThroughHover) return;
       if (Date.now() < pauseUntil.current) return;
       setIndex((i) => i + 1);
     }, AUTOPLAY_MS);
     return () => clearInterval(id);
-  }, [reduced]);
+  }, [reduced, autoplayThroughHover]);
 
   useEffect(() => {
     const el = regionRef.current;
@@ -187,6 +208,15 @@ export default function ProjectCarousel({
       aria-label={label}
       className={s.carousel}
       data-variant={variant}
+      data-fixed-height={fixedHeight ? "true" : undefined}
+      data-controls={centredControls ? "centre" : undefined}
+      style={
+        {
+          ...(aspect ? { "--frame-aspect": aspect } : null),
+          ...(cardWidth ? { "--card": cardWidth } : null),
+          ...(gap ? { "--rail-gap": gap } : null),
+        } as React.CSSProperties
+      }
       onMouseEnter={() => {
         hovered.current = true;
       }}
@@ -262,6 +292,11 @@ export default function ProjectCarousel({
                   width={1238}
                   height={712}
                   loading={i === 0 ? "eager" : "lazy"}
+                  style={
+                    photo.scale
+                      ? ({ "--slide-scale": photo.scale } as React.CSSProperties)
+                      : undefined
+                  }
                 />
               )}
             </li>

@@ -32,6 +32,11 @@ function plural(noun: string) {
 }
 
 export default function ProjectGallery({ project }: { project: Project }) {
+  /* A record may carry no pictures at all — the faculty page is one. Better
+     to render nothing than a rule over an empty rail whose live region would
+     read a slide that does not exist. */
+  if (!project.gallery.length) return null;
+
   const style = project.galleryStyle ?? "rail";
   const cards = style === "cards";
   /* One noun for the section label, the arrows and the live region, so the
@@ -41,6 +46,25 @@ export default function ProjectGallery({ project }: { project: Project }) {
   return (
     <section className={s.gallery} aria-label={`${project.title} ${plural(noun)}`}>
       <WaveRule className={s.rule} />
+
+      {/* Where a record takes a whole section from antzsystems.com, it brings
+          that section's heading with it, so the pictures are introduced rather
+          than appearing unannounced under a divider. */}
+      {project.galleryHead && (
+        <div className={s.galleryHead}>
+          <p className={`${s.galleryKicker} wf-subtitle wf-dotted`}>
+            {project.galleryHead.kicker}
+          </p>
+          <h2 className={`${s.galleryTitle} wf-display-l`}>
+            {project.galleryHead.title}
+          </h2>
+          {project.galleryHead.body?.map((para) => (
+            <p className={`${s.galleryLede} wf-body-l`} key={para.slice(0, 32)}>
+              {para}
+            </p>
+          ))}
+        </div>
+      )}
       {style === "stack" ? (
         <AntzCarousel
           slides={project.gallery.map((p) => ({
@@ -57,6 +81,12 @@ export default function ProjectGallery({ project }: { project: Project }) {
           label={`${project.title} ${plural(noun)}`}
           variant={cards ? "cards" : "photos"}
           noun={noun}
+          aspect={project.galleryAspect}
+          fixedHeight={project.galleryFixedHeight}
+          centredControls={project.galleryControlsCentred}
+          autoplayThroughHover={project.galleryAutoplayThroughHover}
+          cardWidth={project.galleryCardWidth}
+          gap={project.galleryGap}
         />
       )}
     </section>
