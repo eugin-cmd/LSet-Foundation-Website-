@@ -825,3 +825,35 @@
     transform: translateY(calc(var(--antz-lift) * -0.6));
   }
 }
+
+/* --- the phone --------------------------------------------------------------
+   Targets only; no layout or type above 700px changes. */
+@media (max-width: 700px) {
+  /* 38px, and these two sit over the artwork where a miss does nothing. */
+  .arrow {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* The dots stay 12px — they are an indicator and a bigger dot would read as
+     a button. What grows is the area that answers a thumb, which a pseudo can
+     do without the dot occupying a pixel more of the row. */
+  .dot {
+    position: relative;
+  }
+
+  .dot::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    translate: -50% -50%;
+    content: "";
+  }
+
+  /* 43px tall, one short. */
+  .ctaBtn {
+    min-height: 46px;
+  }
+}

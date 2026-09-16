@@ -119,3 +119,12 @@
     animation: none;
   }
 }
+
+/* 35px across on a phone, and it sits over a photograph where a miss does
+   nothing at all. Widened to 44 without moving the chevron inside it. */
+@media (max-width: 700px) {
+  .cue {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}

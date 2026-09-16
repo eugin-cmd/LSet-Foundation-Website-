@@ -134,3 +134,47 @@
     align-items: flex-start;
   }
 }
+
+/* --- the phone --------------------------------------------------------------
+   The footer holds the site's smallest type and its densest stack of links, so
+   it is where a thumb has least room. Nothing here changes the design above
+   700px. */
+@media (max-width: 700px) {
+  /* 36 at the desk, 44 in the hand. These chips sit close enough together that
+     a near miss lands on the neighbour. */
+  .socialChip {
+    width: 44px;
+    height: 44px;
+    border-radius: 22px;
+  }
+
+  /* The links were 21px tall, sized by their type as they should be for a
+     pointer. The padding buys the height a thumb needs; the negative margin
+     gives the column back the space the padding took, so the footer's rhythm
+     is unchanged and only the target grew. */
+  /* `block`, not inline-block: "About" is 35px wide as a word, and a 35px
+     target in a stack of links is one a thumb lands next to. As a block it
+     spans the column, so the target is the row while the text stays exactly
+     where it was. */
+  /* The list already spans the column; what keeps each link at word width is
+     its own `align-items: flex-start`, which governs the cross axis of a
+     column flex box. Stretching that is what actually makes the row the
+     target — "About" is 38px as a word, and a 38px target in a stack of links
+     is one a thumb lands beside. */
+  .columnList {
+    align-items: stretch;
+  }
+
+  .columnLink {
+    display: block;
+    padding-block: 12px;
+    margin-block: -12px;
+  }
+
+  /* The label and the signup copy take their size from .wf-label and
+     .wf-small, whose phone floors are in globals.css. Only .copyright has no
+     utility of its own. */
+  .copyright {
+    font-size: 13.5px;
+  }
+}

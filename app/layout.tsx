@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import NavBar from "@/components/NavBar/NavBar";
 import SiteFooter from "@/components/SiteFooter/SiteFooter";
+import TouchActive from "@/components/TouchActive/TouchActive";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -34,6 +35,8 @@ export default function RootLayout({
             reach is the nav plus <main>, which is exactly what it was when the
             pages rendered it inside their own <main>. Dropped straight into
             <body> it would instead stay pinned over the footer. */}
+        <TouchActive />
+
         <div className="shell">
           <NavBar />
           {children}

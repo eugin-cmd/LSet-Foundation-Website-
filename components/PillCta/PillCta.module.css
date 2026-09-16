@@ -70,3 +70,11 @@
 /* No scale of its own any more: `.wf-holo-hover` lifts and grows every button
    on the site by the same amount, and this variant's old 1.02 would have
    compounded with it into 1.06. */
+
+/* 42px tall, two short of what a thumb wants. The extra two go on the height
+   rather than the padding so the label stays where the design puts it. */
+@media (max-width: 700px) {
+  .pill {
+    height: 46px;
+  }
+}

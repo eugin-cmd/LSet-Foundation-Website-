@@ -295,3 +295,13 @@
     transform: translate(-50%, calc(-100% - var(--approach-lift) * 0.85));
   }
 }
+
+/* Read More / Know More came in 18px tall on a phone, sized by their type as a
+   pointer target should be. Padding buys a thumb's worth of height and the
+   negative margin hands the row back the space, so only the target changed. */
+@media (max-width: 700px) {
+  .more {
+    padding-block: 13px;
+    margin-block: -13px;
+  }
+}

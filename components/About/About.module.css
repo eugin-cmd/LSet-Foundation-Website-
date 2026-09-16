@@ -654,3 +654,21 @@
     align-items: flex-start;
   }
 }
+
+/* The about page's two smallest strings, both 12-13px and both sitting under
+   photographs where the ground is busy. */
+@media (max-width: 700px) {
+  .standsItem {
+    font-size: 13.5px;
+  }
+
+  .memberRole {
+    font-size: 13.5px;
+  }
+}
+
+@media (max-width: 700px) {
+  .quoteRole {
+    font-size: 13.5px;
+  }
+}
