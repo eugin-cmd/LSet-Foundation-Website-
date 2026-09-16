@@ -52,8 +52,12 @@
   flex-direction: column;
   justify-content: flex-end;
   /* Figma's 412px band, which is where the copy sits rather than where the
-     picture ends. The clamp keeps its proportion down to a phone. */
-  min-height: clamp(320px, 28.6vw, 412px);
+     picture ends. The clamp keeps its proportion down to a phone. Named,
+     because the copy's parallax range is measured against it and the two
+     drifting apart would leave the rise finishing somewhere arbitrary. */
+  --header-h: clamp(320px, 28.6vw, 412px);
+
+  min-height: var(--header-h);
   /* The foot is deliberately short. Figma's 68 is the copy's inset from the
      bottom of a band you can see; here the photograph runs on past it, so
      there is no edge to be inset from and all 68 read as a gap to the form.
@@ -67,8 +71,60 @@
   flex-direction: column;
   gap: 16px;
   align-items: flex-start;
-  width: min(1200px, 100%);
-  margin: 0 auto;
+  /* The plate's own box, so this column's left edge lands exactly where the
+     nav plate's does at every width; --banner-align then carries it across to
+     the logo's mark. max-width is 100% rather than the plate's own
+     `100% - --edge * 2` because the section around this is already padded by
+     --edge, and counting the gutter twice would push the column inwards. */
+  width: var(--plate-w);
+  max-width: 100%;
+  margin-inline: auto;
+  padding-left: var(--banner-align);
+}
+
+/* The banner's opening icon, on the same terms as the other four banners'.
+   Only the alignment differs, and only because this banner's column is left
+   aligned where theirs are centred. */
+.heroIcons {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 2.08vw, 30px);
+  /* Against .headerInner's own 16px gap, which is tighter than the other
+     banners' 23px: 6px there and 6px here keeps the icon the same distance off
+     its kicker as theirs are off the copy below them. */
+  margin-bottom: 6px;
+  color: var(--white);
+}
+
+.heroIcons svg {
+  flex: none;
+  width: clamp(26px, 2.36vw, 34px);
+  height: auto;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* Drops in once on load, with the other banners' numbers exactly. `both`
+     holds the first frame through the delay so it does not sit in place
+     beforehand, and 1320ms waits out the blinder — whose last slat lands at
+     11 x 55ms + 760ms = 1365ms — so the drop is seen rather than played behind
+     a closed blind.
+
+     The name arrives through a custom property, never written out: css-loader
+     rewrites every `animation-name` inside a *.module.css to a hashed local
+     name whether or not this file declares the keyframes, and these are
+     global — naming them here would compile to something matching nothing and
+     the icon would silently not move. */
+  animation-name: var(--anim-icon-drop);
+  animation-duration: 940ms;
+  animation-delay: 1320ms;
+  animation-fill-mode: both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroIcons svg {
+    animation: none;
+  }
 }
 
 .kicker {
@@ -99,6 +155,47 @@
   text-wrap: pretty;
 }
 
+/* The banner copy rises as the page scrolls, as the other four banners' does.
+   Two departures from theirs, both because this band is not their band.
+
+   The range is this header's own height rather than --banner-height: at 412px
+   it is roughly half as tall as a full banner, and borrowing that range would
+   leave the rise only half travelled when the copy has already left the
+   screen.
+
+   60px rather than their 150, for the same reason and one more: the form sits
+   40px under this copy and drifts on a timeline of its own, so the two rates
+   have to be chosen together. Measured across the scroll, the gap between the
+   lede and the form runs 52px at rest and opens to 94 as the copy rises: the
+   heading climbs faster than the form does, so they separate rather than
+   converge. At 150 they would not have.
+
+   scroll(root block) rather than a view timeline, because this band starts at
+   the top of the document already in view, where a view() range has nothing to
+   travel through. */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .headerInner {
+      animation-name: contactCopyRise;
+      animation-duration: 1ms; /* superseded by the timeline */
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 var(--header-h);
+    }
+  }
+}
+
+@keyframes contactCopyRise {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-60px);
+  }
+}
+
 /* --- the split, 1993:3278 ------------------------------------------------ */
 
 /* One column now the rail has gone. Figma's 1200px shell still sets the page
@@ -112,13 +209,74 @@
   /* Left, by direction, so the form starts on the same line the heading above
      it starts on rather than floating in the middle of the band. */
   justify-content: flex-start;
-  /* The gutter is in the width, not in padding on top of it. The header puts
-     its padding on the outer element and centres a 1200px inner, so its copy
-     starts at 120 on a 1440 screen; this band was 1200 wide AND padded, which
-     counted the gutter twice and started the form at 144. */
-  width: min(1200px, 100% - var(--edge) * 2);
-  margin: 0 auto;
-  padding: var(--section-y) 0;
+  /* The plate's own box, the same one the header's copy column takes, so the
+     form's left edge lands under the heading's and both land under the logo's
+     mark. --banner-align carries it the rest of the way.
+
+     max-width subtracts the gutter here, where the header's does not: this
+     band sits directly in <main>, which has no padding of its own, while the
+     header sits inside a section already padded by --edge. Getting that
+     backwards is what once started the form at 144 instead of 120. */
+  width: var(--plate-w);
+  max-width: calc(100% - var(--edge) * 2);
+  padding-left: var(--banner-align);
+  /* Up 90px toward the heading and its subtext and then back down 50, by
+     direction: 40 net. As a negative top margin rather than by cutting the
+     padding, because the 60px is --section-y, the rhythm every section under a
+     banner keeps, and this is a deliberate pull off that rhythm rather than a
+     different opinion about what the rhythm is.
+
+     The 50 back matters. The gap under the lede was only 80px to begin with,
+     so the full 90 overran it: the form's "SEND A MESSAGE" sat 10px above the
+     lede's baseline box and a pixel scan of the seam found one continuous band
+     of ink where there should have been two. At 40 the two clear each other. */
+  margin: -40px auto 0;
+  padding-block: var(--section-y);
+  /* The form's own pass, which it rides against the fixed photograph. Named
+     on this band rather than taken from the form itself so the range covers
+     the whole section the form sits in. */
+  view-timeline-name: --contact-form;
+}
+
+/* ---------------------------------------------------------------------------
+   The form's parallax.
+
+   The photograph behind this page is painted on .page and does not move, so
+   the form drifting against it is the whole effect: the picture holds, the
+   panel rides. It answers the reader's own scrolling rather than playing on a
+   clock, like every other piece of motion on this site.
+
+   Down at the band's entry and up at its exit, passing through zero when the
+   band is centred, so the form sits exactly where the layout puts it at the
+   moment the reader is actually looking at it. The travel is deliberately
+   small — this is a form, and anything the eye has to chase is a form that is
+   harder to fill in.
+
+   The range stops short of the band's own edges for the same reason the Antz
+   closing band's does: at the extremes the section is barely on screen and the
+   motion there is only paid for in the jump it causes when it stops.
+   --------------------------------------------------------------------------- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .form {
+      animation-name: contactFormDrift;
+      animation-duration: 1ms; /* superseded by the timeline */
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --contact-form;
+      animation-range: cover 10% cover 90%;
+    }
+  }
+}
+
+@keyframes contactFormDrift {
+  from {
+    translate: 0 var(--form-lift);
+  }
+
+  to {
+    translate: 0 calc(var(--form-lift) * -1);
+  }
 }
 
 
@@ -134,6 +292,9 @@
   flex-direction: column;
   gap: 18px;
   width: min(620px, 100%);
+  /* How far the form travels either side of its resting place; see the
+     parallax above. 26px at the design width. */
+  --form-lift: clamp(14px, 1.8vw, 26px);
 }
 
 .formKicker {
@@ -337,6 +498,12 @@
 /* --- closing band, 1993:3327 -------------------------------------------- */
 
 .secondary {
+  /* How far the closing band travels either side of its resting place. Smaller
+     than the form's 26: this band sits at the foot of the page where the
+     reader is already slowing down, and the buttons in it are targets, which
+     should not be moving much under a pointer. */
+  --secondary-lift: clamp(10px, 1.3vw, 18px);
+
   position: relative;
   z-index: 1;
   display: flex;
@@ -346,6 +513,43 @@
   /* Last band before the footer, so it takes the page tail. */
   padding: var(--section-y) var(--edge) var(--section-tail);
   text-align: center;
+  /* Its own pass, which the title and the buttons ride against the fixed
+     photograph. */
+  view-timeline-name: --contact-secondary;
+}
+
+/* The closing band's parallax, the same mechanic as the form's above it: the
+   photograph is painted on .page and does not move, so what the reader sees is
+   the copy travelling across a still picture.
+
+   The title and the button row share one keyframe and move as a block. They
+   are one thought — a question and the two answers to it — and sliding them at
+   different rates would read as the band coming apart rather than drifting.
+
+   `translate` rather than `transform`, so the buttons' own hover lift and
+   scale compose with this instead of being replaced by it. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .secondaryTitle,
+    .secondaryRow {
+      animation-name: contactSecondaryDrift;
+      animation-duration: 1ms; /* superseded by the timeline */
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --contact-secondary;
+      animation-range: cover 10% cover 90%;
+    }
+  }
+}
+
+@keyframes contactSecondaryDrift {
+  from {
+    translate: 0 var(--secondary-lift);
+  }
+
+  to {
+    translate: 0 calc(var(--secondary-lift) * -1);
+  }
 }
 
 .secondaryTitle {
@@ -360,4 +564,43 @@
   flex-wrap: wrap;
   gap: 12px;
   justify-content: center;
+}
+
+/* --- the phone --------------------------------------------------------------
+   The form is the one place on this site where getting mobile wrong costs the
+   reader something concrete: a message they meant to send. */
+@media (max-width: 700px) {
+  /* 16px is not a style choice here. Mobile Safari zooms the whole page in when
+     a form control smaller than 16px takes focus, and it does not zoom back
+     out — tap the first field and the reader is left on a page they now have
+     to pan sideways to read the rest of. The design's 12.5px holds everywhere
+     above this breakpoint. */
+  .field input,
+  .field select,
+  .field textarea {
+    height: 48px;
+    font-size: 16px;
+  }
+
+  .field textarea {
+    height: auto;
+  }
+
+  /* A 16px box is hard to hit with a thumb, and this one gates the form. */
+  .consent input {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* 41px tall, and the thing the whole page exists for. */
+  .submit {
+    min-height: 48px;
+    padding-inline: 26px;
+  }
+
+  /* 10.5px of tracked caps does not resolve on a phone. */
+  .formKicker,
+  .field label {
+    font-size: 12.5px;
+  }
 }

@@ -137,7 +137,15 @@
   flex-direction: column;
   gap: clamp(20px, 2.2vw, 32px);
   align-items: flex-start;
-  width: min(1280px, 100%);
+  /* The plate's own box, so this column's left edge lands exactly where the
+     nav plate's does at every width; --banner-align then carries it across to
+     the logo's mark. max-width is 100% rather than the plate's own
+     `100% - --edge * 2` because the section around this is already padded by
+     --edge, and counting the gutter twice would push the column inwards. */
+  width: var(--plate-w);
+  max-width: 100%;
+  margin-inline: auto;
+  padding-left: var(--banner-align);
 }
 
 /* Figma's "← All projects", 18px medium white — with the arrow moved to the
@@ -625,7 +633,10 @@
    kickers rather than the card's orange. */
 .blockKicker {
   margin: 0;
-  font: 500 clamp(11px, 0.97vw, 14px) / 1.3 var(--font-flex);
+  /* Floor raised from 11 to 13: these are the section headings of the page's
+     prose, and a heading the reader cannot pick out of the column is not doing
+     a heading's job. The 14px ceiling is unchanged. */
+  font: 500 clamp(13px, 0.97vw, 14px) / 1.3 var(--font-flex);
   color: var(--color-darkblue);
   letter-spacing: 0.4em;
   text-transform: uppercase;
@@ -1394,6 +1405,9 @@
 /* The section kickers' treatment, a size down: same family, same tracking, same
    darkblue, so this reads as page furniture rather than as new copy. */
 .neighbourKicker {
+  /* Floor raised from 9 to 11. Nine pixels of 0.34em-tracked caps is legible
+     on a desktop at arm's length and not on a phone at reading distance; the
+     ceiling is untouched, so nothing above the breakpoint moves. */
   font: 500 clamp(9px, 0.76vw, 11px) / 1.3 var(--font-flex);
   color: var(--color-darkblue);
   letter-spacing: 0.34em;
@@ -1618,4 +1632,37 @@
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+/* --- the phone --------------------------------------------------------------
+   Targets only. Nothing here changes a layout or a type size above 700px. */
+@media (max-width: 700px) {
+  /* The back link came in 20px tall — right for a pointer, not for a thumb.
+     Padding buys the height and the negative margin hands the banner back the
+     space it took, so only the target grew. */
+  .back {
+    padding-block: 12px;
+    margin-block: -12px;
+  }
+
+  /* Same, for the two links out to the neighbouring projects. */
+  .neighbour {
+    padding-block: 10px;
+    margin-block: -10px;
+  }
+
+  /* 44.0 rounded down to 43.5 on some layouts; one more pixel either side puts
+     it past the line rather than on it. */
+  .back {
+    padding-block: 13px;
+    margin-block: -13px;
+  }
+
+  /* 9px of 0.34em-tracked caps is legible at a desk and a smudge in the hand.
+     As a media query, not a clamp floor: a clamp whose floor is above its
+     ceiling pins to the floor at every width, which is how the first attempt
+     at this quietly pushed the desktop size from 10.9 to 12.5. */
+  .neighbourKicker {
+    font-size: 12.5px;
+  }
 }

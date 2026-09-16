@@ -209,6 +209,25 @@
      --nav-offset is how far it sits below the banner's top edge. */
   --nav-inset: 12px;
   --nav-offset: clamp(12px, 1.67vw, 24px);
+
+  /* The sticky plate's own box. Here rather than in NavBar.module.css because
+     the banners' copy columns take the same box, which is what puts their left
+     edge on the logo's. */
+  --nav-row-h: 63px;
+  --nav-cta-h: 42px;
+  --nav-cta-inset: calc(
+    var(--nav-inset) + (var(--nav-row-h) - var(--nav-cta-h)) / 2
+  );
+  --plate-w: calc(1266px + var(--nav-inset) + var(--nav-cta-inset));
+
+  /* How far the logo's MARK sits from the plate's left edge, which is not the
+     same as how far its box does: --nav-inset (12) plus the transparent margin
+     the logo file carries inside its own viewBox (about 16 at this size).
+     Measured on the rendered page rather than read off the SVG, since the
+     image is also centred in a box slightly wider than itself.
+
+     Banner copy that wants to line up under the logo pads by this. */
+  --banner-align: 28px;
 }
 
 /* Narrow screens: the hero copy reflows to many more lines, so the banner
@@ -216,5 +235,13 @@
 @media (max-width: 700px) {
   :root {
     --banner-height: 640px;
+  }
+}
+
+/* The logo drops to a smaller image here, and its mark sits proportionally
+   closer to the edge of it. */
+@media (max-width: 560px) {
+  :root {
+    --banner-align: 21px;
   }
 }
