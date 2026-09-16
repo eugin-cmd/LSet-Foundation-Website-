@@ -101,6 +101,10 @@
   flex-direction: column;
   width: min(457.183px, 82vw);
   overflow: hidden;
+  /* Square at rest, 14px under the pointer, by direction. `overflow: hidden`
+     means the photograph inside is clipped by it too, so the whole card
+     rounds rather than just its outline. */
+  border-radius: 0;
 }
 
 /* .cardBg still resolves against .card: .cardHit is left static on purpose. */
@@ -222,11 +226,12 @@
 /* Pop on hover. Against surface/darker a drop shadow alone barely reads, so the
    depth is carried by a faint rim light as well. */
 .card {
-  transition: box-shadow 220ms ease-out;
+  transition: box-shadow 220ms ease-out, border-radius 320ms ease-in;
 }
 
 .card:hover,
 .card:focus-within {
+  border-radius: 14px;
   box-shadow:
     0 22px 46px -12px rgb(0 0 0 / 70%),
     0 0 0 1px rgb(255 255 255 / 16%);

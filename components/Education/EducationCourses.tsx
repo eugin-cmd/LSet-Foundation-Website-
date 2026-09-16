@@ -34,7 +34,7 @@ export default function EducationCourses() {
                  circle; its card hangs at the top of that circle, so rotating
                  the pivot swings the card along the arc. */
               <div className={s.pivot} key={course.href}>
-                <article className={s.card}>
+                <article className={`${s.card} wf-holo-edge`}>
                   {/* Out to the course's own page on the institute's site,
                       which holds the syllabus, the intake dates and the
                       application. Marked the way every other outbound link

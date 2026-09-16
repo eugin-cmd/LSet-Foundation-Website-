@@ -196,6 +196,12 @@
 /* Figma's separator is a border-top on each row, not a divider element, so the
    first row opens without a rule and the list cannot end on one. */
 .row {
+  /* The pass the "Active Project" chip drifts along. Named on the row rather
+     than on the photograph, whose `overflow: hidden` makes it a scroll
+     container of its own — a stray one in the chain is what has stopped a
+     view() animation on this site before. */
+  view-timeline-name: --work-row;
+
   display: flex;
   gap: clamp(24px, 3.75vw, 54px);
   align-items: flex-start;
@@ -351,6 +357,78 @@
   overflow: hidden;
 }
 
+/* ---------------------------------------------------------------------------
+   The holographic edge, on hover.
+
+   A 4px ring of the site's own diagonal holographic ramp, drawn inside the
+   photograph's rounded corner and travelling while the pointer is on it — the
+   same palette and the same motion the nav drawer's field and the buttons'
+   fill carry, so this reads as the site's one iridescence rather than a second
+   kind that appears only here.
+
+   It is a masked pseudo-element rather than a `border`, because a border
+   cannot take a gradient and keep a 16px radius: border-image ignores
+   border-radius and squares the corners off. The two mask layers are the
+   standard way round it — one covering the whole box, one covering only the
+   content box, composited to exclude the second from the first, which leaves
+   exactly the 4px padding band.
+
+   Under the badge, not over it: z-index 1 against the badge's own stacking, so
+   "Active Project" is never crossed by the ring. pointer-events stay off, so
+   the ring cannot intercept a click meant for the link it sits in.
+   --------------------------------------------------------------------------- */
+.figure::after {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  padding: 4px;
+  background-image: var(--holo-ramp-diagonal);
+  background-size: var(--holo-tile-diagonal) var(--holo-tile-diagonal);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+  content: "";
+}
+
+.figure:hover::after,
+.figure:focus-visible::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .figure::after {
+    /* Easing in, like everything else that answers a pointer on this site. */
+    transition: opacity 320ms ease-in;
+  }
+
+  /* The sheen only travels while the pointer is on the photograph: a page of
+     eight resting rows animating eight gradients would cost the frame budget
+     and show nobody anything. */
+  .figure:hover::after,
+  .figure:focus-visible::after {
+    animation: workHoloEdge 7s linear infinite;
+  }
+}
+
+/* One period along the ramp's own 135deg axis, which is the same distance in x
+   and y. Declared here rather than shared from globals.css: css-loader rewrites
+   every `animation-name` inside a *.module.css to a hashed local name, so a
+   reference to a global keyframe compiles to something matching nothing and
+   the ring would sit still. */
+@keyframes workHoloEdge {
+  to {
+    background-position: var(--holo-shift-diagonal) var(--holo-shift-diagonal);
+  }
+}
+
 .photo {
   display: block;
   /* 619x356 in Figma. The aspect box is what holds the row's height, so the
@@ -400,6 +478,65 @@
   font: 500 clamp(12px, 0.97vw, 14px) / 1 var(--font-inter);
   color: var(--white);
   white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------------
+   The chip's parallax, and its rise.
+
+   It drifts against the photograph it sits on as the row passes, so the two
+   are plainly at different depths rather than one flat image. Down at the
+   row's entry, up at its exit, through zero when the row is centred — so the
+   chip sits exactly where the design puts it at the moment the reader is
+   actually looking at it.
+
+   Small: this is a 29px label, and the photograph's corner is where the eye
+   goes for the species name underneath it. 14px is enough to separate the two
+   planes and not enough to make the chip the subject.
+
+   `translate` for the drift and `transform` for the hover rise, which is what
+   lets the two coexist: the individual properties are applied in the order
+   translate, rotate, scale, transform, so the hover lift composes on top of
+   whatever the scroll has done rather than replacing it. One `transform`
+   carrying both would have the animation and the hover fighting for the same
+   declaration.
+   --------------------------------------------------------------------------- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .badge {
+      animation-name: badgeDrift;
+      animation-duration: 1ms; /* superseded by the timeline */
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --work-row;
+      animation-range: cover 10% cover 90%;
+    }
+  }
+}
+
+@keyframes badgeDrift {
+  from {
+    translate: 0 14px;
+  }
+
+  to {
+    translate: 0 -14px;
+  }
+}
+
+/* Lifts off the photograph under the pointer, with the shadow that makes the
+   lift read as height rather than as a jump. The whole figure is already
+   rising 8px at this moment; the chip going further is what separates it from
+   the picture it is pinned to. */
+.figure:hover .badge,
+.figure:focus-visible .badge {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 20px -6px rgb(1 18 12 / 55%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .badge {
+    transition: transform 320ms ease-in, box-shadow 320ms ease-in;
+  }
 }
 
 /* Each photograph settles into place as its row enters: it drops the last 34px
@@ -483,4 +620,18 @@
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+/* 11px of tracked caps is legible at a desk and not in a hand. */
+@media (max-width: 700px) {
+  .location {
+    font-size: 12.5px;
+  }
+
+  /* The row CTA is sized by its type, 18px tall. Padded to a thumb's height
+     and the space handed back. */
+  .cta {
+    padding-block: 13px;
+    margin-block: -13px;
+  }
 }

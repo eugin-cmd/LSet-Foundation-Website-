@@ -5,7 +5,7 @@ import LinkArrow from "@/components/icons/LinkArrow";
 
 export default function ProofCard({ card }: { card: ProofCardData }) {
   return (
-    <article className={s.card}>
+    <article className={`${s.card} wf-holo-edge`}>
       {/* The anchor is the card's layout column, so the whole card is one hit
           target and one tab stop. A stretched ::after on the "View Project"
           link would only reach as far as .cardBody, which is itself

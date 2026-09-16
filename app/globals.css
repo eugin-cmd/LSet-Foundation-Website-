@@ -518,14 +518,16 @@ video {
 /* ---------------------------------------------------------------------------
    The holographic hover, worn by every button on the site.
 
-   The site's own holographic ramp opens from the centre of the button and
-   spreads to both ends, fills it at full opacity, and the label turns black
-   behind it. Easing in, so it starts slowly and arrives.
+   The site's own holographic ramp opens as a circle from the middle of the
+   button, grows until it has cleared every corner, fills it at full opacity,
+   and the label turns black behind it. Easing in, so it starts slowly and
+   arrives.
 
-   The ramp's bands stay diagonal while the reveal is horizontal: what travels
-   out to the sides is the edge of the fill, and what lies inside it runs at
-   135 degrees, which is where the iridescence reads as iridescence rather than
-   as stripes.
+   The ramp's bands stay diagonal while the reveal is radial: what expands is
+   the edge of the fill, and what lies inside it runs at 135 degrees, which is
+   where the iridescence reads as iridescence rather than as stripes. The sheen
+   itself only travels while the button is held, so a page of resting buttons
+   animates nothing.
 
    The wash is a ::before at z-index -1, which is what makes this work on every
    button regardless of what its label is made of. Painting order inside a
@@ -537,10 +539,16 @@ video {
    `isolation: isolate` keeps the negative layer inside the button rather than
    letting it search for a stacking context further up the page.
 
-   The reveal is a clip-path between two insets: at rest the left and right are
-   both held at 50%, which meets in the middle and leaves a sliver of no width
-   at all, and on hover both go to zero. Two inset() shapes interpolate, which
-   is what lets it travel rather than cut. At rest the shape is the zero-area sliver
+   The reveal is a clip-path between two circles centred on the button: nothing
+   at rest, and on hover one large enough to clear every corner. Two circle()
+   shapes interpolate, which is what lets it open rather than cut.
+
+   75% is not a guess. For `circle(r% at 50% 50%)` the percentage resolves
+   against sqrt(w^2 + h^2) / sqrt(2), while the distance from the centre to a
+   corner is sqrt(w^2 + h^2) / 2 — so the radius that exactly reaches the
+   corners is sqrt(2) / 2, or 70.71%, for ANY rectangle, whatever its aspect.
+   A 42px pill and a 620px submit button need the same number. 75 clears it
+   with a little to spare. At rest the shape is the zero-area sliver
    along the leading diagonal; on hover its far edge is past 100% on both rows,
    so the wash clears the button rather than stopping short inside it.
 
@@ -563,12 +571,88 @@ video {
   border-radius: inherit;
   background-image: var(--holo-ramp-diagonal);
   background-size: var(--holo-tile-diagonal) var(--holo-tile-diagonal);
-  clip-path: inset(0 50% 0 50%);
+  clip-path: circle(0% at 50% 50%);
 }
 
-.wf-holo-hover:hover::before,
-.wf-holo-hover:focus-visible::before {
-  clip-path: inset(0);
+/* The edge, on the same hover. A 4px ring of the same ramp, drawn inside the
+   button's own radius and travelling while the pointer is on it — the same
+   width the project photographs wear, so the two are one treatment rather than
+   two sizes of one.
+
+   A masked pseudo-element rather than a `border`, because a border cannot take
+   a gradient and keep a radius: border-image ignores border-radius and squares
+   the corners off. Two mask layers, one over the whole box and one over the
+   content box, composited to exclude the second from the first, leave exactly
+   the 4px band.
+
+   z-index -1 like the fill, and declared after it, so the painting order runs:
+   the button's own colour, then the fill, then this ring, then the label. The
+   ring is therefore never over the words and never under the fill.
+
+   `inset: 0` resolves against the padding box, so on the buttons that keep a
+   1px border of their own — the Antz outline pair — that border stays outside
+   this ring rather than being covered by it. */
+.wf-holo-hover::after {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 4px;
+  background-image: var(--holo-ramp-diagonal);
+  background-size: var(--holo-tile-diagonal) var(--holo-tile-diagonal);
+  /* Half a period along the ramp's own axis, and this is the line that makes
+     the ring visible at all. The fill underneath is the same ramp in the same
+     box at the same phase, so without an offset the ring's colours land
+     exactly on the fill's and the band disappears: measured, the edge and the
+     interior came back rgb(250,254,255) against rgb(248,254,255), a gap of two
+     in one channel. Half a period puts a different hue on the edge from the
+     one directly inside it, which is what makes it an edge. */
+  background-position: calc(var(--holo-shift-diagonal) * 0.5)
+    calc(var(--holo-shift-diagonal) * 0.5);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+  content: "";
+}
+
+.wf-holo-hover:focus-visible::after,
+.wf-holo-hover:active::after {
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .wf-holo-hover:hover::after {
+    opacity: 1;
+  }
+}
+
+/* Split three ways, and the split is the whole point.
+
+   :active and :focus-visible are unconditional — a finger and a keyboard both
+   reach every button on every device.
+
+   :hover is behind `(hover: hover)` because a touch screen does not really
+   have one. Tap a button on a phone and the browser leaves :hover applied
+   until something else is tapped, so an unguarded rule would light the button
+   up and leave it lit — measured here: after a synthetic tap the fill stayed
+   at inset(0) and the label stayed black with nothing under the finger. The
+   query keeps hover for devices that can actually stop hovering. */
+.wf-holo-hover:focus-visible::before,
+.wf-holo-hover:active::before {
+  clip-path: circle(75% at 50% 50%);
+}
+
+@media (hover: hover) {
+  .wf-holo-hover:hover::before {
+    clip-path: circle(75% at 50% 50%);
+  }
 }
 
 /* Black, and it has to be. Every stop in the ramp is a high-luminance pastel:
@@ -579,9 +663,15 @@ video {
    Doubled class, so this outranks the `.ctaBtnOutline:hover` sort of rule the
    button's own module carries. Those modules load after this file, and at
    equal specificity the later sheet would win. */
-.wf-holo-hover.wf-holo-hover:hover,
-.wf-holo-hover.wf-holo-hover:focus-visible {
+.wf-holo-hover.wf-holo-hover:focus-visible,
+.wf-holo-hover.wf-holo-hover:active {
   color: #000;
+}
+
+@media (hover: hover) {
+  .wf-holo-hover.wf-holo-hover:hover {
+    color: #000;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -604,20 +694,53 @@ video {
     transition: clip-path 420ms ease-in;
   }
 
+  .wf-holo-hover.wf-holo-hover::after {
+    transition: opacity 320ms ease-in;
+  }
+
   /* The pop: up 4px and 4% larger. The independent `translate` and `scale`
      properties rather than one `transform`, so these compose with whatever
      transform a button already owns rather than replacing it. 4px is the
      site's 3px link lift plus a little, since a button is a larger object and
      the same distance reads as less on it. */
-  .wf-holo-hover:hover,
-  .wf-holo-hover:focus-visible {
+  /* :active is what carries the pop on a phone. Before it, nothing here was
+     guarded either way, so the wash, the lift and the growth simply never
+     happened for a phone user: the whole effect was desktop-only by accident. */
+  .wf-holo-hover:focus-visible,
+  .wf-holo-hover:active {
     translate: 0 -4px;
     scale: 1.04;
   }
 
-  .wf-holo-hover:hover::before,
-  .wf-holo-hover:focus-visible::before {
+  @media (hover: hover) {
+    .wf-holo-hover:hover {
+      translate: 0 -4px;
+      scale: 1.04;
+    }
+  }
+
+  .wf-holo-hover:focus-visible::before,
+  .wf-holo-hover:active::before {
     animation: holoWash 7s linear infinite;
+  }
+
+  /* The ring travels on its own keyframe, which starts and ends half a period
+     further along than the fill's. Same speed, same direction, permanently out
+     of step — so the edge stays a different colour from the interior for the
+     whole loop rather than only at the moment it starts. */
+  .wf-holo-hover:focus-visible::after,
+  .wf-holo-hover:active::after {
+    animation: holoWashEdge 7s linear infinite;
+  }
+
+  @media (hover: hover) {
+    .wf-holo-hover:hover::before {
+      animation: holoWash 7s linear infinite;
+    }
+
+    .wf-holo-hover:hover::after {
+      animation: holoWashEdge 7s linear infinite;
+    }
   }
 }
 
@@ -626,5 +749,170 @@ video {
 @keyframes holoWash {
   to {
     background-position: var(--holo-shift-diagonal) var(--holo-shift-diagonal);
+  }
+}
+
+/* 0.5 to 1.5, so it covers exactly one period like holoWash does and the loop
+   has no seam, while sitting half a period ahead of it throughout. */
+@keyframes holoWashEdge {
+  from {
+    background-position: calc(var(--holo-shift-diagonal) * 0.5)
+      calc(var(--holo-shift-diagonal) * 0.5);
+  }
+
+  to {
+    background-position: calc(var(--holo-shift-diagonal) * 1.5)
+      calc(var(--holo-shift-diagonal) * 1.5);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   The phone layer.
+
+   One block rather than a mobile rule scattered through twenty modules, because
+   what is being said here is one thing: below 700px the reader is holding the
+   page in one hand, touching it with a thumb, on a screen with a fraction of
+   the fill rate. Everything under this comment follows from that.
+
+   700px is the widest breakpoint the site already uses for "this is a narrow
+   screen" (Project, Education and the footer all turn there), so nothing here
+   introduces a new idea about where phone begins.
+   --------------------------------------------------------------------------- */
+@media (max-width: 700px) {
+  /* --- the animation budget ---------------------------------------------
+     Measured before this rule: the homepage ran 17 infinite animations on a
+     390px phone, 13 of them gradients clipped to text. That is the most
+     expensive kind of animation there is — a text-clipped gradient cannot be
+     handed to the compositor, so every frame re-rasterises the glyphs. The
+     identical count ran on the phone as on a 1440px desktop; nothing had ever
+     been scaled back.
+
+     The banner heading keeps its sheen. It is the page's signature, and
+     measured at 390px it still renders 11 distinct hue families against the
+     desktop's 16, so it genuinely works at this width. Everything else holds
+     at a static frame: the stats numbers, the labels, the tech chips. They sit
+     in the reader's periphery, and on a 67px-wide number the ramp can only
+     ever show 13% of one period anyway — measured over six seconds it never
+     left cyan-white, so the animation was paying for a colour change nobody
+     could see. */
+  :is(.wf-iridescent):not(h1):not(h1 *) {
+    animation: none !important;
+  }
+
+  /* --- tap targets -------------------------------------------------------
+     WCAG 2.5.8 asks for 24px and Apple's guidance for 44. The site's links
+     were coming in at 18 to 21px tall because they are sized by their type,
+     which is right on a desktop where the pointer is a pixel.
+
+     The height is bought with padding, not with a bigger font: the type is the
+     design and must not move. Where padding would push a layout around, the
+     target is grown with a pseudo-element instead, which costs no space at
+     all. Negative margins keep the visual rhythm the padding would otherwise
+     disturb. */
+  .wf-tap {
+    position: relative;
+  }
+
+  /* --- the type floors ---------------------------------------------------
+     These three utilities carry the site's smallest type, and between them
+     they set the footer's labels, the form's field labels, the section
+     kickers and the course durations — which is why the floors belong here
+     rather than in ten modules. 10.5px of 0.2em-tracked caps is a considered
+     size at a desk; in a hand, at a phone's viewing distance, it is a smudge.
+
+     Raised only, and only below 700px. Every ceiling above the breakpoint is
+     untouched, so the design does not move on any screen it was drawn for.
+
+     A doubled class, because these utilities use the `font:` shorthand and a
+     module setting plain `font-size` loses to them: measured, .columnLabel's
+     own mobile rule was being overruled and the label stayed at 10.5px. */
+  .wf-label.wf-label {
+    font-size: 12px;
+  }
+
+  .wf-small.wf-small {
+    font-size: 13.5px;
+  }
+
+  .wf-meta.wf-meta {
+    font-size: 12.5px;
+  }
+
+  /* An invisible 44px-tall pad centred on the link. It takes the touch without
+     the link occupying a pixel more of the layout than it did. */
+  .wf-tap::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 1;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    translate: -50% -50%;
+    content: "";
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   The holographic edge, for surfaces that are not buttons.
+
+   A 4px ring of the site's diagonal ramp, drawn just inside the element's own
+   radius and travelling while the pointer is on it. `.wf-holo-hover` carries
+   the same ring, but it comes bundled with a fill, a label colour, a lift and
+   a scale — everything a button wants and a card does not. This is the edge
+   alone, for the rotating cards on the Foundation and Education pages.
+
+   `border-radius: inherit`, so it follows whatever the host is doing with its
+   corners, including a radius that only appears on hover.
+
+   A masked pseudo-element rather than a `border`, for the reason it always is:
+   border-image ignores border-radius and squares the corners off.
+   --------------------------------------------------------------------------- */
+.wf-holo-edge {
+  position: relative;
+}
+
+.wf-holo-edge::after {
+  position: absolute;
+  inset: 0;
+  /* Above the card's photograph, which is an absolutely positioned layer of
+     its own; the ring is 4px at the very edge, so it crosses no copy. */
+  z-index: 5;
+  border-radius: inherit;
+  padding: 4px;
+  background-image: var(--holo-ramp-diagonal);
+  background-size: var(--holo-tile-diagonal) var(--holo-tile-diagonal);
+  /* Half a period, so the ring is never the same hue as anything the same ramp
+     might be painting underneath it. The buttons' edge carries the identical
+     offset and for the identical reason. */
+  background-position: calc(var(--holo-shift-diagonal) * 0.5)
+    calc(var(--holo-shift-diagonal) * 0.5);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+  content: "";
+}
+
+/* :focus-within as well as :hover — these cards are links, and the ring is the
+   only thing that would tell a keyboard user which one they are on. */
+.wf-holo-edge:hover::after,
+.wf-holo-edge:focus-within::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .wf-holo-edge::after {
+    transition: opacity 320ms ease-in;
+  }
+
+  .wf-holo-edge:hover::after,
+  .wf-holo-edge:focus-within::after {
+    animation: holoWashEdge 7s linear infinite;
   }
 }
