@@ -1,5 +1,6 @@
 import Blinder from "@/components/Blinder/Blinder";
 import ScrollCue from "@/components/ScrollCue/ScrollCue";
+import Leaves from "@/components/icons/Leaves";
 import WaveText from "@/components/WaveText/WaveText";
 import CuppedHands from "@/components/icons/CuppedHands";
 import OpenBook from "@/components/icons/OpenBook";
@@ -83,6 +84,13 @@ export default function AboutHero() {
             animal care professionals, working on the same problems from
             different sides.
           </p>
+
+          {/* The flourish that closes every other banner's copy column. This
+              one was the odd banner out. Nothing is configured here on
+              purpose: <Leaves /> owns its size, its white, and its rise-then-
+              stir on load, so every banner gets the identical thing by
+              rendering it and knowing nothing else. */}
+          <Leaves />
         </div>
       </div>
 

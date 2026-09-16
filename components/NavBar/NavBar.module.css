@@ -14,12 +14,10 @@
 
   /* Declared here, not on .nav, so the drawer panel can size itself to the
      plate from the same numbers instead of a second copy of them. */
-  --nav-row-h: 63px;
-  --nav-cta-h: 42px;
-  --nav-cta-inset: calc(
-    var(--nav-inset) + (var(--nav-row-h) - var(--nav-cta-h)) / 2
-  );
-  --plate-w: calc(1266px + var(--nav-inset) + var(--nav-cta-inset));
+  /* --nav-row-h, --nav-cta-h, --nav-cta-inset and --plate-w moved to
+     tokens.css. The banners' copy columns now take the plate's exact box so
+     their left edge lands on the logo's, and two definitions of the same
+     geometry would drift the first time either was touched. */
 }
 
 /* The plate and its drawer, stacked and centred. Zero-height like .sticky, so
@@ -181,9 +179,10 @@
 .brandItem {
   position: relative;
   z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  /* Grid rather than flex, so the label and the invisible bold copy below can
+     be stacked in one cell instead of sitting side by side. */
+  display: grid;
+  place-items: center;
   padding: 8px 12px;
   color: var(--white);
   white-space: nowrap;
@@ -191,8 +190,105 @@
   transition: opacity 200ms ease;
 }
 
+/* The width reserver. It renders the same word at the weight the hover uses,
+   in the same cell as the real label, and is never painted — so the column is
+   always as wide as its boldest state and hovering changes nothing about the
+   layout.
+
+   Measured before this existed: hovering ANTZ SYSTEMS grew the row from 338 to
+   358 and pushed Our Work, What We Do and About 7px to the right, because the
+   three columns are equal width and sized by the widest of them. */
+.brandItem::before,
+.brandLabel {
+  grid-area: 1 / 1;
+}
+
+.brandItem::before {
+  font-weight: 700;
+  visibility: hidden;
+  pointer-events: none;
+  content: attr(data-label);
+}
+
 .brandItem:hover {
   opacity: 1;
+}
+
+/* ---------------------------------------------------------------------------
+   The brand columns under the pointer: bold, filled with the holographic ramp,
+   and pushed a little forward.
+
+   The ramp and the clip are on the item at ALL times, with white painted over
+   them at rest. `background-clip: text` shows the background only through the
+   glyphs, and the glyph's own colour sits on top of it — so white hides the
+   ramp completely, and fading that white to transparent is what reveals it.
+   Applying the clip only on hover would snap the gradient in instead of
+   letting it arrive.
+
+   Guarded: without background-clip support the transparent fill on hover would
+   leave an invisible label, so the white simply stays.
+   --------------------------------------------------------------------------- */
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .brandLabel {
+    background-image: var(--holo-ramp-diagonal);
+    background-size: var(--holo-tile-diagonal) var(--holo-tile-diagonal);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  @media (hover: hover) {
+    .brandItem:hover .brandLabel {
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+}
+
+/* Google Sans Flex is a variable font, so this is a real interpolation between
+   400 and 700 rather than a swap to a second file. The row's three columns are
+   equal width and the labels are centred in them, so the weight can grow
+   without moving anything beside it. */
+@media (hover: hover) {
+  .brandItem:hover .brandLabel {
+    font-weight: 700;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .brandItem {
+    transition: opacity 200ms ease, scale 260ms ease-in;
+  }
+
+  .brandLabel {
+    transition: color 260ms ease-in, font-weight 260ms ease-in;
+  }
+
+  @media (hover: hover) {
+    /* The pop. `scale` as its own property, not a transform: the row itself is
+       transformed by --brand-index as the highlight travels, and a transform
+       here would have the two fighting. */
+    .brandItem:hover {
+      scale: 1.06;
+    }
+
+    /* 7s, the speed the holographic edges run at everywhere else on the site —
+       the buttons' ring, the project photographs' and the cards'. Only while
+       hovered: three labels animating a clipped gradient on every page, at
+       rest, is the sort of cost that buys nothing. */
+    .brandItem:hover .brandLabel {
+      animation: brandIridescence 7s linear infinite;
+    }
+  }
+}
+
+/* One period along the ramp's own 135deg axis. Declared here rather than
+   shared from globals.css: css-loader rewrites every `animation-name` inside a
+   *.module.css to a hashed local name, so naming a global keyframe compiles to
+   something matching nothing and the fill would sit still. */
+@keyframes brandIridescence {
+  to {
+    background-position: var(--holo-shift-diagonal) var(--holo-shift-diagonal);
+  }
 }
 
 .brandItemActive {
@@ -261,9 +357,15 @@
     opacity: 0;
   }
 
+  /* 42x36 before the min sizes: the only control on the page at this width,
+     and 8px short of the 44 a thumb wants in both directions. The bars stay
+     22px, so the mark is unchanged — the box around it grew. */
   .burger {
     display: grid;
+    place-content: center;
     gap: 5px;
+    min-width: 44px;
+    min-height: 44px;
     padding: 10px;
     border-radius: var(--radius-chip);
     cursor: pointer;
@@ -342,6 +444,15 @@
 
 @media (max-width: 560px) {
   .logo img {
+    width: 124.55px;
+    height: 47.09px;
+  }
+
+  /* The box has to come down with the image. It did not, and since the image
+     is centred inside it the mark drifted 18px right of where it sits at every
+     other width — measured: 46px from the plate edge here against 28 above the
+     breakpoint. Anything aligned to the logo inherited that jump. */
+  .logo {
     width: 124.55px;
     height: 47.09px;
   }
@@ -661,5 +772,50 @@
   }
   to {
     --mesh-swirl: 360deg;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   The selected item's underline.
+
+   On Our Work and About only, by direction. The three brand columns say "you
+   are here" already, with the plate that travels between them; a hairline as
+   well would be the same fact stated twice, and these two links are the only
+   items in the bar that had no way of saying it at all.
+
+   Hung off `[aria-current="page"]` rather than off a class, so the thing the
+   screen reader is told and the thing the eye is shown are the same fact and
+   cannot fall out of step.
+
+   It grows from the middle outward, easing in. `scaleX` rather than an
+   animated width, because a transform is composited: the line never triggers
+   layout, whatever else the bar is doing while a route changes.
+
+   `transform-origin: 50% 100%` puts the growth on the centre and keeps the
+   line pinned to its own baseline.
+   --------------------------------------------------------------------------- */
+.pill {
+  position: relative;
+}
+
+.pill::after {
+  position: absolute;
+  right: 12px;
+  bottom: 4px;
+  left: 12px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: 50% 100%;
+  content: "";
+}
+
+.pill[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pill::after {
+    transition: transform 320ms ease-in;
   }
 }

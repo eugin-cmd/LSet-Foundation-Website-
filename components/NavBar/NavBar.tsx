@@ -157,8 +157,14 @@ export default function NavBar() {
                     className={`${s.brandItem} ${
                       i === activeIndex ? s.brandItemActive : ""
                     } wf-nav`}
+                    /* Read by .brandItem::before, which renders this same word
+                       in bold and invisibly underneath the real one. That is
+                       what holds the column at its hovered width so bolding on
+                       hover cannot widen the row and shove the links to its
+                       right along. */
+                    data-label={label}
                   >
-                    {label}
+                    <span className={s.brandLabel}>{label}</span>
                   </Link>
                 ))}
               </div>
@@ -186,14 +192,33 @@ export default function NavBar() {
                     {body}
                   </label>
                 ) : (
-                  <a
+                  /* next/link, not a bare <a>. These are internal routes, and
+                     an <a href> made every press a full document load: the bar
+                     was torn down and rebuilt on each one, which is why the
+                     selected item's underline snapped into place instead of
+                     easing — a freshly built element starts at its final style
+                     with nothing to travel from. Measured: the element under
+                     the probe came back "replaced" on every frame after a
+                     click.
+
+                     It still renders a real <a href>, so the menu keeps
+                     working with scripts stripped, which is the constraint the
+                     rest of this bar is built around. */
+                  <Link
                     key={label}
                     href={href}
+                    /* Marks the link for the page being read, which is what the
+                       underline hangs off. Without it /the-work and /about
+                       showed nothing selected anywhere in the bar: no brand
+                       claims those routes, so the travelling plate is hidden
+                       and these two were the only items that could say "you
+                       are here". */
+                    aria-current={href === pathname ? "page" : undefined}
                     className={`${s.pill} wf-nav`}
                     onClick={closeMenus}
                   >
                     {body}
-                  </a>
+                  </Link>
                 );
               })}
             </nav>
