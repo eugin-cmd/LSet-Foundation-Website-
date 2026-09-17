@@ -10,6 +10,15 @@ html,
 body {
   margin: 0;
   padding: 0;
+  /* iOS Safari resizes text on its own — Text Autosizing inflates the type in
+     a block it judges too narrow, and it is the reason a banner can measure
+     correctly in a 390px desktop window and still overflow on a 390pt iPhone.
+     Chrome on Android has the same behaviour. Pinning it to 100% does not stop
+     the reader zooming; it only stops the engine second-guessing the sizes
+     these clamps already work out. Prefixed for Safari, which has never
+     shipped the unprefixed property. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 @media (prefers-reduced-motion: no-preference) {

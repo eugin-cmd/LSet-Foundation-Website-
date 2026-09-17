@@ -140,12 +140,29 @@
      same utility drives the approach, CTA, pillar and card headings, which
      should not grow with it. Google Sans Flex is variable to 1000, so 900 is
      the real face rather than a synthesised bold. */
-  font-size: clamp(36px, 5.56vw, 80px);
+  /* The floor is 30px, not the 36px that scaling the other terms gave. 5.56vw
+     only reaches 36px at a 648px viewport, so every phone sat on that floor,
+     and the longest word this line carries — CONSERVATION'S, fourteen
+     characters at weight 900 with the 5.5% tracking — measures 349px there
+     against the ~288px a 320px screen leaves. It was clipped on the homepage,
+     the one banner nobody can miss. 30px puts it at 291px. */
+  font-size: clamp(30px, 5.56vw, 80px);
   font-weight: 900;
   color: var(--white);
   text-align: center;
   /* Centred display type wants even line lengths. */
   text-wrap: balance;
+}
+
+/* 291px still does not fit 288. This band is iPhone SE and 12/13 mini at 375
+   and 360, and — the case that is easy to forget — any current iPhone with
+   Display Zoom switched on, which reports 320pt however large the handset is.
+   `.word` is inline-block so the name can never break; it overflows instead,
+   which is why the size has to give rather than the wrapping. */
+@media (max-width: 374px) {
+  .title {
+    font-size: 25px;
+  }
 }
 
 /* Moved here from the old mint intro band. Figma set it 964px wide; narrowed
