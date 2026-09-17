@@ -12,44 +12,6 @@
   background: transparent;
 }
 
-/* --- overhanging field photo (Figma `Container`, 962x696 at top -615) --- */
-.photo {
-  position: absolute;
-  /* Anchored by its own bottom edge: 81px of the photo sits inside this
-     section and the rest overhangs, so the overlap survives a fluid height
-     where a fixed top: -615px would not. */
-  top: 81px;
-  left: 50%;
-  transform: translate(-50%, -100%);
-  z-index: 2;
-  /* 66.81vw is Figma's 962px at a 1440 page. Scaling with the viewport rather
-     than only capping at 962px keeps the photo's height in step with the
-     approach section above, which is also vw-based — capped, it stayed 696px
-     tall while the section shrank and ran into the heading. */
-  width: min(962px, 66.81vw, 100% - var(--edge) * 2);
-  aspect-ratio: 962 / 696;
-  overflow: hidden;
-}
-
-.photoInner {
-  position: absolute;
-  top: 0;
-  left: 0;
-  /* Figma's 1025px leaf inside a 962px frame, as a ratio. */
-  width: 106.55%;
-  height: 100%;
-}
-
-.photoInner img {
-  position: absolute;
-  top: -4.2%;
-  left: -7.07%;
-  width: 110.4%;
-  height: 108.46%;
-  max-width: none;
-  object-fit: cover;
-}
-
 /* --- accordion --- */
 .list {
   /* Above .pillars::before, the holographic band — that pseudo-element is
@@ -122,6 +84,101 @@
   }
 }
 
+/* The row answers the pointer with a short lift, the way every other thing on
+   this site that can be pressed does — the pill buttons take 4px, the Our Work
+   rows give "View project" 3px. A board row is a bigger target than either, so
+   it takes the 4px.
+
+   On .item, which is the header alone: .panelWrap is its sibling, so an open
+   row lifts its heading without the panel below it sliding about. Eased out,
+   not in — the lift is the row arriving under the cursor and wants to settle,
+   where the title below is entering and wants to accelerate.
+
+   Behind `hover: hover` so a touch screen never latches it on after a tap, and
+   the transition alone is gated on reduced motion: the lift still happens for
+   anyone who asked for less, it simply happens at once, which is the same rule
+   .more:hover follows further down. */
+@media (hover: hover) {
+  .item:hover {
+    transform: translateY(-4px);
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .item {
+    transition: transform 220ms cubic-bezier(0.25, 0.7, 0.35, 1);
+  }
+}
+
+/* The title grows a little under the pointer, with the row's own lift.
+
+   `scale` as its own property, NOT inside a transform. An open row's title is
+   still being held by titleLift below, whose fill-mode leaves
+   `transform: translateY(0)` applying for as long as the row stays open — and
+   an animation's declaration outranks a normal one, so a `transform: scale()`
+   here would simply be ignored on exactly the rows a reader is most likely to
+   be pointing at. The separate property composes with the animation's
+   transform instead of losing to it. The banner's leaf does the same thing
+   with `rotate` for the same reason.
+
+   From the left edge, because the titles are left-aligned and growing one from
+   its centre would walk the first letter leftwards out of the column.
+
+   1.03, and it is held down by the chevron rather than by taste. .title
+   reserves a 40px column for the mark at `right: 0`, and the longest title on
+   any of the three boards — the Antz board's "Records that grow with the
+   animal" — runs to about 1056px on one line. 3% of that is 32px of growth to
+   the right, inside the 40px. At the 1.06 the nav wears it would be 63px and
+   the words would cross the chevron. */
+@media (hover: hover) {
+  .item:hover .title {
+    scale: 1.03;
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .title {
+    transition: scale 220ms cubic-bezier(0.25, 0.7, 0.35, 1);
+  }
+}
+
+/* The title rises as the row opens, against the mark falling into it from
+   above. The two are deliberately opposed: the icon drops 28px and the words
+   come up 16px to meet it, so an opening row reads as one movement closing on
+   itself rather than two things starting at once.
+
+   ease-in, by direction. It is the unusual choice — a thing settling into
+   place normally eases out — and it gives the words a slow start that gathers
+   speed into the line they land on.
+
+   The keyframes are declared here rather than taken from globals.css, and can
+   be: css-loader hashes an animation-name and the @keyframes it finds in the
+   same module together, so a local pair matches. It is only a reference to a
+   keyframe declared elsewhere that has to go through a var(), which is why the
+   icon drop above does. */
+@keyframes titleLift {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .item[data-open="true"] .title {
+    animation-name: titleLift;
+    animation-duration: 520ms;
+    /* The same 40ms the mark waits, so they leave together. */
+    animation-delay: 40ms;
+    animation-timing-function: ease-in;
+    animation-fill-mode: both;
+  }
+}
+
 .index {
   font: 400 17.742px/1.55 var(--font-sans);
   color: currentColor;
@@ -145,6 +202,8 @@
      seven titles across the three boards are one line, where this does nothing. */
   text-wrap: balance;
   color: var(--color-teal-950);
+  /* For the hover scale below: left-aligned type has to grow rightwards. */
+  transform-origin: left center;
 }
 
 .chevron {
@@ -262,37 +321,6 @@
 
   .trigger {
     padding-right: 32px;
-  }
-}
-
-/* ---------------------------------------------------------------------------
-   The overhanging photo rides up as it passes, matching the heading above it
-   so the whole approach section reads as planes over the backdrop. Its base
-   transform is repeated in the keyframes, since the animation replaces it.
-   --------------------------------------------------------------------------- */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .photo {
-      animation-name: pillarsPhotoRise;
-      /* Explicit: the `animation` shorthand defaults duration to 0s, which
-         leaves a scroll-driven animation pinned to its first frame. */
-      animation-duration: 1ms;
-      animation-timing-function: linear;
-      animation-fill-mode: both;
-      /* The same timeline the approach heading uses, so the photo and the text
-         rise in lockstep over the backdrop rather than on separate clocks. */
-      animation-timeline: --approach-view;
-      animation-range: cover 0% cover 100%;
-    }
-  }
-}
-
-@keyframes pillarsPhotoRise {
-  from {
-    transform: translate(-50%, calc(-100% + var(--approach-lift) * 0.78));
-  }
-  to {
-    transform: translate(-50%, calc(-100% - var(--approach-lift) * 0.85));
   }
 }
 

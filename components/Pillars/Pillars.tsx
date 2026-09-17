@@ -24,16 +24,11 @@ const ITEMS: AccordionItem[] = PILLARS.map((p) => ({ ...p, icon: ICONS[p.key] })
 export default function Pillars() {
   return (
     <section className={s.pillars}>
-      {/* Figma parents this photo to the pillars frame at top -615px so it
-          overhangs the deep-green block of the section above. */}
-      <div className={s.photo}>
-        <div className={s.photoInner}>
-          <img src="/assets/approach-photo.jpg" alt="Field team feeding rescued cranes" />
-        </div>
-      </div>
-
-      {/* Figma ships the board with row 02 (Education) expanded. */}
-      <Accordion items={ITEMS} defaultOpen={1} />
+      {/* Figma overhangs a field photograph from here into the approach
+          section above. Removed by direction, along with its rise and the
+          timeline-scope in globals.css that only existed to let a child of
+          this section key off that section's timeline. */}
+      <Accordion items={ITEMS} />
     </section>
   );
 }

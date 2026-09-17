@@ -34,7 +34,7 @@ export default function EducationPillars() {
   return (
     <section className={s.rows}>
       <div className={s.rowsInner}>
-        <Accordion items={ITEMS} defaultOpen={1} />
+        <Accordion items={ITEMS} />
       </div>
     </section>
   );

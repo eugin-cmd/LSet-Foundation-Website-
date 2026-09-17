@@ -13,7 +13,8 @@ import s from "./Antz.module.css";
  * and the education page, at the same 1101px list width and the same 78px/172px
  * frame, so it reuses <Accordion> rather than repeating it a third time.
  *
- * Figma ships row 02 expanded.
+ * Figma ships row 02 expanded; <Accordion> opens row 01 on every board
+ * instead, by direction.
  *
  * Icons: the four product marks this codebase already carries — they were
  * drawn for these exact products, and were previously unused here because the
@@ -40,7 +41,7 @@ export default function AntzRows() {
   return (
     <section className={s.rows}>
       <div className={s.rowsInner}>
-        <Accordion items={ITEMS} defaultOpen={1} />
+        <Accordion items={ITEMS} />
       </div>
     </section>
   );

@@ -1,0 +1,125 @@
+/* ---------------------------------------------------------------------------
+   The three pillars as one line, under the sentence whose colon introduces
+   them.
+
+   Modelled on the About banner's pillar row — same uppercase, same tracking,
+   same drawn dot between items — because they are the same list said twice and
+   should not read as two different devices. What differs is the ground: that
+   row sits in white on photography, this one on the pastel mesh, so it takes
+   the band's own --ink-black exactly as the kicker and paragraphs around it
+   do.
+   --------------------------------------------------------------------------- */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  /* The column gap is the space BEFORE each dot; the item's own gap below is
+     the space after it. Equal values, so a dot sits midway between the words
+     it separates rather than hard against the one on its left. */
+  gap: 10px clamp(12px, 1.53vw, 22px);
+  /* Air above and below, on top of the 12px .copy already puts between every
+     child — so 42px at the design width rather than 12.
+
+     The row is a change of register, not another paragraph: running prose
+     stops, three names are shown with their marks, and the prose resumes. At
+     the paragraph gap it read as a third paragraph that happened to be short,
+     and the marks looked like they belonged to the sentence above them. This
+     is the distance at which it reads as its own device.
+
+     30px is 2.08vw of the 1440 the band was drawn at, so it holds its
+     proportion as the column narrows, with an 18px floor to keep the line from
+     collapsing back into the copy on a phone. */
+  margin: clamp(18px, 2.08vw, 30px) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row li {
+  display: flex;
+  align-items: center;
+  /* Tighter than the gap between items: the mark belongs to the word it sits
+     beside, where the dot belongs between two of them. */
+  gap: 9px;
+  /* 700, where the About banner's version of this row sits at 500. That row
+     is white on a photograph, which carries weight of its own; this one is
+     ink on a pale mesh at the same size as the body copy around it, and at 500
+     it read as a caption rather than as the three names the sentence above has
+     just promised. Google Sans Flex is variable to 900, so this is a real face
+     and not a synthesised bold. */
+  font: 700 clamp(12px, 1.11vw, 16px) / 1.4 var(--font-flex);
+  color: var(--ink-black);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* The dot belongs to the item that follows it, so the first has none and the
+   row cannot end on one however it wraps. Drawn rather than typed, as the
+   About row's is: U+00B7 sits where its font puts it, and a box has no such
+   opinion. */
+.row li + li::before {
+  width: 4px;
+  height: 4px;
+  margin-right: clamp(2px, 0.35vw, 6px);
+  margin-bottom: 0.1875em;
+  border-radius: 50%;
+  background: var(--ink-black);
+  content: "";
+}
+
+/* The board's own size and stroke, so the mark is the same drawing here as in
+   the accordion further down the page. */
+.icon {
+  display: inline-flex;
+  flex: none;
+}
+
+.icon svg {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------------------------------------------------------------------------
+   The drop.
+
+   `armed` is only ever set once scripting is running, so a reader without it —
+   or with reduced motion, which never arms — sees the marks drawn and still.
+   That is why the hidden state hangs off the attribute rather than being the
+   element's default.
+   --------------------------------------------------------------------------- */
+.row[data-state="armed"] .icon svg {
+  opacity: 0;
+}
+
+.row[data-state="dropped"] .icon svg {
+  /* Through the variable, never by name: css-loader rewrites every
+     `animation-name` inside a *.module.css to a hashed local name whether or
+     not this file declares the keyframes, so naming icon-drop-short here would
+     compile to PillarRow_icon-drop-short__xxxxx and match nothing — the
+     animation would silently not run. A var() is left alone. */
+  animation-name: var(--anim-icon-drop-short);
+  /* The accordion's 780ms, not the banner's 940: this is the short drop, which
+     falls 28px inside a row rather than 120px into a banner. Same fall, at the
+     scale the row asks for. */
+  animation-duration: 780ms;
+  animation-fill-mode: both;
+}
+
+/* Staggered so they land one after another rather than as a block — the
+   banner's 90ms between marks, off the accordion's 40ms start. */
+.row[data-state="dropped"] li:nth-child(1) .icon svg {
+  animation-delay: 40ms;
+}
+
+.row[data-state="dropped"] li:nth-child(2) .icon svg {
+  animation-delay: 130ms;
+}
+
+.row[data-state="dropped"] li:nth-child(3) .icon svg {
+  animation-delay: 220ms;
+}

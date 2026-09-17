@@ -28,7 +28,17 @@ export type AccordionItem = {
  */
 export default function Accordion({
   items,
-  defaultOpen = -1,
+  /** Which row starts open. 0, the first, on every board — a closed board
+   *  opens on nothing and the reader has to guess that the numbers are
+   *  pressable at all, and an open row is what shows them.
+   *
+   *  It is the default rather than an argument each board repeats, because all
+   *  three want the same thing and a default cannot drift between them. Figma
+   *  ships row 02 expanded on the pillars, education and Antz frames alike;
+   *  opening row 01 instead is a departure from all three, by direction.
+   *
+   *  -1 still closes everything, for a board that ever wants it. */
+  defaultOpen = 0,
 }: {
   items: AccordionItem[];
   defaultOpen?: number;

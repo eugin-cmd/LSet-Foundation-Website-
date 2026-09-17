@@ -212,8 +212,26 @@ export default function NavBar() {
                        showed nothing selected anywhere in the bar: no brand
                        claims those routes, so the travelling plate is hidden
                        and these two were the only items that could say "you
-                       are here". */
-                    aria-current={href === pathname ? "page" : undefined}
+                       are here".
+
+                       The section owns its children, not just its own route.
+                       An exact match lit Our Work on /the-work and then went
+                       out the moment a project was opened, so the five records
+                       that are the whole point of the section were the pages
+                       where the bar said nothing at all. A reader who has
+                       followed a link into the heron page is still in Our Work.
+
+                       Matched on a trailing slash rather than a bare prefix, so
+                       /the-work never claims a future /the-workshop, and "#" is
+                       excluded outright: What We Do opens the drawer and names
+                       no route, and `"#".startsWith` would otherwise have to be
+                       reasoned about every time this is read. */
+                    aria-current={
+                      href !== "#" &&
+                      (pathname === href || pathname.startsWith(`${href}/`))
+                        ? "page"
+                        : undefined
+                    }
                     className={`${s.pill} wf-nav`}
                     onClick={closeMenus}
                   >

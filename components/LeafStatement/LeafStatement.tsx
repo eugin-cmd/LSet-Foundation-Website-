@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import LeafSprig from "@/components/icons/LeafSprig";
 import s from "./LeafStatement.module.css";
 
@@ -19,10 +20,14 @@ export default function LeafStatement({
   id,
   kicker,
   paragraphs,
+  afterFirstParagraph,
 }: {
   id: string;
   kicker: string;
   paragraphs: string[];
+  /** Dropped in under the first paragraph. The homepage puts its pillar row
+   *  there; the education page passes nothing and gets the band unchanged. */
+  afterFirstParagraph?: React.ReactNode;
 }) {
   return (
     <section id={id} className={s.who}>
@@ -34,10 +39,15 @@ export default function LeafStatement({
           <p className={`${s.kicker} wf-subtitle wf-dotted`}>{kicker}</p>
 
           <div className={s.copy}>
-            {paragraphs.map((para) => (
-              <p className={s.para} key={para}>
-                {para}
-              </p>
+            {paragraphs.map((para, i) => (
+              <Fragment key={para}>
+                <p className={s.para}>{para}</p>
+
+                {/* Under the first paragraph specifically, because that is the
+                    one whose colon introduces the list. Anywhere else and the
+                    colon points at nothing. */}
+                {i === 0 && afterFirstParagraph}
+              </Fragment>
             ))}
           </div>
         </div>
