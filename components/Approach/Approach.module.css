@@ -14,21 +14,38 @@
 .bgArea {
   position: relative;
   width: 100%;
-  /* Figma had 1050px at 1440; tightened to 860 so the section is shorter and
-     the parallax plays out over less scroll. */
-  height: clamp(320px, 59.72vw, 860px);
+  /* Figma had 1050px at 1440; tightened to 860, and now to 645 — a quarter off
+     that, by direction.
+
+     Every term is scaled together, not just the ceiling: 59.72vw is what put
+     860px at the 1440 the section was drawn at, so moving the cap alone would
+     have left the band unchanged on every viewport under 1440 and then jumped
+     once it cleared it. 55.99vw holds 806 at 1440 and 300 is the floor a phone
+     lands on.
+
+     Note for anyone reading the history: this is not the 860 it started at.
+     A quarter off and then a quarter back on is 0.9375 of the original, not
+     1.0 — the second quarter is taken from the smaller number. 806 is what was
+     asked for both times; 860 is a different instruction.
+
+     The video is object-fit: cover, so it crops rather than squashes into the
+     shorter band, and the heading is centred on the band so it follows it up
+     without any figure of its own to change. */
+  height: clamp(300px, 55.99vw, 806px);
   overflow: hidden;
 }
 
 .bg {
-  /* Defocused, so it reads as a far plane and the sharp heading and photo
-     separate from it more strongly than position alone achieves. */
-  --bg-blur: 3px;
-  /* A blurred layer fades out at its own edges, and .bgArea clips it. Without
-     slack the faded edge shows as a translucent band letting the section's
-     dark green through — so the layer is grown by 3x the radius on every side,
-     on top of the vertical --approach-overscan the drift consumes. */
-  --bg-bleed: calc(var(--bg-blur) * 3);
+  /* No blur now that this is footage. The still was defocused so it read as a
+     far plane behind the heading; moving footage separates itself, and 3px
+     across a drone shot is only a waste of the thing it is showing. The
+     heading's legibility rides on .bgTint's 25% black instead, which was
+     already there.
+
+     --bg-bleed goes to 0 with it: it existed solely to hide the faded edge a
+     blurred layer leaves inside .bgArea's clip. The overscan stays, because
+     that is what the drift consumes rather than anything to do with blur. */
+  --bg-bleed: 0px;
   --bg-slack: calc(var(--approach-overscan) + var(--bg-bleed));
 
   position: absolute;
@@ -36,39 +53,163 @@
   left: calc(var(--bg-bleed) * -1);
   width: calc(100% + var(--bg-bleed) * 2);
   height: calc(100% + var(--bg-slack) * 2);
-  background: url("/assets/approach-bg.jpg") center bottom / cover no-repeat;
-  filter: blur(var(--bg-blur));
+  /* center bottom, as the still was framed, and cover so the clip fills the
+     band at any width without letterboxing. */
+  object-fit: cover;
+  object-position: center bottom;
 }
 
-/* Flat 25% black over the canopy only — the block below is already dark. Held
-   still while the image drifts beneath it. */
+/* A diagonal wash over the footage only — the block below is already dark.
+   Held still while the video drifts beneath it.
+
+   135deg, so the ramp runs corner to corner: #00d6c9 entering at the top left
+   and settling into #1f415b at the bottom right, which is the direction
+   asked for, cyan above and the deep blue below.
+
+   The lower stop is --color-teal-700, which is exactly #1f415b already. The
+   upper is a literal because #00d6c9 is not in the palette — it is the one
+   colour on the site with no token behind it, so if it is going to be used
+   anywhere else it wants promoting to tokens.css rather than copying.
+
+   50%, replacing the flat black that was here. Worth watching: black at 50%
+   darkened every frame evenly, where this lightens the top left. The heading
+   is white and sits over that corner. */
 .bgTint {
   position: absolute;
   inset: 0;
-  background: rgb(0 0 0 / 25%);
+  /* The 50% lives here, on the pair below rather than on either ramp, so the
+     wash keeps one strength however far through the swap it is. */
+  opacity: 0.5;
   pointer-events: none;
 }
 
-.deep {
-  width: 100%;
-  /* Figma's 402px was a wide green wash under the image; cut to 150. */
-  height: clamp(90px, 10.42vw, 150px);
-  background: var(--surface-deep);
+.bgTint::before,
+.bgTint::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+}
+
+/* The ramp as it starts: cyan at the top left, deep blue at the bottom right. */
+.bgTint::before {
+  background: linear-gradient(135deg, #00d6c9 0%, var(--color-teal-700) 100%);
+}
+
+/* The same ramp with its ends exchanged, sitting on top at zero and brought up
+   as the section passes. Two layers crossfading, rather than two colour stops
+   animating: a linear-gradient is not an interpolable value, so animating the
+   stops themselves would need both registered through @property, and that is a
+   lot of machinery for a fade between two paintings of the same thing.
+
+   It does mean the midpoint is the two ramps at equal strength, which averages
+   to a flat wash rather than a diagonal. It reads as the diagonal easing off
+   and rebuilding the other way, which is the swap. */
+.bgTint::after {
+  background: linear-gradient(135deg, var(--color-teal-700) 0%, #00d6c9 100%);
+  opacity: 0;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .bgTint::after {
+      animation-name: approachTintSwap;
+      /* Explicit: the shorthand defaults duration to 0s, which leaves a
+         scroll-driven animation pinned to its first frame. */
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      /* The section's own passage, the same timeline the video and the heading
+         drift on, so the colour turns in step with them rather than on a
+         clock of its own. */
+      animation-timeline: --approach-view;
+      animation-range: cover 0% cover 100%;
+    }
+  }
+}
+
+@keyframes approachTintSwap {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Flat 40% black, last in the stack so it sits over the ramp and the footage
+   both. Its own layer rather than a stop inside .bgTint, whose 0.5 would have
+   taken it to an effective 12.5% and tied it to the swap; here the darkening
+   holds steady while the colour turns underneath it. */
+.bgShade {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 40%);
+  pointer-events: none;
 }
 
 .heading {
   position: absolute;
-  /* The overhanging photo keeps its own height as the section shrinks, so the
-     heading sits higher to stay clear of it. */
-  top: 15%;
+  /* Centred in the band rather than set at a fraction from the top. The
+     section is the footage alone now — the green wash that used to sit under
+     it is gone — so its middle and the video's middle are the same line, and
+     15% was leaving the copy high in the frame with the weight of the shot
+     below it. */
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 25.499px;
   width: min(1078px, 100% - var(--edge) * 2);
   text-align: center;
+}
+
+/* The mark above the kicker. A quarter larger than the banner's four, which
+   run clamp(26px, 2.36vw, 34px): this one stands alone above a kicker where
+   those are a row of four above a mast, and a single mark at the row's size
+   read as something dropped rather than as the head of the block.
+
+   The stroke stays 1.5 and the colour still comes from the block, so the two
+   sets are the same drawing at two sizes rather than two drawings. Larger is
+   also the safe direction for this particular mark: PawPrint's geometry was
+   measured for 34px and its failure mode is small, where the toes close up.
+
+   `flex: none` because .heading is a flex column and will otherwise squeeze
+   it; the rule below it needed the same. */
+.icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--white);
+}
+
+.icon svg {
+  flex: none;
+  width: clamp(32px, 2.92vw, 42px);
+  height: auto;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Hidden only once scripting is confirmed, so a reader without it — or with
+   reduced motion, which never arms — gets the mark drawn and still. */
+.icon[data-state="armed"] svg {
+  opacity: 0;
+}
+
+.icon[data-state="dropped"] svg {
+  /* The banner's drop, through the variable rather than by name: css-loader
+     rewrites an animation-name inside a *.module.css to a hashed local, so
+     naming icon-drop here would compile to Approach_icon-drop__xxxx and match
+     nothing. */
+  animation-name: var(--anim-icon-drop);
+  animation-duration: 940ms;
+  /* The 220ms the first of the banner's four waits. */
+  animation-delay: 220ms;
+  animation-fill-mode: both;
 }
 
 .kicker {
@@ -79,10 +220,48 @@
 .title {
   width: 100%;
   color: var(--white);
+  /* Centred display type wants even line lengths, and this is one sentence
+     wrapping freely now rather than three lines broken by hand. */
+  text-wrap: balance;
 }
 
 .accent {
   color: var(--color-orange);
+}
+
+/* The education statement's sub, to the value: same 680px measure, same Inter
+   Tight at 400 on a 1.5 leading, same white at 82%, same `pretty` wrapping.
+   The two bands are the same construction — display type over footage, with a
+   line of plain copy under it — and they should not be two different
+   treatments of it.
+
+   No margin-top, where that one carries clamp(18px, 2.1vw, 30px): .heading is
+   a flex column and its own 25.5px gap already sits inside that range, so a
+   margin here would stack on top of it rather than replace it. */
+.note {
+  width: min(680px, 100%);
+  margin: 0;
+  font: 400 clamp(15px, 1.39vw, 20px) / 1.5 var(--font-inter-tight);
+  color: rgb(255 255 255 / 82%);
+  text-wrap: pretty;
+}
+
+/* The rule under the block. 90px and exactly 1px, which is also what the nav's
+   selected underline measures at 89 — near enough that the two read as the
+   same mark rather than two different widths of hairline.
+
+   `flex: none` because .heading is a flex column: a 1px box is the first thing
+   a flex container will crush when it is working out how to fit its children,
+   and a crushed rule is an invisible one.
+
+   82% white, the note's own tone. A hairline at full white sits brighter than
+   the copy above it and starts reading as a divider between two things rather
+   than as the close of one. */
+.rule {
+  flex: none;
+  width: 90px;
+  height: 1px;
+  background: rgb(255 255 255 / 82%);
 }
 
 /* ---------------------------------------------------------------------------
@@ -124,13 +303,16 @@
   }
 }
 
-/* translateX(-50%) is repeated in both frames because the animation replaces
-   the base transform outright while it runs. */
+/* Both halves of the centring are repeated in every frame because the
+   animation replaces the base transform outright while it runs: -50% across
+   for the horizontal centre, and -50% down folded into the rise, or the copy
+   would snap back to hanging from its own top edge the moment the section
+   entered view. */
 @keyframes approachHeadingRise {
   from {
-    transform: translate(-50%, calc(var(--approach-lift) * 0.85));
+    transform: translate(-50%, calc(-50% + var(--approach-lift) * 0.85));
   }
   to {
-    transform: translate(-50%, calc(var(--approach-lift) * -1));
+    transform: translate(-50%, calc(-50% - var(--approach-lift)));
   }
 }
