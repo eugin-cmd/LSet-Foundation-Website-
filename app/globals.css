@@ -818,15 +818,30 @@ video {
      identical count ran on the phone as on a 1440px desktop; nothing had ever
      been scaled back.
 
-     The banner heading keeps its sheen. It is the page's signature, and
-     measured at 390px it still renders 11 distinct hue families against the
-     desktop's 16, so it genuinely works at this width. Everything else holds
-     at a static frame: the stats numbers, the labels, the tech chips. They sit
-     in the reader's periphery, and on a 67px-wide number the ramp can only
-     ever show 13% of one period anyway — measured over six seconds it never
-     left cyan-white, so the animation was paying for a colour change nobody
-     could see. */
-  :is(.wf-iridescent):not(h1):not(h1 *) {
+     The banner heading used to be carved out of this and keep its sheen — it
+     is the page's signature, and at 390px it still renders 11 distinct hue
+     families against the desktop's 16. It is carved out no longer, because on
+     iOS the exemption was not buying a moving sheen, it was costing the
+     heading entirely.
+
+     On iOS WebKit an animated gradient clipped to text does not paint. The
+     glyphs stay transparent and nothing is drawn behind them, so the mast is
+     not dim or mis-coloured, it is absent: on an iPhone the homepage showed
+     its icons, its lede and its scroll cue with a blank band where the title
+     belongs, in Safari and in Chrome alike — both are WebKit there. Every one
+     of the seven heroes puts .wf-iridescent on its h1, so every banner on the
+     site lost its title. The reason it was only the h1 is this very rule: the
+     `:not(h1)` exemption meant the h1 was the single element left animating a
+     text-clipped gradient on a phone, and it was the single element missing.
+
+     Freezing it is the fix and it costs little. The static ramp still paints
+     the full holographic palette — it is exactly what the other thirteen have
+     shown here all along, and what anyone with reduced motion has always
+     seen. It also finishes the thought this block already had: a text-clipped
+     gradient cannot be handed to the compositor, and this was the last and
+     largest one still re-rasterising its glyphs every frame on the slowest
+     screen the site meets. */
+  .wf-iridescent {
     animation: none !important;
   }
 
