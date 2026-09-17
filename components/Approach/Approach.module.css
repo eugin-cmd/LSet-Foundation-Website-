@@ -23,10 +23,11 @@
      once it cleared it. 55.99vw holds 806 at 1440 and 300 is the floor a phone
      lands on.
 
-     Note for anyone reading the history: this is not the 860 it started at.
-     A quarter off and then a quarter back on is 0.9375 of the original, not
-     1.0 — the second quarter is taken from the smaller number. 806 is what was
-     asked for both times; 860 is a different instruction.
+     The band has been resized by direction more than once and the numbers do
+     not read back as the arithmetic suggests, so: 860 to 645 (a quarter off),
+     to 806 (a quarter back on, taken from the smaller number, which is why it
+     did not return to 860). A 20% rise to 967 was tried and taken back off.
+     806 is about 6% below where it started.
 
      The video is object-fit: cover, so it crops rather than squashes into the
      shorter band, and the heading is centred on the band so it follows it up
@@ -273,8 +274,18 @@
    --------------------------------------------------------------------------- */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
-    .bg,
-    .heading {
+    /* The backdrop alone. The heading used to rise against it, and that is
+       what stopped it being centred: the base rule centres it, then the
+       animation replaced that transform with one carrying the rise, so the
+       copy sat 0.85 of --approach-lift — 83px at a 1280 viewport — below the
+       middle of the band for most of the section's pass. Measured against the
+       band's own box: 283px of air above the block and 116px below it.
+
+       The two planes still separate, because the footage still sinks
+       underneath. What has gone is the copy moving at its own rate, which is
+       the half of that effect that cost the centring. */
+    .bg {
+      animation-name: approachBackdropSink;
       animation-duration: 1ms; /* superseded by the timeline */
       animation-timing-function: linear;
       animation-fill-mode: both;
@@ -282,14 +293,6 @@
       /* Ease in and out of the range so the drift never starts or stops
          abruptly at the section's edges. */
       animation-range: cover 0% cover 100%;
-    }
-
-    .bg {
-      animation-name: approachBackdropSink;
-    }
-
-    .heading {
-      animation-name: approachHeadingRise;
     }
   }
 }
@@ -303,16 +306,3 @@
   }
 }
 
-/* Both halves of the centring are repeated in every frame because the
-   animation replaces the base transform outright while it runs: -50% across
-   for the horizontal centre, and -50% down folded into the rise, or the copy
-   would snap back to hanging from its own top edge the moment the section
-   entered view. */
-@keyframes approachHeadingRise {
-  from {
-    transform: translate(-50%, calc(-50% + var(--approach-lift) * 0.85));
-  }
-  to {
-    transform: translate(-50%, calc(-50% - var(--approach-lift)));
-  }
-}
