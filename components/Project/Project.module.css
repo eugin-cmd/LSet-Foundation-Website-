@@ -309,8 +309,21 @@
   margin: 0;
   /* 50% up from Figma's 75px, by direction — every term scaled, so the whole
      fluid curve moves rather than just its ceiling: a bigger cap with the old
-     floor and slope would leave narrow screens unchanged and then jump. */
-  font-size: clamp(51px, 7.8vw, 112.5px);
+     floor and slope would leave narrow screens unchanged and then jump.
+
+     The floor is the exception, and it is 32px rather than the 51px that
+     scaling gave. 7.8vw only reaches 51px at a 653px viewport, so every phone
+     sat on the floor, and the longest word a species name offers —
+     MEDITERRANEAN, WHITE-BELLIED, BROAD-TOOTHED, all thirteen characters — is
+     about 8.8em wide with the 5.5% tracking. At 51px that is 449px of word in
+     the ~267px a 320px phone leaves once --edge takes 16px a side and
+     --banner-align another 21, and the mast ran off the right of the screen. Nobody saw it because the override
+     was losing the cascade in the production build and the 28px floor of
+     .wf-display-xl was what shipped; fixing that in globals.css is what
+     uncovered this. 28px — the floor .wf-display-xl
+     already uses, so the masts share one — puts it at ~246px, inside that
+     column, and the curve is untouched from 360px up. */
+  font-size: clamp(28px, 7.8vw, 112.5px);
   font-weight: 700;
   color: var(--white);
   text-wrap: balance;

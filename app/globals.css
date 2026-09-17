@@ -79,6 +79,25 @@ video {
    Figma text styles (WF/*) as reusable utilities.
    letterSpacing in Figma is a percentage of the font size; converted here.
    --------------------------------------------------------------------------- */
+/* These sit in a cascade layer, and nothing else in the app does.
+
+   Every one of them is a base a component is expected to overrule: the project
+   mast wears .wf-display-xl for the family, the 5.5% tracking and the
+   uppercase, then sets its own 112.5px and 700 on top. Both selectors are a
+   single class, so specificity ties and the cascade falls through to source
+   order — and source order is the bundler's to decide, not ours. It put the
+   module first in dev and the utility first in the production build, so the
+   same markup rendered a 112.5px/700 mast locally and a 52px/400 one on
+   Vercel. The `font:` shorthand is what made it so visible: it resets weight
+   and size together, so losing the tie cost both.
+
+   Unlayered styles beat layered ones whatever their specificity and whatever
+   order they arrive in, and every CSS module here is unlayered. So a component
+   override now wins by rule rather than by luck, and the built site matches
+   what `next dev` shows.
+   --------------------------------------------------------------------------- */
+@layer wf-type {
+
 .wf-display-xl {
   font: 400 clamp(28px, 3.61vw, 52px) / 1.12 var(--font-flex);
   letter-spacing: 0.055em; /* 5.5%, so it tracks the fluid size */
@@ -135,6 +154,9 @@ video {
   letter-spacing: 0.2em;
   text-transform: uppercase;
 }
+}
+/* end @layer wf-type */
+
 
 /* A 3px dot on each side of a section kicker.
 
