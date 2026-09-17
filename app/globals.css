@@ -1,5 +1,24 @@
 @import "./tokens.css";
 
+/* Layer order, declared before either is used, because first-appearance order
+   would otherwise decide it.
+
+   reset      — the element defaults below. Lowest, so anything else beats them.
+   wf-type    — the Figma text utilities. They beat the reset, lose to modules.
+   (unlayered) — every CSS module. Unlayered always wins, which is the point.
+
+   The middle layer is the one that had to be added twice. Putting the
+   utilities in a layer fixed a real bug — a module override and a utility tie
+   on specificity, and the bundler was breaking the tie differently in dev and
+   in the build. But a layer does not just lose to modules, it loses to
+   *everything* unlayered, and `h1, h2, h3, p { font-weight: inherit }` below
+   is unlayered. So the reset started outranking the utilities and every
+   kicker, every heading that took its weight from a wf-* class and happened
+   to be an h1, h2, h3 or p, silently dropped to the inherited 400. Naming
+   both layers here is what puts them back in the order they were always
+   meant to be in. */
+@layer reset, wf-type;
+
 *,
 *::before,
 *::after {
@@ -27,13 +46,6 @@ body {
   }
 }
 
-/* Lets the approach section's view timeline be referenced by elements outside
-   it — the overhanging photo belongs to that composition but is a child of the
-   pillars section, so it needs the name in scope here. */
-main {
-  timeline-scope: --approach-view;
-}
-
 body {
   min-width: 320px;
   background: var(--surface-white);
@@ -44,12 +56,17 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-h1,
-h2,
-h3,
-p {
-  margin: 0;
-  font-weight: inherit;
+@layer reset {
+  h1,
+  h2,
+  h3,
+  p {
+    margin: 0;
+    /* In the reset layer, not because the margin needs it but because this
+       `inherit` does: unlayered, it beat every .wf-* utility that sets a
+       weight on one of these elements. */
+    font-weight: inherit;
+  }
 }
 
 a {
@@ -124,8 +141,26 @@ video {
   letter-spacing: 0.05em;
 }
 
+/* Figma's WF/Subtitle, at 500 rather than its 600 — by direction, and in one
+   place because it is one treatment: this utility is what every kicker on the
+   site is made of. WHO WE ARE, OUR APPROACH, OUR WORK, ABOUT US, the project
+   gallery's and the proof wall's. They are small, tracked caps sitting above
+   something much larger, and at 600 they were reading as a label for the
+   heading under them rather than as its own line.
+
+   900, 800 and 700 were each tried and each was too much: a kicker is an
+   introduction, and at those weights it competed with the heading it
+   introduces instead of announcing it. 400 went the other way and let it go
+   slack. 500 is the step between, and a step below Figma's 600, by direction.
+
+   Worth knowing if this is ever revisited: between 74ecbe6 and the
+   layer-order fix these rendered at 400 by accident, an unlayered
+   `font-weight: inherit` having quietly beaten this rule — so the eye that
+   chose 500 was comparing against that, not against the 600 the design asks
+   for. The value is deliberate either way, and it is written down so nobody
+   `fixes` it back on the grounds that Figma says 600. */
 .wf-subtitle {
-  font: 600 clamp(15px, 1.18vw, 17px) / 1.35 var(--font-flex);
+  font: 500 clamp(15px, 1.18vw, 17px) / 1.35 var(--font-flex);
   letter-spacing: -0.005em;
 }
 
