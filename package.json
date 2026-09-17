@@ -17,6 +17,7 @@
     "@types/node": "22.10.2",
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
+    "@vercel/toolbar": "^0.2.7",
     "typescript": "5.7.2"
   }
 }
