@@ -411,12 +411,9 @@
    photograph still clears 4.5:1 wherever the band's 25% tint sits. */
 .statementSub {
   width: min(680px, 100%);
-  /* 25.499px, which is the gap the homepage's approach band puts between
-     every part of its block — Figma's number there, and the two bands are the
-     same construction, so they should measure the same. It was
-     clamp(18px, 2.1vw, 30px), which landed at 30 on the design width and made
-     this block sit looser than that one. */
-  margin: 25.499px auto 0;
+  /* This band's own number, and the homepage's approach block follows it
+     rather than the other way round. */
+  margin: clamp(18px, 2.1vw, 30px) auto 0;
   font: 400 clamp(15px, 1.39vw, 20px) / 1.5 var(--font-inter-tight);
   color: rgb(255 255 255 / 82%);
   text-wrap: pretty;

@@ -17,22 +17,26 @@
   /* Figma had 1050px at 1440; tightened to 860, and now to 645 — a quarter off
      that, by direction.
 
-     Every term is scaled together, not just the ceiling: 59.72vw is what put
-     860px at the 1440 the section was drawn at, so moving the cap alone would
-     have left the band unchanged on every viewport under 1440 and then jumped
-     once it cleared it. 55.99vw holds 806 at 1440 and 300 is the floor a phone
-     lands on.
+     The value is the education statement's, copied outright rather than
+     arrived at: that band runs clamp(340px, 65.28vw, 940px) on
+     .statementPhoto, and by direction these two are to stand the same height.
+     Both sections are a single full-width band with their copy absolutely
+     centred over it, so matching the one measurement matches the sections.
+
+     Anything retuned here has to be retuned there, or they drift apart and
+     the pairing is lost. That is the cost of copying a number instead of
+     sharing a token, and it is worth knowing before the next resize.
 
      The band has been resized by direction more than once and the numbers do
-     not read back as the arithmetic suggests, so: 860 to 645 (a quarter off),
-     to 806 (a quarter back on, taken from the smaller number, which is why it
-     did not return to 860). A 20% rise to 967 was tried and taken back off.
-     806 is about 6% below where it started.
+     not read back as the arithmetic suggests: 860, to 645 (a quarter off), to
+     806 (a quarter back on, taken from the smaller number, which is why it did
+     not return to 860), a 20% rise to 967 tried and taken off again, and now
+     940 to meet education. That is about 9% above where it started.
 
      The video is object-fit: cover, so it crops rather than squashes into the
      shorter band, and the heading is centred on the band so it follows it up
      without any figure of its own to change. */
-  height: clamp(300px, 55.99vw, 806px);
+  height: clamp(340px, 65.28vw, 940px);
   overflow: hidden;
 }
 
@@ -78,74 +82,68 @@
 .bgTint {
   position: absolute;
   inset: 0;
-  /* The 50% lives here, on the pair below rather than on either ramp, so the
-     wash keeps one strength however far through the swap it is. */
+  /* 50%, on the layer: each blob already carries its own 70% falloff, and
+     thinning them individually would wash the mesh out rather than lighten
+     it. */
   opacity: 0.5;
   pointer-events: none;
 }
 
-.bgTint::before,
-.bgTint::after {
+/* The paint comes from the global .wf-mesh::before, which this element opts
+   into by carrying that class. This rule owns only geometry — the same
+   division of labour MeshField uses for the light sections, and the reason the
+   eight blobs have one definition on the site rather than a copy per caller. */
+.bgTint::before {
   position: absolute;
   inset: 0;
   content: "";
 }
 
-/* The ramp as it starts: cyan at the top left, deep blue at the bottom right. */
-.bgTint::before {
-  background: linear-gradient(135deg, #00d6c9 0%, var(--color-teal-700) 100%);
-}
-
-/* The same ramp with its ends exchanged, sitting on top at zero and brought up
-   as the section passes. Two layers crossfading, rather than two colour stops
-   animating: a linear-gradient is not an interpolable value, so animating the
-   stops themselves would need both registered through @property, and that is a
-   lot of machinery for a fade between two paintings of the same thing.
-
-   It does mean the midpoint is the two ramps at equal strength, which averages
-   to a flat wash rather than a diagonal. It reads as the diagonal easing off
-   and rebuilding the other way, which is the swap. */
-.bgTint::after {
-  background: linear-gradient(135deg, var(--color-teal-700) 0%, #00d6c9 100%);
-  opacity: 0;
-}
-
+/* One revolution of the mesh per pass of the band, as the field downstairs
+   turns once per pass of its own. Scroll-driven rather than timed: a view()
+   progress animation is a position on a range, not a clock, so scrolling back
+   up unwinds the mesh rather than letting it run on. The pointer does not
+   drive this one — usePointerMesh belongs to MeshField, and this layer sits
+   under a heading rather than under a cursor. */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
-    .bgTint::after {
-      animation-name: approachTintSwap;
-      /* Explicit: the shorthand defaults duration to 0s, which leaves a
-         scroll-driven animation pinned to its first frame. */
+    .bgTint::before {
+      animation-name: approachMeshSwirl;
+      /* Explicit: the shorthand defaults duration to 0s, which pins a
+         scroll-driven animation to its first frame. */
       animation-duration: 1ms;
       animation-timing-function: linear;
       animation-fill-mode: both;
-      /* The section's own passage, the same timeline the video and the heading
-         drift on, so the colour turns in step with them rather than on a
-         clock of its own. */
       animation-timeline: --approach-view;
       animation-range: cover 0% cover 100%;
     }
   }
 }
 
-@keyframes approachTintSwap {
+/* Declared here rather than shared: css-loader hashes every animation-name
+   inside a *.module.css, so naming MeshField's keyframe would compile to
+   something matching nothing. --mesh-swirl is registered in globals.css, which
+   is what lets an angle animate at all. */
+@keyframes approachMeshSwirl {
   from {
-    opacity: 0;
+    --mesh-swirl: 0deg;
   }
 
   to {
-    opacity: 1;
+    --mesh-swirl: 360deg;
   }
 }
 
-/* Flat 40% black, last in the stack so it sits over the ramp and the footage
-   both. Its own layer rather than a stop inside .bgTint, whose 0.5 would have
+/* Flat 50% black, last in the stack so it sits over the mesh and the footage
+   both. A quarter up from the 40 it carried, by direction — read as 40 x 1.25
+   rather than 40 + 25, which would have been 65 and close to burying the
+   shot. Its own layer rather than a stop inside .bgTint, whose 0.5 would have
    taken it to an effective 12.5% and tied it to the swap; here the darkening
    holds steady while the colour turns underneath it. */
 .bgShade {
   position: absolute;
   inset: 0;
-  background: rgb(0 0 0 / 40%);
+  background: rgb(0 0 0 / 50%);
   pointer-events: none;
 }
 
@@ -162,7 +160,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 25.499px;
+  /* No gap: each part carries its own margin below, because the education
+     statement this block now follows does not space its five parts evenly and
+     a single gap cannot say so. Its numbers, in its order. */
+  gap: 0;
   width: min(1078px, 100% - var(--edge) * 2);
   text-align: center;
 }
@@ -182,6 +183,7 @@
 .icon {
   display: inline-flex;
   flex: none;
+  margin-bottom: 25.499px;
   color: var(--white);
 }
 
@@ -215,6 +217,7 @@
 
 .kicker {
   width: 100%;
+  margin-bottom: 25.499px;
   color: var(--white);
 }
 
@@ -241,7 +244,11 @@
    margin here would stack on top of it rather than replace it. */
 .note {
   width: min(680px, 100%);
-  margin: 0;
+  /* The education statement's gap between its heading and its copy, which is
+     what this block follows. It is not the 25.499 above, and that is the
+     point: that band spaces its copy wider than its kicker and its rule wider
+     still, and matching it means matching the unevenness. */
+  margin: clamp(18px, 2.1vw, 30px) 0 0;
   font: 400 clamp(15px, 1.39vw, 20px) / 1.5 var(--font-inter-tight);
   color: rgb(255 255 255 / 82%);
   text-wrap: pretty;
@@ -262,6 +269,10 @@
   flex: none;
   width: 90px;
   height: 1px;
+  /* 50px, the education statement's distance from its copy to its own rule —
+     which is a ::after on the paragraph there rather than an element, and the
+     reason it took a while to find. */
+  margin-top: 50px;
   background: rgb(255 255 255 / 82%);
 }
 

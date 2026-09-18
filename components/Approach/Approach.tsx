@@ -27,9 +27,13 @@ export default function Approach() {
         >
           <source src="/assets/approach-drone.mp4" type="video/mp4" />
         </video>
-        <div className={s.bgTint} />
-        {/* Above the ramp, not blended into it: the ramp carries its own 50%
-            and the black has to stay 25% of the footage rather than 25% of
+        {/* Carries `wf-mesh` so the paint comes from the one definition in
+            globals.css — the same eight blobs the light sections downstairs
+            sit on. This module owns only the geometry and the strength. */}
+        <div className={`${s.bgTint} wf-mesh`} aria-hidden="true" />
+
+        {/* Above the mesh, not blended into it: the mesh carries its own 50%
+            and the black has to stay 40% of the footage rather than 40% of
             what is left after it. */}
         <div className={s.bgShade} />
       </div>
