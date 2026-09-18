@@ -362,10 +362,35 @@
       will-change: transform;
     }
 
-    .pivot:nth-child(1) { animation-range: cover 0% cover 73.627%; }
-    .pivot:nth-child(2) { animation-range: cover 8.791% cover 82.418%; }
-    .pivot:nth-child(3) { animation-range: cover 17.582% cover 91.209%; }
-    .pivot:nth-child(4) { animation-range: cover 26.373% cover 100%; }
+    /* The windows start BEFORE the timeline does, which is what puts cards on
+       the stage the moment the section arrives instead of after a scroll.
+
+       `cover` opens when the track's top edge crosses the viewport's bottom,
+       and the section's own top does not reach the viewport top until 100 of
+       those 480svh have gone — 20.833%. Every window used to open at or after
+       0%, so at that moment card one had travelled 28% of its sweep, still at
+       about +22deg, and the stage read as empty. The file already knew the
+       good state: 38% is where the scroll-margin-top below lands an in-page
+       jump, "cards one and two both fully on screen and three just entering".
+
+       So everything shifts 17.167% earlier — 38 minus 20.833 — and card one
+       opens at a negative offset, i.e. part-way through its arc before the
+       timeline starts. The windows widen with the shift rather than sliding
+       as a block, so card four still closes exactly on 100% and the pin's
+       last sixth is not left with a static stage: the span becomes
+       100 + 17.167, and the derivation is unchanged otherwise —
+         w = (100 + shift) / (1 + 0.1194 * (n - 1))   step = 0.1194 * w
+       At n = 4 that is w = 86.266%, step = 10.300%, against the 73.627 / 8.791
+       these had while the span was 100. **Recompute both if a card is ever
+       added or removed**, as the note above already says.
+
+       One consequence worth knowing: a wider window is a slower card. Each one
+       now turns across 86% of the track rather than 74%, so the sweep is about
+       15% gentler per pixel scrolled than the figures in the note above. */
+    .pivot:nth-child(1) { animation-range: cover -17.167% cover 69.099%; }
+    .pivot:nth-child(2) { animation-range: cover -6.866% cover 79.400%; }
+    .pivot:nth-child(3) { animation-range: cover 3.434% cover 89.700%; }
+    .pivot:nth-child(4) { animation-range: cover 13.734% cover 100%; }
 
     .pivot .card {
       position: absolute;
