@@ -70,5 +70,13 @@
   /* Both needed before a flex item will shrink below its intrinsic width. */
   min-width: 0;
   flex-shrink: 1;
+  /* Most of these files are white artwork and this band sits on the light
+     surface, so inverting is what makes them dark enough to read. */
   filter: invert(1);
+}
+
+/* A logo supplied dark already, which inverting would turn white against that
+   same light ground. */
+.logos img[data-invert="false"] {
+  filter: none;
 }
