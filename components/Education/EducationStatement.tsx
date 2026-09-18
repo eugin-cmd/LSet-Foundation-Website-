@@ -1,3 +1,5 @@
+import DropIcon from "@/components/DropIcon/DropIcon";
+import OpenBook from "@/components/icons/OpenBook";
 import s from "./Education.module.css";
 
 /**
@@ -17,17 +19,40 @@ export default function EducationStatement() {
           this wrapper, so the two travel together rather than drifting apart
           at different rates. */}
       <div className={s.statementCopy}>
+        {/* The open book, which is what education is drawn as across the
+            site. Every other mark that would suit this page is already on it —
+            cupped hands, the globe and the birds head the board below, and the
+            banner's row carries the print and the book — so this repeats the
+            banner's book rather than introducing a fifth idea. Repeating a
+            mark that means the one thing is the lesser cost.
+
+            Drops as the homepage's does, on the same shared <DropIcon>. */}
+        <DropIcon className={s.statementIcon}>
+          <OpenBook />
+        </DropIcon>
+
+        {/* The homepage's approach kicker, in its form exactly: .wf-subtitle
+            for the type and .wf-dotted for the 3px dot either side. The page
+            already carries WHAT WE BELIEVE and Real Courses. Real Careers.,
+            and neither claims this one. */}
+        <p className={`${s.statementKicker} wf-subtitle wf-dotted`}>
+          OUR APPROACH
+        </p>
+
         <p className={`${s.statementLine} wf-display-xl`}>
           {/* One sentence, by direction, where Figma set four: "WE TRAIN. WE
               IMMERSE.WE MENTOR. TO PLACE THEM IN THE FIELD." The three verbs
               share a subject now and the last clause is what they are for,
-              which is what the full stops were breaking apart.
+              which is what the full stops were breaking apart. No closing one
+              either: the band is a statement standing on its own, as the
+              homepage's approach mast is, and the mark was the last thing left
+              of the four-sentence version.
 
               It also retires the missing space after the second full stop —
               carried verbatim from Figma and flagged in the README, which can
               lose that note with it. */}
           WE TRAIN, IMMERSE &amp; MENTOR{" "}
-          <span className={s.statementAccent}>TO PLACE THEM IN THE FIELD.</span>
+          <span className={s.statementAccent}>TO PLACE THEM IN THE FIELD</span>
         </p>
 
         {/* What the claim above rests on, in the institute's own figures:
@@ -40,6 +65,7 @@ export default function EducationStatement() {
           first week, so what waits at the end is a job and not an
           introduction.
         </p>
+
       </div>
     </section>
   );

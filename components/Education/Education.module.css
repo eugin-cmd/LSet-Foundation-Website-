@@ -352,6 +352,51 @@
   text-wrap: balance;
 }
 
+/* The mark above the kicker, at the approach band's size and stroke so the
+   two bands carry one drawing weight. Its own 25.499px below it, spent as a
+   margin because .statementCopy is block flow rather than the flex column the
+   homepage uses. */
+.statementIcon {
+  display: inline-flex;
+  flex: none;
+  margin: 0 0 25.499px;
+  color: var(--white);
+}
+
+.statementIcon svg {
+  flex: none;
+  width: clamp(32px, 2.92vw, 42px);
+  height: auto;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Hidden only once scripting is confirmed, so no-JS and reduced motion both
+   get the mark drawn and still. */
+.statementIcon[data-state="armed"] svg {
+  opacity: 0;
+}
+
+.statementIcon[data-state="dropped"] svg {
+  /* Through the variable, never by name: css-loader hashes an animation-name
+     inside a *.module.css whether or not the file declares the keyframes. */
+  animation-name: var(--anim-icon-drop);
+  animation-duration: 940ms;
+  animation-delay: 220ms;
+  animation-fill-mode: both;
+}
+
+/* Above the statement, at the same 25.499px the rest of this block and the
+   homepage's approach band both use. As a margin rather than a gap because
+   .statementCopy is block flow, not the flex column .heading is over there —
+   the number is what matters, not how it is spent. */
+.statementKicker {
+  margin: 0 0 25.499px;
+  color: var(--white);
+}
+
 .statementLine {
   margin: 0;
 }
@@ -366,7 +411,12 @@
    photograph still clears 4.5:1 wherever the band's 25% tint sits. */
 .statementSub {
   width: min(680px, 100%);
-  margin: clamp(18px, 2.1vw, 30px) auto 0;
+  /* 25.499px, which is the gap the homepage's approach band puts between
+     every part of its block — Figma's number there, and the two bands are the
+     same construction, so they should measure the same. It was
+     clamp(18px, 2.1vw, 30px), which landed at 30 on the design width and made
+     this block sit looser than that one. */
+  margin: 25.499px auto 0;
   font: 400 clamp(15px, 1.39vw, 20px) / 1.5 var(--font-inter-tight);
   color: rgb(255 255 255 / 82%);
   text-wrap: pretty;

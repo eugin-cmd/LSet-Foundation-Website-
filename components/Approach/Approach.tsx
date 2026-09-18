@@ -1,4 +1,5 @@
-import ApproachIcon from "./ApproachIcon";
+import DropIcon from "@/components/DropIcon/DropIcon";
+import PawPrint from "@/components/icons/PawPrint";
 import s from "./Approach.module.css";
 
 export default function Approach() {
@@ -33,7 +34,16 @@ export default function Approach() {
         <div className={s.bgShade} />
       </div>
       <div className={s.heading}>
-        <ApproachIcon />
+        {/* A paw print, line-drawn like every other mark on this page, and
+            the better idea for the section: a print is evidence of the animal
+            on the ground, which is what the copy below claims. <Leaf>'s note
+            says a paw print is the better mark for a wildlife charity and was
+            abandoned only because it could not survive 20px in the accordion;
+            this band sets it at 42, well past where its geometry was drawn to
+            hold. */}
+        <DropIcon className={s.icon}>
+          <PawPrint />
+        </DropIcon>
 
         <p className={`${s.kicker} wf-subtitle wf-dotted`}>OUR APPROACH</p>
         {/* One sentence now, not three, so the breaks are the browser's rather
