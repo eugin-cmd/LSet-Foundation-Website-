@@ -99,8 +99,10 @@ Page order in [`app/page.tsx`](app/page.tsx), with the Figma y-offsets each sect
 
 ### Known copy gaps on the education page
 
-- The statement reads "WE TRAIN. WE IMMERSE.**WE** MENTOR." in Figma — no space after
-  the second full stop. Reproduced verbatim.
+- The statement read "WE TRAIN. WE IMMERSE.**WE** MENTOR. TO PLACE THEM IN THE FIELD."
+  in Figma, with no space after the second full stop, and was reproduced verbatim
+  for a time. It is now one sentence by direction — "WE TRAIN, IMMERSE & MENTOR TO
+  PLACE THEM IN THE FIELD." — so the gap is closed rather than carried.
 - The partner label reads "**n** association with leading partners" — the leading
   "I" is missing in Figma. Reproduced verbatim.
 - Figma leaves accordion rows 01 and 03 collapsed and supplies no body copy for

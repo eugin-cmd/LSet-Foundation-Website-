@@ -18,9 +18,15 @@ export default function EducationStatement() {
           at different rates. */}
       <div className={s.statementCopy}>
         <p className={`${s.statementLine} wf-display-xl`}>
-          {/* Verbatim from Figma, including the missing space after the second
-              full stop. Flagged in the README. */}
-          WE TRAIN. WE IMMERSE.WE MENTOR.{" "}
+          {/* One sentence, by direction, where Figma set four: "WE TRAIN. WE
+              IMMERSE.WE MENTOR. TO PLACE THEM IN THE FIELD." The three verbs
+              share a subject now and the last clause is what they are for,
+              which is what the full stops were breaking apart.
+
+              It also retires the missing space after the second full stop —
+              carried verbatim from Figma and flagged in the README, which can
+              lose that note with it. */}
+          WE TRAIN, IMMERSE &amp; MENTOR{" "}
           <span className={s.statementAccent}>TO PLACE THEM IN THE FIELD.</span>
         </p>
 
