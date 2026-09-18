@@ -6,22 +6,20 @@ import CuppedHands from "@/components/icons/CuppedHands";
 import OpenBook from "@/components/icons/OpenBook";
 import NodeNetwork from "@/components/icons/NodeNetwork";
 import Leaf from "@/components/icons/Leaf";
-import HabitatPlan from "@/components/icons/HabitatPlan";
 import s from "./About.module.css";
 
 /** The four the banner heading counts. The same four the homepage's "Who we
  *  are" names, in the same order.
  *
- *  Three of the marks are the ones the homepage's own pillars board gives
- *  them, so a pillar wears the same drawing wherever it is named. Living
- *  systems design has no board row, so it has a mark of its own: two blocks
- *  of different size on a ground line, which says designed where the other
- *  three say taught, connected and grown. */
+ *  The marks are the ones the homepage's own pillars board gives them, so a
+ *  pillar wears the same drawing wherever it is named. There were four: living
+ *  systems design had no board row and carried a mark of its own, two blocks on
+ *  a ground line. It has been dropped, by direction, and the row is the board's
+ *  three. <HabitatPlan> is now unused. */
 const PILLARS = [
   { label: "Education", Icon: OpenBook },
   { label: "Technology", Icon: NodeNetwork },
   { label: "Conservation", Icon: Leaf },
-  { label: "Living systems design", Icon: HabitatPlan },
 ];
 
 /**
@@ -54,9 +52,9 @@ export default function AboutHero() {
 
           <h1
             className={`${s.heroHeading} wf-display-xl wf-iridescent`}
-            aria-label="One mission. Four pillars."
+            aria-label="One mission. Three pillars."
           >
-            <WaveText text={"One mission. Four pillars."} />
+            <WaveText text={"One mission. Three pillars."} />
           </h1>
 
           {/* The four the heading counts, named. A list rather than a

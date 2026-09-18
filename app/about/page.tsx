@@ -12,7 +12,7 @@ import MeshField from "@/components/MeshField/MeshField";
 export const metadata: Metadata = {
   title: "About Us | LSeT Foundation",
   description:
-    "One mission across four pillars: education, technology, conservation and living systems design. The council and faculty behind the Institute of Animal Care and Management, and the work it puts into the field.",
+    "One mission across three pillars: education, technology and conservation. The council and faculty behind the Institute of Animal Care and Management, and the work it puts into the field.",
 };
 
 /**

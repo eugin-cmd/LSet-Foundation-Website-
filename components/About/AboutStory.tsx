@@ -18,7 +18,7 @@ export default function AboutStory() {
         kicker="WHY WE EXIST"
         paragraphs={[
           "Conservation problems do not arrive sorted by discipline. A heron colliding with a transmission line is an engineering problem, a monitoring problem, a training problem and a partnership problem at once, and answering only one of them changes nothing on the ground.",
-          "So the LSeT Foundation works across four connected pillars: education, technology, conservation and living systems design. The people who train animal care professionals are the people who build the software zoos run on, and who fly the diverters that keep herons off the lines.",
+          "So the LSeT Foundation works across three connected pillars: education, technology and conservation. The people who train animal care professionals are the people who build the software zoos run on, and who fly the diverters that keep herons off the lines.",
         ]}
       />
 
