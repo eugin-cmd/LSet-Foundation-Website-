@@ -1,0 +1,25 @@
+# What the deploy uploads, and what it has no business uploading.
+#
+# Without this file the CLI sends the whole working directory — 226MB of it,
+# of which References alone is 719MB on disk — and the deploy fails outright:
+# dronediverterdeployment.MOV is 138MB against Vercel's 100MB per-file limit.
+# .gitignore already keeps the heavy footage out of the history, but the CLI
+# does not read it, so the same list has to be stated here.
+
+# Stock footage kept locally for reference only. The frames actually used are
+# committed under public/assets and ship with the build; nothing here is ever
+# served, and it is the reason a deploy failed rather than merely being slow.
+References
+
+# Generated single-file snapshots — rebuild with scripts/build_preview.py.
+# Each is 10-15MB of inlined data URIs and none of them is a route.
+preview
+
+# Built on Vercel, not here. A local build is stale by definition and would
+# only be overwritten.
+.next
+out
+
+# Never useful anywhere.
+.DS_Store
+*.tsbuildinfo
