@@ -2,8 +2,9 @@
 """Build a single self-contained HTML file from the running dev server.
 
 Fetches the rendered page, inlines the real stylesheet, embeds every asset as a
-data URI, strips the Next.js runtime and re-adds a small vanilla accordion, so
-the result is a faithful snapshot of the app that opens anywhere offline.
+data URI, strips the Next.js runtime and re-adds the pointer-following mesh in
+plain script, so the result is a faithful snapshot of the app that opens
+anywhere offline.
 
 Usage:  npm run dev          # in one shell
         python3 scripts/build_preview.py [out.html]
@@ -80,16 +81,28 @@ def main() -> None:
     # "/assets/antz-carousel" and tried to read the folder as a file
     # (IsADirectoryError). The trailing [^/] keeps it from swallowing a bare
     # directory reference, so only real files are inlined.
-    asset_re = re.compile(r"/assets/(?:[A-Za-z0-9._-]+/)*[A-Za-z0-9._-]*[A-Za-z0-9._-]")
+    #
+    # The last character cannot be a dot. It could, and the CSS in this repo
+    # carries long prose comments that name their own assets — WaveRule's
+    # "lives in /assets/logo-rule-wave.svg. See the README" ends a sentence on
+    # one, and dev serves comments through unminified. The pattern took the
+    # full stop with the filename and went looking for "logo-rule-wave.svg.",
+    # which is not a file. A real reference always ends on the extension, so
+    # ending the match on an alphanumeric costs nothing and closes it.
+    asset_re = re.compile(r"/assets/(?:[A-Za-z0-9._-]+/)*[A-Za-z0-9._-]*[A-Za-z0-9_-]")
     css = asset_re.sub(lambda m: data_uri(m.group(0)), css)
     html = asset_re.sub(lambda m: data_uri(m.group(0)), html)
     html = re.sub(r'<link[^>]+(rel="stylesheet"|rel="preload"|\.css)[^>]*>', "", html)
     body = re.search(r"<body[^>]*>(.*)</body>", html, flags=re.S).group(1)
 
-    m = re.search(r"\.([A-Za-z0-9_]*_chevronOpen__[A-Za-z0-9_-]+)", css)
-    if not m:
-        sys.exit("Could not resolve the hashed chevronOpen class.")
-    chevron_open = m.group(1)
+    # There was a guard here that resolved the accordion's hashed chevronOpen
+    # class out of the CSS bundle and exited hard when a page carrying a board
+    # did not have one, because a snapshot that shipped a dead accordion was
+    # worth failing over. The boards stopped being accordions: every row stands
+    # open, there is no chevron, and each row is a plain <a>. A link needs no
+    # script to work in a snapshot, so both the guard and the script it guarded
+    # are gone rather than repaired — and the guard did fire, exactly as
+    # designed, the moment the class it looks for stopped existing.
 
     # The stripped <head> takes the app's own <title> with it. Reuse the real
     # one from the fetched page so each route's snapshot is named correctly,
@@ -117,32 +130,6 @@ html, body {{ margin: 0; background: #ffffff; }}
 
 <script>
 (function () {{
-  // Accordion — mirrors components/Pillars/Pillars.tsx
-  var CHEVRON_OPEN = {chevron_open!r};
-  var triggers = Array.prototype.slice.call(
-    document.querySelectorAll("[data-accordion] button[aria-controls]")
-  );
-
-  triggers.forEach(function (trigger) {{
-    trigger.addEventListener("click", function () {{
-      var wasOpen = trigger.getAttribute("aria-expanded") === "true";
-      triggers.forEach(function (other) {{
-        var open = other === trigger && !wasOpen;
-        other.setAttribute("aria-expanded", String(open));
-        var panel = document.getElementById(other.getAttribute("aria-controls"));
-        if (panel) {{
-          // Mirrors Pillars.tsx: data-open drives the eased height, inert keeps
-          // the collapsed copy out of the tab order.
-          panel.setAttribute("data-open", String(open));
-          if (open) panel.removeAttribute("inert");
-          else panel.setAttribute("inert", "");
-        }}
-        var chev = other.querySelector("span[class*='chevron']");
-        if (chev) chev.classList.toggle(CHEVRON_OPEN, open);
-      }});
-    }});
-  }});
-
   // Pointer-following mesh — mirrors components/usePointerMesh.ts.
   //
   // The snapshot has no React, so the hook's effect never runs and the mesh

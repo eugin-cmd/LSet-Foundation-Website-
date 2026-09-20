@@ -1,3 +1,4 @@
+import ExternalArrow from "@/components/icons/ExternalArrow";
 import Handshake from "@/components/icons/Handshake";
 import ClockFilled from "@/components/icons/ClockFilled";
 import CheckFilled from "@/components/icons/CheckFilled";
@@ -191,20 +192,3 @@ export default function ProjectBody({ project }: { project: Project }) {
   );
 }
 
-/** The outbound mark: a shaft leaving a corner, which is the convention for a
- *  link that leaves the site. Its own glyph rather than the pager chevron —
- *  that one means "along", and this one means "away". */
-function ExternalArrow() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
-      <path
-        d="M8.5 15.5 15.5 8.5M9.8 8.5h5.7v5.7"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        vectorEffect="non-scaling-stroke"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}

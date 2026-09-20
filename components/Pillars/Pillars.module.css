@@ -33,19 +33,38 @@
   border-top: 1px solid var(--line-band);
 }
 
+/* The row is the link now — an <a> around the head and the panel both, or a
+   <div> on the rare row with nowhere to go. `display: block` because an anchor
+   is inline and would otherwise sit on a line box, collapsing the min-height
+   and letting the panel escape the overflow.
+
+   The focus ring is offset outwards and drawn on the row rather than the mark
+   at its corner: the row is what takes focus, and a ring around an 18px arrow
+   would tell a keyboard reader that the arrow is the target when the whole
+   thing is. `outline` rather than a border or shadow so it follows the row's
+   own box through the 4px hover lift without being laid out. */
 .item {
+  display: block;
   overflow: hidden;
   min-height: 93px;
 }
 
-.trigger {
+.item:focus-visible {
+  outline: 2px solid var(--color-teal-950);
+  outline-offset: 6px;
+}
+
+/* .head, not .trigger: it was a <button> and triggered the row's panel, and
+   now it is a <div> that heads it. `position: relative` stays — .jump is
+   still absolutely positioned against it, in the slot the chevron held. The
+   width and text-align went with the button; a div is block and left-aligned
+   without being told. */
+.head {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 6.653px;
-  width: 100%;
-  text-align: left;
 }
 
 /* The icon sits beside the number and takes its colour, so one declaration
@@ -68,36 +87,43 @@
   stroke-linejoin: round;
 }
 
-/* The mark drops in when its row is opened — the same fall the drawer's
-   destination icons use, from the shared keyframe in globals.css.
+/* The board rows carried four movements while they were a disclosure list. Two
+   were entrances — the mark dropping in and the title rising to meet it as a
+   row opened — and those are gone with the accordion: they hung off
+   `[data-open="true"]`, which every row now has from the first paint, so they
+   would fire on all of them at once, on load, and say "these rows just opened"
+   about rows that were never closed. (Worth knowing if a board ever opens on a
+   gesture again: the icon drop was the drawer's shared keyframe, the title
+   lift a local one, and the two were opposed on purpose — the mark fell 28px
+   as the words came up 16px, so an opening row read as one movement closing on
+   itself.)
 
-   Driven by the row's own open state rather than running once on load, so it
-   replays every time a row is opened. Only one icon moves per open, so unlike
-   the drawer's three there is no stagger; the 40ms delay just lets the panel
-   below start expanding first. */
-@media (prefers-reduced-motion: no-preference) {
-  .item[data-open="true"] .indexRow svg {
-    animation-name: var(--anim-icon-drop-short);
-    animation-duration: 780ms;
-    animation-delay: 40ms;
-    animation-fill-mode: both;
-  }
-}
+   The other two are the hover answers below, and they stay, by direction.
+
+   They now point at .jump, which is the row's only link, rather than at a row
+   that was itself a button. The whole row still answers the pointer and the
+   arrow moves on its own besides — the lift is the row saying the mark at its
+   corner is live, not claiming the words are pressable. */
 
 /* The row answers the pointer with a short lift, the way every other thing on
-   this site that can be pressed does — the pill buttons take 4px, the Our Work
-   rows give "View project" 3px. A board row is a bigger target than either, so
-   it takes the 4px.
+   this site that leads somewhere does — the pill buttons take 4px, the Our
+   Work rows give "View project" 3px. A board row is a bigger target than
+   either, so it takes the 4px.
 
-   On .item, which is the header alone: .panelWrap is its sibling, so an open
-   row lifts its heading without the panel below it sliding about. Eased out,
-   not in — the lift is the row arriving under the cursor and wants to settle,
-   where the title below is entering and wants to accelerate.
+   On .item, which now holds the head and the panel both, so a row lifts whole.
+   While the panel could collapse this was on the header alone, to stop an open
+   row's copy sliding about under it; there is nothing left to slide.
+
+   ease-in, by direction, where this used to ease out. It is the unusual choice
+   for a thing settling into place — the old titleLift made the same one — and
+   it gives the row a slow start that gathers speed, so the lift reads as the
+   row being drawn up to the pointer rather than coasting to a stop under it.
+   The mark's fall below starts on the same edge and lands into its bounce.
 
    Behind `hover: hover` so a touch screen never latches it on after a tap, and
    the transition alone is gated on reduced motion: the lift still happens for
-   anyone who asked for less, it simply happens at once, which is the same rule
-   .more:hover follows further down. */
+   anyone who asked for less, it simply happens at once, which is the rule
+   .jump:hover follows further down. */
 @media (hover: hover) {
   .item:hover {
     transform: translateY(-4px);
@@ -106,30 +132,53 @@
 
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .item {
-    transition: transform 220ms cubic-bezier(0.25, 0.7, 0.35, 1);
+    transition: transform 220ms ease-in;
+  }
+}
+
+/* The mark falls into the row under the pointer and bounces once — the banner
+   icon rows' fall, from the shared keyframe in globals.css, which is already
+   drop, overshoot, settle and needed no bounce added to it.
+
+   It ran on `[data-open="true"]` before, replaying each time a row opened.
+   Rows do not open any more, so hover is what is left to hang it on, and it
+   suits the shorthand better: the drop is the row's answer to the pointer,
+   arriving with the lift rather than marking a state that changed.
+
+   Through var(--anim-icon-drop-short), never by name — css-loader rewrites
+   every `animation-name` inside a *.module.css to a hashed local, so naming a
+   keyframe declared in globals.css directly compiles to something that matches
+   nothing and silently does not run. globals.css says so at the keyframe.
+
+   Declared on the :hover rule so it restarts on every entry; an animation on
+   the resting element would run once on load and never again. No fill-mode:
+   the mark has to be sitting at rest the instant the pointer leaves, and
+   `both` would hold it on the last frame of a fall it may have left halfway. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .item:hover .indexRow svg {
+    animation-name: var(--anim-icon-drop-short);
+    animation-duration: 780ms;
   }
 }
 
 /* The title grows a little under the pointer, with the row's own lift.
 
-   `scale` as its own property, NOT inside a transform. An open row's title is
-   still being held by titleLift below, whose fill-mode leaves
-   `transform: translateY(0)` applying for as long as the row stays open — and
-   an animation's declaration outranks a normal one, so a `transform: scale()`
-   here would simply be ignored on exactly the rows a reader is most likely to
-   be pointing at. The separate property composes with the animation's
-   transform instead of losing to it. The banner's leaf does the same thing
-   with `rotate` for the same reason.
+   `scale` as its own property rather than inside a transform. The reason used
+   to be titleLift, whose fill-mode left a `transform` applying for as long as
+   a row stayed open and would have outranked a normal declaration here; that
+   animation is gone, but the separate property is still the right shape — it
+   composes with .item's translate instead of being a second transform on a
+   descendant that has to restate it.
 
    From the left edge, because the titles are left-aligned and growing one from
    its centre would walk the first letter leftwards out of the column.
 
-   1.03, and it is held down by the chevron rather than by taste. .title
-   reserves a 40px column for the mark at `right: 0`, and the longest title on
-   any of the three boards — the Antz board's "Records that grow with the
-   animal" — runs to about 1056px on one line. 3% of that is 32px of growth to
-   the right, inside the 40px. At the 1.06 the nav wears it would be 63px and
-   the words would cross the chevron. */
+   1.03, and it is held down by the mark rather than by taste. .title reserves
+   a 40px column for the arrow at `right: 0`, and the longest title on any of
+   the three boards — the Antz board's "Records that grow with the animal" —
+   runs to about 1056px on one line. 3% of that is 32px of growth to the right,
+   inside the 40px. At the 1.06 the nav wears it would be 63px and the words
+   would cross the arrow. */
 @media (hover: hover) {
   .item:hover .title {
     scale: 1.03;
@@ -138,44 +187,9 @@
 
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .title {
-    transition: scale 220ms cubic-bezier(0.25, 0.7, 0.35, 1);
-  }
-}
-
-/* The title rises as the row opens, against the mark falling into it from
-   above. The two are deliberately opposed: the icon drops 28px and the words
-   come up 16px to meet it, so an opening row reads as one movement closing on
-   itself rather than two things starting at once.
-
-   ease-in, by direction. It is the unusual choice — a thing settling into
-   place normally eases out — and it gives the words a slow start that gathers
-   speed into the line they land on.
-
-   The keyframes are declared here rather than taken from globals.css, and can
-   be: css-loader hashes an animation-name and the @keyframes it finds in the
-   same module together, so a local pair matches. It is only a reference to a
-   keyframe declared elsewhere that has to go through a var(), which is why the
-   icon drop above does. */
-@keyframes titleLift {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .item[data-open="true"] .title {
-    animation-name: titleLift;
-    animation-duration: 520ms;
-    /* The same 40ms the mark waits, so they leave together. */
-    animation-delay: 40ms;
-    animation-timing-function: ease-in;
-    animation-fill-mode: both;
+    /* ease-in, with the row's own lift and on the same 220ms, so the two read
+       as one gesture rather than two things arriving on different curves. */
+    transition: scale 220ms ease-in;
   }
 }
 
@@ -185,11 +199,12 @@
 }
 
 .title {
-  /* Reserves the chevron's column. The chevron is absolutely positioned at
-     `right: 0` and is 15px wide, so without this a long title runs straight
-     under it: the Antz board's row 01, "Records that grow with the animal", is
-     the longest title on the site and measured a -3px overlap at a 1100px
-     viewport before this. 40px is the 15px mark plus a 25px gap.
+  /* Reserves the mark's column. .jump is absolutely positioned at `right: 0`
+     and is 18px wide, so without this a long title runs straight under it:
+     the Antz board's row 01, "Records that grow with the animal", is the
+     longest title on the site and measured a -3px overlap at a 1100px
+     viewport before this. 40px was the chevron's 15px plus a 25px gap; the
+     arrow is 3px wider and the gap absorbs it, so the number stands.
 
      Harmless to the other two boards — their longest titles stop hundreds of
      pixels short of this edge — but it is the shared rule, so re-measure all
@@ -197,118 +212,83 @@
   padding-inline-end: 40px;
   /* Only bites on a title long enough to wrap, which today is one: the Antz
      board's "Records that grow with the animal" needs about 1108px at 52px and
-     has 1056 once the chevron's column is reserved, so it takes two lines.
+     has 1056 once the mark's column is reserved, so it takes two lines.
      Without balancing, the second line was the single word "animal". The other
      seven titles across the three boards are one line, where this does nothing. */
   text-wrap: balance;
   color: var(--color-teal-950);
-  /* For the hover scale below: left-aligned type has to grow rightwards. */
+  /* For the hover scale above: left-aligned type has to grow rightwards. */
   transform-origin: left center;
 }
 
-.chevron {
+/* The row's mark, in the slot the chevron held — same `top` clamp, same
+   `right: 0`, so the column .title reserves goes on being the right one.
+
+   18px against the chevron's 15, because the shapes are not comparable: the
+   chevron was a bare stroke and this is a shaft with a corner, which carries
+   more drawing in the same box and reads smaller at a given size.
+
+   It moves 3px up and to the right when the row is pointed at — along the
+   arrow's own direction rather than straight up, so the mark travels the way
+   it points, against the row's 4px lift underneath it. */
+.jump {
   position: absolute;
   top: clamp(30px, 3.75vw, 54px);
   right: 0;
   display: grid;
   place-items: center;
-  width: 15px;
-  height: 8px;
+  width: 18px;
+  height: 18px;
   color: var(--color-teal-950);
 }
 
-.chevron svg {
-  transform: rotate(90deg);
-  transition: transform 220ms ease;
+.jump svg {
+  width: 100%;
+  height: 100%;
 }
 
-.chevronOpen svg {
-  transform: rotate(-90deg);
+/* Driven by the row, not by the mark. The mark is a <span> inside the anchor
+   now and never takes a pointer or a focus of its own, so hovering the arrow
+   and hovering anywhere else in the row are the same event — which is the
+   point of making the whole row the link. */
+@media (hover: hover) {
+  .item:hover .jump,
+  .item:focus-visible .jump {
+    translate: 3px -3px;
+  }
 }
 
-/* The row animates via grid-template-rows 0fr -> 1fr: it eases to the panel's
-   natural height without anyone having to measure it, and unlike max-height it
-   never overshoots or stalls. The child needs overflow:hidden and min-height:0
-   for the 0fr track to actually collapse. */
-.panelWrap {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+/* The move still happens for anyone who asked for less motion; it simply
+   happens at once. The same rule .more:hover followed before it. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .jump {
+    transition: translate 220ms cubic-bezier(0.25, 0.7, 0.35, 1);
+  }
 }
 
-.panelWrap[data-open="true"] {
-  grid-template-rows: 1fr;
-}
+/* No .panelWrap above it any more, and nothing here to reveal. The wrapper
+   existed only to run a 0fr -> 1fr height, and the panel's own fade and 6px
+   settle existed to follow that height in. A panel that is always open has
+   no entrance to make.
 
+   `overflow: hidden` and `min-height: 0` went with the same thing — both were
+   what a collapsing 0fr track needs from its child to actually collapse. Left
+   in, `overflow: hidden` would go on clipping a descendant for no reason. */
 .panel {
   display: flex;
-  min-height: 0;
   flex-direction: column;
   align-items: flex-start;
   gap: 7px;
-  overflow: hidden;
-  /* Content settles just behind the height, so it reads as easing in rather
-     than being revealed by a shutter. */
-  opacity: 0;
-  translate: 0 -6px;
-  transition:
-    opacity 300ms ease 40ms,
-    translate 340ms cubic-bezier(0.22, 0.61, 0.36, 1) 40ms;
-}
-
-.panelWrap[data-open="true"] .panel {
-  opacity: 1;
-  translate: 0 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .panelWrap,
-  .panel {
-    transition: none;
-  }
 }
 
 .desc {
-  /* Sits on the first child rather than the panel: padding on the panel
-     survives the collapsed 0fr track and left closed rows 7px tall. */
+  /* Sat on the first child rather than the panel because padding on the panel
+     survived the collapsed 0fr track and left closed rows 7px tall. There are
+     no closed rows now; it stays here because it is the gap under the title
+     either way, and moving it up would change nothing but the address. */
   padding-top: 7px;
   color: var(--ink-2);
 }
-
-.more {
-  /* inline-flex so the label and its triangle lift as one object. As inline
-     text the transform would apply to the anchor's box while the arrow sat in
-     its own line box, and the two would shear apart mid-hover. */
-  display: inline-flex;
-  gap: 0.45em;
-  align-items: center;
-  align-self: flex-start;
-  margin-top: clamp(20px, 3.06vw, 44px);
-  font: 500 14px/normal var(--font-sans);
-  color: var(--ink-1);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .more {
-    transition: transform 200ms ease-out;
-  }
-
-  /* The same 3px lift every other link on the site answers a pointer with.
-     Plain `transform` is safe here — nothing else animates this element. */
-  .more:hover,
-  .more:focus-visible {
-    transform: translateY(-3px);
-  }
-}
-
-/* Motion only is gated: the underline still carries the hover state for anyone
-   who has asked for reduced motion. */
-.more:hover,
-.more:focus-visible {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
 
 @media (max-width: 900px) {
   .pillars {
@@ -319,17 +299,15 @@
     min-height: 0;
   }
 
-  .trigger {
+  .head {
     padding-right: 32px;
   }
 }
 
-/* Read More / Know More came in 18px tall on a phone, sized by their type as a
-   pointer target should be. Padding buys a thumb's worth of height and the
-   negative margin hands the row back the space, so only the target changed. */
-@media (max-width: 700px) {
-  .more {
-    padding-block: 13px;
-    margin-block: -13px;
-  }
-}
+/* No tap-target rule for the mark, and none needed. Read More / Know More used
+   to come in 18px tall on a phone, sized by its type as a pointer target
+   should be, and bought a thumb's worth of height with padding that a negative
+   margin handed straight back; the 18px arrow that replaced it would have
+   wanted the same treatment twice over. The row is the link now, and a row is
+   93px at its shortest and the width of the board — comfortably past the 44px
+   a thumb wants, in both directions, without anything being bought. */
