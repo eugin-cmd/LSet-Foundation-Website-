@@ -562,14 +562,32 @@
 
    Anchored by the stack's own centre rather than a corner, which is what lets
    the film be resized without moving. Figma's 606.072-wide frame at x 417 put
-   that centre at 720 of 1440 — dead centre — and 415 down a 1452 band, which
-   is 40.32%. Both are kept.
+   that centre at 720 of 1440 — dead centre — which is kept.
+
+   The vertical anchor is not. Figma's 415 down a 1452 band is 40.32%, but that
+   was measured for a 438px still, and the frame that replaced it is 596px of
+   16:9 under a title of its own. The taller stack centred on the same point
+   finished at y 919 — 131px SHORT of the join at 1050, so the frame no longer
+   overhung anything, and the 533px of flat band left under it ran into the
+   courses section's own 133px of top padding. Two thirds of a screen of dead
+   near-black between the film and "our courses", by report.
+
+   65.53% puts the stack's centre at y 952 and its bottom at y 1285, which
+   overhangs the join by 235px — what 1962:18205 asked for in the first place —
+   and takes that run from 666px to 300px, by direction: 40% off, then another
+   25% off what was left. A percentage rather than a length because both the
+   band and the stack are sized in vw between roughly 480 and 1440, so the
+   ratio holds across the range — the second cut measures 24% at 1200 — and
+   because the clip below is unforgiving. `.showcase` is `overflow: clip`, so
+   the frame's bottom has to stay inside the band at every width; the tightest
+   point is around 360, where the deep block is on its 140px floor and 43px
+   are still left under the frame.
 
    `translate` rather than a transform, so nothing here collides with a
    transform an animation may want later. */
 .showcaseStage {
   position: absolute;
-  top: 40.32%;
+  top: 65.53%;
   left: 50%;
   translate: -50% -50%;
   z-index: 1;
@@ -898,6 +916,27 @@
   color: rgb(255 255 255 / 80%);
 }
 
+/* The name holds the two lines education.data.ts breaks it into, at every
+   width, in both layouts — which is what keeps every card the same height.
+
+   `nowrap` is the instruction; the size is what makes it keepable. Doubled
+   selector for the size because `wf-display-l` supplies it otherwise and the
+   two are both single classes: specificity ties, source order decides, and
+   source order is the bundler's — the same trap the mast fell into, written
+   up in globals.css. `.cardTitle.cardTitle` takes it out of the bundler's
+   hands.
+
+   Two caps on top of the utility's own clamp, each answering a width where
+   the longest line ("Technician Programme", 430px at 32px) outgrew its box:
+
+     5vw    — below about 480 the card is 82vw and shrinking while the clamp
+              sits on its 24px floor, so the type has to track the card down.
+              At 360 that is 18px against the 19px the line needs.
+     28px   — the card caps at 457.183px but the clamp keeps growing to 38px,
+              which needs 511px of a 402px box. Only the base rail reaches
+              that, and only when the arc is off — reduced motion, a short
+              window, or no scroll-driven animation — but it is the layout
+              those readers get, so it has to hold there too. */
 .cardTitle {
   display: flex;
   flex-direction: column;
@@ -906,9 +945,52 @@
   color: var(--white);
 }
 
+.cardTitle.cardTitle {
+  font-size: min(clamp(24px, 2.64vw, 38px), 5vw, 28px);
+}
+
+.cardTitle span {
+  white-space: nowrap;
+}
+
+/* Three lines, reserved and enforced.
+
+   The snippets are what made the cards uneven from below, as the names did
+   from above: the equine card's ran to three lines in the arc where its
+   neighbours took two, and stood 26px taller for it.
+
+   Three rather than two because the card narrows with the viewport while
+   `wf-body` stays at a fixed 14.5px, so the same sentence needs more lines
+   the narrower the card gets: two is enough at 1440 and up, but at 1280 the
+   content box is 300px and most of them need three. Reserving two there cut
+   five of the eight mid-word. Three is the most any of them needs at any
+   width the cards are shown at, measured from 360 to 1920.
+
+   `min-height` as well as the clamp, because the defect runs both ways: the
+   clamp stops a long snippet pushing a card DOWN, the reserve stops a short
+   one pulling it UP. The clamp is also the guard on copy written later — a
+   snippet that outgrows three lines is cut rather than allowed to break the
+   row. Keep them inside it; none is cut today. */
 .cardDesc {
+  display: -webkit-box;
   width: 100%;
+  min-height: 3lh;
+  overflow: hidden;
   color: rgb(255 255 255 / 85%);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* The smallest phones still in use — 320px, where the card is 262px and its
+   content box 222px. Three lines hold every snippet down to 330; at 320 the
+   zoo-design one needs a fourth and was being cut mid-word. It costs a blank
+   line on the cards whose snippet is shorter, which is the same trade the
+   third line is, and the row stays level either way. */
+@media (max-width: 340px) {
+  .cardDesc {
+    min-height: 4lh;
+    -webkit-line-clamp: 4;
+  }
 }
 
 .cardLink {
@@ -1164,9 +1246,26 @@
       padding: clamp(18px, 1.6vw, 23px);
     }
 
+    /* The card names are broken into their two lines by hand in
+       education.data.ts, expressly so the box never breaks them differently
+       at different widths. At 384px the box was breaking them anyway: at 32px
+       the longest line ("Technician Programme") measures 430px against 338px
+       of content box, so five of the eight names wrapped to three lines and
+       two to four. That is what made the cards uneven — 503px for the two
+       that held their pair, up to 575px for the ones that wrapped twice.
+
+       So the spans are told not to wrap, and the size is brought down to
+       where they do not have to. The binding line needs 25.1px of the 32,
+       a ratio of 0.783, measured at 1440 and holding to three decimals at
+       1100 — both the box and the type are vw-driven, so the ratio is
+       scale-invariant across the arc's range. 0.75 is taken rather than
+       0.783 to leave about 4% of headroom, since a nowrap line that does
+       not fit is clipped by the card rather than wrapped. Every clamp stop
+       is the old one times 0.75. */
     .pivot .cardTitle {
-      font-size: clamp(20px, 2.22vw, 32px);
+      font-size: clamp(15px, 1.665vw, 24px);
     }
+
   }
 }
 

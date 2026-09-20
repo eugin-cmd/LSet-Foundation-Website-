@@ -108,7 +108,7 @@ export const COURSES: Course[] = [
     duration: "1 MONTH, DAWN TO DUSK",
     titleLines: ["Basics of Equine", "Care & Management"],
     description:
-      "Stable management, nutrition, hoof care and equine behaviour, with Bangalore Horse Riding School.",
+      "Stable management, nutrition, hoof care and behaviour, with Bangalore Horse Riding School.",
     image: "/assets/edu/courses/equine.webp",
     href: "https://lifesciencetrust.org/course/basics-of-equine-care-management",
   },
