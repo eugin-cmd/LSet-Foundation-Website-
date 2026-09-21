@@ -6,7 +6,7 @@ import WaveText from "@/components/WaveText/WaveText";
 import Leaves from "@/components/icons/Leaves";
 import PawPrint from "@/components/icons/PawPrint";
 import OpenBook from "@/components/icons/OpenBook";
-import CuppedHands from "@/components/icons/CuppedHands";
+import Leaf from "@/components/icons/Leaf";
 import Globe from "@/components/icons/Globe";
 import s from "./Education.module.css";
 
@@ -66,23 +66,29 @@ export default function EducationHero() {
           />
 
           {/* Four marks, as the Antz banner carries four: animal care and
-              education, which the heading names, then hands-on training and
-              multinational faculty, which the lede does — "immersive, hands-on
-              learning guided by international faculty".
+              education, which the heading names, then the ground the institute
+              stands on and the faculty it draws on, which the lede does — "a
+              working farm in Bengaluru", "international faculty".
 
-              The last two are the marks the Hands-on Training and Multinational
-              Faculty rows already wear further down this page, so the banner
-              promises what the board below it goes on to list, in the same
-              drawings. Species Exposure's birds are the one pillar left out:
-              its subject is animals, and the paw print is already here saying
-              so.
+              The globe is the mark the Multinational Faculty row wears further
+              down this page. The leaf is the homepage's Conservation mark and
+              the one the About banner carries, standing here for the farm the
+              institute is built on and the habitat its work is for.
+
+              It replaced the cupped hands, by direction. Those were the
+              Hands-on Training row's own mark and tied the row more tightly to
+              the board below, but four marks that each name a pillar leave the
+              row reading as a contents list; the leaf gives it something the
+              page does not already itemise. Species Exposure's birds stay out
+              either way: their subject is animals, and the paw print is here
+              saying so.
 
               Decorative: the heading and the lede name all four, so the row is
               hidden from assistive tech rather than read as four loose nouns. */}
           <div className={s.heroIcons} aria-hidden="true">
             <PawPrint />
             <OpenBook />
-            <CuppedHands />
+            <Leaf />
             <Globe />
           </div>
 
