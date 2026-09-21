@@ -1557,8 +1557,16 @@
   width: 100%;
   /* Top on the site's rhythm like every other section. The bottom is the
      page's tail before the footer, not a gap between two sections, so it
-     keeps its own larger value. */
-  padding: var(--section-y) var(--edge) var(--section-tail);
+     keeps its own larger value.
+
+     No horizontal padding, where this had --edge. The gutter moved inside
+     .ctaInner, which is where .neighbours keeps its own — and it has to be one
+     or the other, not both. With it here as well, the two insets stacked below
+     1280: above that width .ctaInner is capped and the centring quietly
+     absorbs the section's padding, but under it the padding bites and the band
+     ended up twice inset, landing 21.4px inside the arrows at 1280 rather than
+     on them. */
+  padding: var(--section-y) 0 var(--section-tail);
   background: transparent;
 }
 
@@ -1584,6 +1592,20 @@
   gap: var(--pair-gap);
   align-items: flex-start;
   width: min(1280px, 100%);
+  /* The same inset .neighbours carries, and the reason the two blocks did not
+     line up on their outer edges.
+
+     .neighbours puts --edge INSIDE its own min(1280px, 100%), so with
+     border-box its content — and therefore the < and > chevrons that begin and
+     end it — runs 104 to 1336 at 1440. This band takes --edge as padding on the
+     section instead, outside .ctaInner, so its content got the whole 1280: 80
+     to 1360. Twenty-four pixels wider at each end, which is the heading sitting
+     left of the Previous arrow and the buttons' row ending short of the Next
+     one.
+
+     Stated as the same var rather than a matched number, so the two move
+     together if the page gutter ever changes. */
+  padding-inline: var(--edge);
 }
 
 /* Figma's 48px teal. .wf-display-l carries the family, tracking and uppercase
@@ -1629,10 +1651,24 @@
   text-wrap: pretty;
 }
 
+/* Ranged right, so the pair closes on the Next arrow the way the copy above
+   them already does.
+
+   .ctaCol aligns its children to flex-start, which left the buttons hanging at
+   the column's left edge while the paragraph ran the column's full width — so
+   the block had a straight right edge for two lines and then stopped 200px
+   short of it. align-self overrides that for this row alone; the paragraph
+   keeps its flush-left reading edge and only the pills move.
+
+   `justify-content` as well as `align-self`, for the width where the two pills
+   wrap onto separate lines: without it the second would sit left under a
+   right-hung first. */
 .ctaRow {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+  align-self: flex-end;
+  justify-content: flex-end;
 }
 
 /* Figma's 24px/14px at a pill radius, 18px medium label. Same family as the
@@ -1685,6 +1721,16 @@
   .card,
   .ctaTitle {
     width: 100%;
+  }
+
+  /* The pills range right to close on the Next arrow, which is a thing the
+     two-column band does. Stacked, there is no Next arrow beside them and
+     nothing to close on: the heading, the copy and the buttons are one column
+     reading top to bottom, and a right-hung pair under flush-left copy would
+     only look adrift. */
+  .ctaRow {
+    align-self: flex-start;
+    justify-content: flex-start;
   }
 
   /* .ctaCol's `max-width: none` was here too, undoing the 500px cap once the
