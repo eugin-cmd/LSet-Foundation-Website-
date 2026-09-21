@@ -6,6 +6,8 @@ import WaveText from "@/components/WaveText/WaveText";
 import Leaves from "@/components/icons/Leaves";
 import PawPrint from "@/components/icons/PawPrint";
 import OpenBook from "@/components/icons/OpenBook";
+import CuppedHands from "@/components/icons/CuppedHands";
+import Globe from "@/components/icons/Globe";
 import s from "./Education.module.css";
 
 /**
@@ -48,11 +50,25 @@ export default function EducationHero() {
       {/* .heroTitle centres the stack in the band; .heroInner is the column. */}
       <div className={s.heroTitle}>
         <div className={s.heroInner}>
-          {/* Decorative: the heading below names both, so the row is hidden
-              from assistive tech rather than read as two nouns. */}
+          {/* Four marks, as the Antz banner carries four: animal care and
+              education, which the heading names, then hands-on training and
+              multinational faculty, which the lede does — "immersive, hands-on
+              learning guided by international faculty".
+
+              The last two are the marks the Hands-on Training and Multinational
+              Faculty rows already wear further down this page, so the banner
+              promises what the board below it goes on to list, in the same
+              drawings. Species Exposure's birds are the one pillar left out:
+              its subject is animals, and the paw print is already here saying
+              so.
+
+              Decorative: the heading and the lede name all four, so the row is
+              hidden from assistive tech rather than read as four loose nouns. */}
           <div className={s.heroIcons} aria-hidden="true">
             <PawPrint />
             <OpenBook />
+            <CuppedHands />
+            <Globe />
           </div>
 
           <h1

@@ -129,10 +129,18 @@
   pointer-events: none;
 }
 
-/* Paw print + open book: animal care and education, the two halves of the
-   heading. Same construction as the Foundation hero's icon row. Both drawings
-   are sized to the same ink extent, since this row centres the 34px boxes
-   rather than the artwork inside them. */
+/* Four marks: paw print and open book for animal care and education, the two
+   halves of the heading, then cupped hands and globe for the hands-on training
+   and international faculty the lede promises. Same construction as the
+   Foundation hero's icon row, and the same count as the Antz banner's.
+
+   All four drawings are sized to the same ink extent, since this row centres
+   the 34px boxes rather than the artwork inside them.
+
+   The gap's clamp is unchanged and did not need to be. Four boxes at 34px with
+   30px between them is 226px at 1440, against a 1276px column — the row is
+   nowhere near the width it would have to fight for, and at 360 it is 26px
+   boxes on a 16px gap, 152px of a 320px column. */
 .heroIcons {
   display: flex;
   align-items: center;
@@ -158,12 +166,23 @@
   animation-fill-mode: both;
 }
 
+/* The 90ms step the Antz banner's four marks fall on, and the same four
+   delays, so the two banners drop their rows in one rhythm rather than two.
+   The first waits out the blinder, as above. */
 .heroIcons svg:nth-child(1) {
   animation-delay: 1320ms;
 }
 
 .heroIcons svg:nth-child(2) {
   animation-delay: 1410ms;
+}
+
+.heroIcons svg:nth-child(3) {
+  animation-delay: 1500ms;
+}
+
+.heroIcons svg:nth-child(4) {
+  animation-delay: 1590ms;
 }
 
 @media (prefers-reduced-motion: reduce) {
