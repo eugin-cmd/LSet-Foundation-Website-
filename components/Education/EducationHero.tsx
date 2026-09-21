@@ -50,6 +50,21 @@ export default function EducationHero() {
       {/* .heroTitle centres the stack in the band; .heroInner is the column. */}
       <div className={s.heroTitle}>
         <div className={s.heroInner}>
+          {/* The trust's own lockup, carrying no alt text — the heading names
+              the institute and the nav chip names the brand.
+
+              Placed and timed exactly as the Antz banner's wordmark is: above
+              the icon row, rising into the band 90ms ahead of it, so the two
+              banners open the same way. Measurements in .heroWordmark. */}
+          <img
+            className={s.heroWordmark}
+            src="/assets/edu-wordmark.svg"
+            alt=""
+            aria-hidden="true"
+            width={115}
+            height={72}
+          />
+
           {/* Four marks, as the Antz banner carries four: animal care and
               education, which the heading names, then hands-on training and
               multinational faculty, which the lede does — "immersive, hands-on

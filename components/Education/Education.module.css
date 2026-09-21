@@ -129,6 +129,65 @@
   pointer-events: none;
 }
 
+/* The trust's lockup, sized and timed off the Antz banner's wordmark so the
+   two banners open alike.
+
+   Matched on HEIGHT, not width. The Antz mark is 231.562 x 123.924 and this one
+   is 83 x 52, which is 1.596:1 against 1.869:1 — different shapes, so the two
+   cannot share both dimensions, and two marks of unlike proportion read as the
+   same size when their heights agree.
+
+   Matched on the INK, not the box, which is the part that is not obvious. The
+   Antz file carries about 26px of empty bearing top and bottom: its artwork is
+   71.88px of its 123.924px box, 58% of it, where this lockup fills 99.5% of
+   its own. Giving both the same 123.924px box would have drawn this one's
+   artwork at 123.3px against the Antz mark's 71.9 — the same footprint in CSS
+   and 70% larger to the eye, which is the opposite of what matching them was
+   for. So the box is 72.255px, which is 71.88 / 0.995: the height at which the
+   ink agrees.
+
+   The width is derived rather than typed: `height` carries the match,
+   `width: auto` follows the ratio, and the 46vw cap is restated as the height
+   it corresponds to, scaled by the same ratio the box was — 46vw of the Antz
+   mark's width is 24.62vw of its height, and 72.255/123.924 of that is 14.35vw.
+   The cap therefore bites at the same viewport width for both, so the two go
+   on agreeing all the way down. aspect-ratio is declared for the reason it is
+   declared there: without it the box collapses while the SVG loads.
+
+   The rise is the Antz banner's, unchanged — 28px, 940ms, the same curve, and
+   1230ms so it leads the four marks below it by the 90ms step they hold
+   between themselves. Both banners now open on one cascade of five. Keyframes
+   local to this module, hashed with the local animation-name; see the note on
+   the icon fall below. */
+.heroWordmark {
+  flex: none;
+  height: min(72.255px, 14.35vw);
+  width: auto;
+  aspect-ratio: 115.33 / 72.255;
+}
+
+@keyframes wordmarkRise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .heroWordmark {
+    animation-name: wordmarkRise;
+    animation-duration: 940ms;
+    animation-delay: 1230ms;
+    animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+    animation-fill-mode: both;
+  }
+}
+
 /* Four marks: paw print and open book for animal care and education, the two
    halves of the heading, then cupped hands and globe for the hands-on training
    and international faculty the lede promises. Same construction as the
