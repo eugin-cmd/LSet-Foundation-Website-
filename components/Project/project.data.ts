@@ -150,20 +150,23 @@ export type Project = {
    *  pages' blue-green ramp. The two travel together because they are one
    *  treatment, not two choices. */
   heroCentred?: boolean;
-  /** A product's own mark, above the copy in the mast, placed and timed exactly
-   *  as the Foundation, Education and Antz Systems banners place theirs.
+  /** A product's own lockup, above the copy in the mast, placed and timed
+   *  exactly as the Foundation, Education and Antz Systems banners place their
+   *  marks.
    *
-   *  A lockup rather than a file, because that is what the product marks are:
-   *  antzsystems.com sets its own as a glyph beside two stacked words, the
-   *  smaller naming the family and the larger the product. Holding the words
-   *  as words rather than baking them into artwork is what lets the other
-   *  three products take the same shape later — only `name` changes.
+   *  One file, because that is how these arrived: glyph, family name and
+   *  product name are all artwork in the same SVG. An earlier version of this
+   *  field held { icon, kicker, name } and set the two words as live Inter,
+   *  rebuilt from antzsystems.com because only its glyph was a file. These
+   *  supersede that.
    *
-   *  Optional and off by default, because this banner is shared by twelve
-   *  pages — five species, three education topics and four Antz products — and
-   *  only a product has a mark of its own. A species page's mast opens on its
-   *  name. */
-  bannerLogo?: { icon: string; kicker: string; name: string };
+   *  Dimensions travel with it, as locationMap's do: the four are not one
+   *  shape — Edge is 2.36:1 and EthoStudio 4.10:1 — so the box cannot be
+   *  reserved from a shared constant.
+   *
+   *  Optional, because this banner is shared by twelve pages and only the four
+   *  Antz products have a lockup. A species page's mast opens on its name. */
+  bannerLogo?: { src: string; width: number; height: number };
   /** A line or two under the heading in the mast, as the other four banners
    *  carry. On the Antz products this is the same sentence the accordion on
    *  /technology lists them by — and that board reads it from here, so the two

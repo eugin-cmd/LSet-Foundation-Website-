@@ -187,57 +187,37 @@
   }
 }
 
-/* A product's lockup above its name: the glyph, then the family name small over
-   the product name large.
+/* A product's lockup above its name.
 
-   Rebuilt from antzsystems.com rather than lifted, because only the glyph is a
-   file there — the words are live type. Their measurements, kept: a 62px mark,
-   8px of gap, Inter 500 at 16px over Inter 600 at 32px on a line-height of 1,
-   dropping to 52px and 28px below their md breakpoint. This site already loads
-   Inter at 400, 500 and 600, so the weights are the real faces rather than
-   anything synthesised.
+   One height for all four, not one width and not one area. They are a family
+   and the thing a family holds level is its height: Edge is 2.36:1 where
+   EthoStudio is 4.10:1, so matching widths would draw one at half the size of
+   the other, and the ink-area rule the Foundation, Education and Antz Systems
+   marks are scaled by would do the same more subtly. `width: auto` lets each
+   one be as long as its own name.
 
-   The two clamps reach their full size at 768px, which is where that breakpoint
-   sits: 62 / 768 is 8.07vw and 32 / 768 is 4.17vw. Expressed that way rather
-   than as a media query so the lockup grows with the band between the floors
-   and the caps instead of stepping once.
+   69.75px at the desk falling to 58.5 on a phone. Arrived at in two steps, both
+   by direction: half again the 62 and 52 the files were drawn at, then a
+   quarter off that. The net is 1.125x the drawn size. Written as a clamp that
+   reaches 69.75 at 768px, antzsystems.com's own md breakpoint
+   (69.75/768 = 9.08vw), so the lockup grows with the band rather than stepping
+   once.
 
-   No area-match was needed, unusually. The other three banner marks are scaled
-   to 13,465 square pixels of ink to sit level with each other; this lockup at
-   its own size measures about 211 x 62, which is 13,082 — within 3% of that
-   figure already. Left at the source's dimensions, since they land where the
-   rule would have put them anyway. */
+   Where that leaves the four against the other three banner marks: the platform
+   lockup covers about 15,200 square pixels of ink where the Foundation,
+   Education and Antz Systems marks are matched to 13,465. Thirteen per cent
+   larger, which is close enough to read as one family across the site. At the
+   93 this briefly ran to, it was twice them.
+
+   Every file was cropped horizontally on the way in. They arrived with empty
+   space beside the drawing — 8px on Platform, 39 on EthoStudio, and 145 on
+   Trails, whose viewBox was twice as wide as anything in it. Centred in a
+   band, that is a lockup sitting visibly left of the heading beneath it. The
+   vertical box is untouched, so each keeps the proportions it was drawn with. */
 .bannerLogo {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  color: var(--white);
-}
-
-.bannerLogoMark {
   flex: none;
-  width: clamp(52px, 8.07vw, 62px);
-  height: auto;
-  aspect-ratio: 1;
-}
-
-.bannerLogoWords {
-  display: flex;
-  flex-direction: column;
-  font-family: var(--font-inter);
-  /* The stack is tight on purpose: the two words read as one mark, not as two
-     lines of a heading. */
-  line-height: 1;
-}
-
-.bannerLogoKicker {
-  font-size: 16px;
-  font-weight: 500;
-}
-
-.bannerLogoName {
-  font-size: clamp(28px, 4.17vw, 32px);
-  font-weight: 600;
+  height: clamp(58.5px, 9.08vw, 69.75px);
+  width: auto;
 }
 
 @keyframes bannerLogoRise {
@@ -383,59 +363,6 @@
   }
 }
 
-/* A product's mark above its name, sized and timed off the Antz Systems
-   banner's wordmark so all four banners open with a mark of the same weight.
-
-   Matched on the ink and on its area, which is the rule the education banner
-   set and reasons out in full. The short of it: equal boxes are not equal marks
-   where one file carries bearing and another does not, and these lockups are
-   all different proportions — 2.606:1 for the Antz wordmark's ink against
-   0.92:1 for this monogram — so no single dimension can be the thing that
-   matches. Equal ink area can. 13,465 square pixels each puts this one at
-   110.97 x 120.513.
-
-   The cap is scaled the same way and comes to 22.04vw of width, so this mark
-   and the Antz wordmark both stop growing at 503px of viewport — the same
-   crossover the Foundation and Education marks use.
-
-   This one fills its own box: ink 408.3 x 443.6 in a 407 x 442 viewBox, 100%
-   both ways, where the Antz file is 81% and 58%. That is why the box here is
-   smaller than that one's and the two still read alike. */
-.bannerLogo {
-  flex: none;
-  width: min(110.97px, 22.04vw);
-  height: auto;
-  aspect-ratio: 110.97 / 120.513;
-}
-
-@keyframes bannerLogoRise {
-  from {
-    opacity: 0;
-    transform: translateY(28px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* The other three banners' rise, unchanged: 28px over 940ms on the settle
-   curve, starting at 1230ms so it clears the blind — whose last slat lands at
-   11 x 55ms + 760ms = 1365ms — and leads the copy under it.
-
-   Local keyframes, hashed with the local animation-name so the pair matches; a
-   bare reference to a keyframe declared in globals.css compiles to a name that
-   matches nothing and silently does nothing. */
-@media (prefers-reduced-motion: no-preference) {
-  .bannerLogo {
-    animation-name: bannerLogoRise;
-    animation-duration: 940ms;
-    animation-delay: 1230ms;
-    animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
-    animation-fill-mode: both;
-  }
-}
 
 .heroCopy {
   display: flex;

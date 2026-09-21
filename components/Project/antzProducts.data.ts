@@ -37,25 +37,21 @@ export const ANTZ_PLATFORM: Project = {
   heroVideo: "/assets/antz/platform-hero.mp4",
   heroCentred: true,
   heroLeaf: "sprig",
+  /* The four product lockups, supplied as finished artwork: glyph, family name
+     and product name all in one SVG. They replace a hand-built lockup that set
+     the two words as live Inter over a glyph ripped from antzsystems.com —
+     which was the right reconstruction of the wrong thing, since only the glyph
+     was ever a file there.
+
+     Each was cropped horizontally on the way in, and Trails needed it badly:
+     its drawing filled 145 of a 290-wide viewBox, so half the file was empty
+     and the mark would have sat well left of a centred heading. Widths here are
+     the cropped ones. */
   bannerLogo: {
-    icon: "/assets/antz/platform-mark.svg",
-    kicker: "Antz",
-    name: "Platform",
+    src: "/assets/antz/lockup-platform.svg",
+    width: 193.69,
+    height: 62,
   },
-  /* The lockup antzsystems.com/antz-platform heads its own banner with: the
-     device glyph, then the family name small over the product name large.
-
-     Rebuilt rather than ripped, because only the glyph is a file. The words are
-     live type there — Inter 500 at 16px over Inter 600 at 32px, stacked on a
-     line-height of 1, 8px to the right of a 62px mark — and this site already
-     loads Inter at 400, 500 and 600, so they are set here the same way. Baking
-     them into artwork would have cost a second file per product and made the
-     words unselectable and unsearchable for nothing.
-
-     The ornamental "a" from /platform/banner-logo.svg was tried here first and
-     is not this: that one is their watermark, 50% opacity behind the copy at
-     the band's right edge, and it is already on this site as the initial of
-     antz-wordmark.svg. */
   lede:
     "The operating system an institution runs on every day. One record per animal, from accession to outcome.",
 
@@ -181,6 +177,11 @@ export const ANTZ_ETHOSTUDIO: Project = {
   heroVideo: "/assets/antz/ethostudio-hero.mp4",
   heroCentred: true,
   heroLeaf: "sprig",
+  bannerLogo: {
+    src: "/assets/antz/lockup-ethostudio.svg",
+    width: 254.06,
+    height: 62,
+  },
   lede:
     "Keeper-trained behaviour and recognition AI. Your team designs the study, labels the footage, and trains a model on your own species.",
 
@@ -253,6 +254,11 @@ export const ANTZ_EDGE: Project = {
   heroVideo: "/assets/antz/edge-hero.mp4",
   heroCentred: true,
   heroLeaf: "sprig",
+  bannerLogo: {
+    src: "/assets/antz/lockup-edge.svg",
+    width: 136.92,
+    height: 58,
+  },
   lede:
     "On-premises AI for wildlife monitoring. It reads your camera feeds where they already are, with no network required.",
 
@@ -324,6 +330,11 @@ export const ANTZ_TRAILS: Project = {
   heroVideo: "/assets/antz/trails-hero.mp4",
   heroCentred: true,
   heroLeaf: "sprig",
+  bannerLogo: {
+    src: "/assets/antz/lockup-trails.svg",
+    width: 145.03,
+    height: 58,
+  },
   lede:
     "The AI companion a visitor carries through the zoo. A planned day before they arrive, and an exhibit that answers for itself at the fence.",
 

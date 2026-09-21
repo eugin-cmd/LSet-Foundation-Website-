@@ -95,61 +95,63 @@ export default function ProjectHero({
         </Link>
 
         <div className={s.heroCopy}>
-          {/* The product's own mark, where a record carries one — only the Antz
-              pages do. Decorative: the heading below names the product and the
-              nav names the brand, so this is kept out of the accessibility tree
-              rather than read as a stray letter.
+          {/* The product's lockup, where a record carries one — the four Antz
+              pages do and nothing else does. Decorative: the heading below
+              names the product and the nav names the brand, so it is kept out
+              of the accessibility tree rather than read as a second title.
 
               Above the copy and rising into the band 90ms ahead of it, which is
               how the Foundation, Education and Antz Systems banners open.
               Measurements in .bannerLogo. */}
           {project.bannerLogo && (
-            <span className={s.bannerLogo} aria-hidden="true">
-              <img
-                className={s.bannerLogoMark}
-                src={project.bannerLogo.icon}
-                alt=""
-                width={62}
-                height={62}
-              />
-              {/* The two words stacked on a line-height of 1, as the source
-                  sets them: the family small above, the product large below. */}
-              <span className={s.bannerLogoWords}>
-                <span className={s.bannerLogoKicker}>
-                  {project.bannerLogo.kicker}
-                </span>
-                <span className={s.bannerLogoName}>
-                  {project.bannerLogo.name}
-                </span>
-              </span>
-            </span>
+            <img
+              className={s.bannerLogo}
+              src={project.bannerLogo.src}
+              alt=""
+              aria-hidden="true"
+              width={project.bannerLogo.width}
+              height={project.bannerLogo.height}
+            />
           )}
 
-          <div className={s.meta}>
-            {/* Same treatment as the Our Work row this page is reached from:
-                the code is the visible chip, the phrase is what is read. */}
-            {project.status && (
-              <span className={s.status}>
-                <span aria-hidden="true">{project.status}</span>
-                <span className={s.srOnly}>{project.statusLabel}</span>
-              </span>
-            )}
-            <span className={s.location}>{project.location}</span>
+          {/* The location line is dropped where a record carries a lockup: on
+              the products it reads "ANTZ SYSTEMS", which is the family name the
+              lockup's own kicker has just said two lines above. A species page
+              has no lockup and keeps its country.
 
-            {/* Anchored to this row rather than placed at a measured offset,
-                so it follows the location text however long that is. */}
-            {project.locationMap && (
-              <img
-                className={s.locationMap}
-                src={project.locationMap.src}
-                alt=""
-                aria-hidden="true"
-                width={project.locationMap.width}
-                height={project.locationMap.height}
-              />
-            )}
+              And the row goes with it rather than standing empty. A product
+              record carries no conservation status and no map either, so
+              without the location there is nothing left in it — and an empty
+              flex child still takes its share of the column's 16px gap, which
+              would open a hole between the lockup and the heading. */}
+          {(project.status || !project.bannerLogo || project.locationMap) && (
+            <div className={s.meta}>
+              {/* Same treatment as the Our Work row this page is reached from:
+                  the code is the visible chip, the phrase is what is read. */}
+              {project.status && (
+                <span className={s.status}>
+                  <span aria-hidden="true">{project.status}</span>
+                  <span className={s.srOnly}>{project.statusLabel}</span>
+                </span>
+              )}
+              {!project.bannerLogo && (
+                <span className={s.location}>{project.location}</span>
+              )}
 
-          </div>
+              {/* Anchored to this row rather than placed at a measured offset,
+                  so it follows the location text however long that is. */}
+              {project.locationMap && (
+                <img
+                  className={s.locationMap}
+                  src={project.locationMap.src}
+                  alt=""
+                  aria-hidden="true"
+                  width={project.locationMap.width}
+                  height={project.locationMap.height}
+                />
+              )}
+            </div>
+          )}
 
           {/* The same load ripple the other banners run. <WaveText> splits the
               name into per-character spans and hides them, so the h1 carries
