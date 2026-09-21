@@ -93,13 +93,26 @@ export default function EducationHero() {
             <WaveText text={"Institute of animal care\n& Management"} />
           </h1>
 
+          {/* 33 words, down from 63, and nothing differentiating is lost: the
+              founding year, the only-residential claim, the farm, the faculty
+              and the 200+ species all survive.
+
+              Two things went, and both because they were already said. The
+              opening clause restated the institute's name, which the heading
+              directly above gives. And "the enclosure is the classroom and the
+              animals are the curriculum" — LSeT's own words, and the best line
+              in the copy — opens WHAT WE BELIEVE immediately below this banner,
+              where <EducationPhilosophy> keeps it verbatim on purpose. Said
+              twice within one screen it stops being the line and becomes a
+              refrain; the banner gives it up so the section below lands it.
+
+              No em dashes, following the rule EducationPhilosophy records for
+              this page's prose. */}
           <p className={`${s.heroLede} wf-body-l`}>
-            The Institute of Animal Care and Management is where the enclosure is
-            the classroom and the animals are the curriculum. Founded in 2021, LSeT
-            is India&rsquo;s only residential institute for exotic animal care
-            education, built on a working farm in Bengaluru. We train skilled,
-            ethical animal care professionals through immersive, hands-on learning
-            guided by international faculty and 200+ species, all under one roof.
+            Founded in 2021, LSeT is India&rsquo;s only residential institute for
+            exotic animal care, built on a working farm in Bengaluru. Students
+            train hands-on with international faculty and 200+ species, all under
+            one roof.
           </p>
 
           {/* Decorative flourish under the subtext. */}
