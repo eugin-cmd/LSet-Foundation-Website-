@@ -24,6 +24,13 @@ import s from "./Project.module.css";
  * <WaveRule /> instead, by direction — the same squiggle that closes the
  * homepage's partner strip and the Antz platform section, so the site has one
  * divider rather than a second kind that appears only here.
+ *
+ * It sits under the slides rather than over them, by direction. It opened the
+ * section before, which made it the lid on the body copy above — the products
+ * and the tech a project used — and left the pictures running into whatever
+ * came next with nothing to close them. Below the rail it closes the gallery
+ * instead, which is what the same squiggle does everywhere else it appears:
+ * the partner strip and the Antz platform section both carry it last.
  */
 /** "capability" plus an "s" is "capabilitys". Consonant + y takes -ies; every
  *  other noun these galleries use takes a plain -s. */
@@ -45,8 +52,6 @@ export default function ProjectGallery({ project }: { project: Project }) {
 
   return (
     <section className={s.gallery} aria-label={`${project.title} ${plural(noun)}`}>
-      <WaveRule className={s.rule} />
-
       {/* Where a record takes a whole section from antzsystems.com, it brings
           that section's heading with it, so the pictures are introduced rather
           than appearing unannounced under a divider. */}
@@ -89,6 +94,8 @@ export default function ProjectGallery({ project }: { project: Project }) {
           gap={project.galleryGap}
         />
       )}
+
+      <WaveRule className={s.galleryRule} />
     </section>
   );
 }

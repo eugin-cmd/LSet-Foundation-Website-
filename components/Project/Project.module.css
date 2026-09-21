@@ -836,13 +836,36 @@
 }
 
 /* Placement only for the shared <WaveRule />; the paint — tile, height, weight
-   and fading ends — lives in that component. In flow above the rail, as the
-   Antz platform section drops it, rather than pinned like the partners strip's.
-   Figma draws a plain 1px hairline here; the squiggle replaces it by direction
-   so the site keeps one divider. */
+   and fading ends — lives in that component. In flow, as the Antz platform
+   section drops it, rather than pinned like the partners strip's. Figma draws a
+   plain 1px hairline here; the squiggle replaces it by direction so the site
+   keeps one divider.
+
+   This one opens its section and is now <EdgeAudience>'s alone — the gallery's
+   moved under its slides and took .galleryRule with it. Kept separate rather
+   than shared with a modifier because the two want opposite margins, and a
+   single class carrying both would mean every caller stating which end it is
+   at. */
 .rule {
   width: min(1280px, 100%);
   margin-bottom: 42px;
+}
+
+/* The gallery's own, closing the section under the rail.
+
+   `margin-top` where .rule takes `margin-bottom`, which is the whole
+   difference: the section is a flex column, so the gap belongs to whichever
+   side the rule is not against.
+
+   The clamp rather than .rule's flat 42px because this gap sits under the
+   carousel's arrows, which are already 44px of target at the rail's bottom
+   right, and a fixed 42 under them reads tight on a phone where everything
+   else has tightened. It matches .galleryHead's own margin exactly, so the
+   space above the pictures and the space below them are the same measurement
+   at every width — 44px at the desk, 28 in the hand. */
+.galleryRule {
+  width: min(1280px, 100%);
+  margin-top: clamp(28px, 3.3vw, 44px);
 }
 
 /* The heading a record brings with a section it has taken wholesale. Centred
