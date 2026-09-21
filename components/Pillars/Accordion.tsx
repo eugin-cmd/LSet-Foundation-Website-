@@ -73,7 +73,19 @@ export default function Accordion({ items }: { items: AccordionItem[] }) {
                   {Icon && <Icon />}
                   <span className={s.index}>{item.index}</span>
                 </span>
-                <span className={`${s.title} wf-display-xl`}>{item.title}</span>
+                {/* data-text is the hover outline's copy of these words. The
+                    stroke cannot go on this element: it would trace every
+                    contour in each glyph, and a variable font keeps its stems,
+                    bars and diagonals as separate overlapping shapes, so every
+                    seam inside a letter would draw. .title::before wears it
+                    instead, behind the gradient. Kept in sync by being the same
+                    expression, not a second string. */}
+                <span
+                  className={`${s.title} wf-display-xl`}
+                  data-text={item.title}
+                >
+                  {item.title}
+                </span>
 
                 {/* Top right, in the slot the chevron held — which is also what
                     `.title`'s end padding still reserves, so a long title goes
