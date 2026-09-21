@@ -1601,6 +1601,19 @@
   text-wrap: balance;
 }
 
+/* Fills its half, so the block closes on the right edge as well as opening on
+   the left one.
+
+   It carried `max-width: 500px`, which held the paragraph to a narrower measure
+   and stopped the column 124.2px short of the page's right edge at 1440 — so
+   this band began exactly under Next project and then ended well inside it.
+   Aligning one edge and not the other is what the cap was costing.
+
+   The measure goes from 500px to 623.9 at 1440, which is about 78 characters
+   of wf-body-l against 62. Wider than the 45 to 75 a measure is usually held
+   to, and worth knowing, but this is two lines of standfirst beside a heading
+   rather than a passage anyone reads down. If it ever wants reining in, rein
+   it in with the words: the sentence is three clauses and would take a cut. */
 .ctaCol {
   display: flex;
   flex: 1;
@@ -1608,7 +1621,6 @@
   gap: clamp(16px, 1.67vw, 24px);
   align-items: flex-start;
   min-width: 0;
-  max-width: 500px;
 }
 
 .ctaBody {
@@ -1675,9 +1687,8 @@
     width: 100%;
   }
 
-  .ctaCol {
-    max-width: none;
-  }
+  /* .ctaCol's `max-width: none` was here too, undoing the 500px cap once the
+     band stacked. The cap is gone from the base rule, so this said nothing. */
 }
 
 /* Visually hidden, still read. Not display:none, which would take it out of
