@@ -117,10 +117,17 @@ export type Project = {
   /** The page's own route segment under /the-work, so a project can name its
    *  neighbours without the components importing five records each. */
   slug: string;
-  /** The IUCN chip, on the species pages only. Optional because the same
-   *  template now carries the Antz product pages, which have no conservation
-   *  status to show — the chip simply does not render for them. */
-  status?: "CR" | "EN";
+  /** The IUCN Red List category, on the species pages only. Optional because
+   *  the same template now carries the Antz product pages, which have no
+   *  conservation status to show — the chip simply does not render for them.
+   *
+   *  The code is what the chip shows and what picks its colour; `statusLabel`
+   *  is the words, and is what a screen reader is given instead. The two are
+   *  set together on every record.
+   *
+   *  VU and NT joined CR and EN when the five records were checked against the
+   *  Red List and four of them turned out to be carrying the wrong category. */
+  status?: "CR" | "EN" | "VU" | "NT";
   statusLabel?: string;
   location: string;
   title: string;
@@ -349,8 +356,8 @@ export const WHITE_BELLIED_HERON: Project = {
  */
 export const MEDITERRANEAN_MONK_SEAL: Project = {
   slug: "mediterranean-monk-seal",
-  status: "CR",
-  statusLabel: "Critically endangered",
+  status: "VU",
+  statusLabel: "Vulnerable",
   location: "CAP BLANC, MAURITANIA",
   title: "Mediterranean Monk Seal",
   hero: "/assets/seal-hero.jpg",
@@ -441,8 +448,8 @@ export const MEDITERRANEAN_MONK_SEAL: Project = {
  */
 export const SIAMANG_GIBBON: Project = {
   slug: "siamang-gibbon",
-  status: "CR",
-  statusLabel: "Critically endangered",
+  status: "EN",
+  statusLabel: "Endangered",
   location: "SUMATRA, INDONESIA",
   title: "Siamang Gibbon",
   hero: "/assets/gibbon-hero.jpg",
@@ -623,8 +630,8 @@ export const ORANGUTAN_HAVEN: Project = {
  */
 export const BROAD_TOOTHED_RAT: Project = {
   slug: "broad-toothed-rat",
-  status: "CR",
-  statusLabel: "Critically endangered",
+  status: "NT",
+  statusLabel: "Near threatened",
   location: "BARRINGTON TOPS, AUSTRALIA",
   title: "Broad-toothed Rat",
   hero: "/assets/rat-hero.jpg",

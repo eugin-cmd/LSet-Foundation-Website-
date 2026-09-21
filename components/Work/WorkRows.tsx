@@ -32,7 +32,7 @@ export default function WorkRows() {
                 <div className={s.meta}>
                   {/* The IUCN code is the visible chip; the full phrase is what
                       assistive tech reads, since "CR" alone is opaque. */}
-                  <span className={s.status}>
+                  <span className={s.status} data-status={p.status}>
                     <span aria-hidden="true">{p.status}</span>
                     <span className={s.srOnly}>{p.statusLabel}</span>
                   </span>

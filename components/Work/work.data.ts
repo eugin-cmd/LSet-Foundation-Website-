@@ -1,6 +1,13 @@
 export type WorkProject = {
-  /** IUCN Red List code, as the chip in Figma shows it. */
-  status: "CR" | "EN";
+  /** IUCN Red List category, as the chip shows it, and what picks the chip's
+   *  colour.
+   *
+   *  The same fact lives on each project's own record in
+   *  components/Project/project.data.ts, and the two had already drifted apart
+   *  before anyone checked: this file had the Mediterranean Monk Seal at EN
+   *  while its page said CR, and neither was right. Both are set from the Red
+   *  List now. If a category changes, it changes in two places. */
+  status: "CR" | "EN" | "VU" | "NT";
   /** Spelt out for assistive tech, since "CR" alone reads as noise. */
   statusLabel: string;
   location: string;
@@ -42,8 +49,8 @@ export const WORK_PROJECTS: WorkProject[] = [
     href: "/the-work/white-bellied-heron",
   },
   {
-    status: "EN",
-    statusLabel: "Endangered",
+    status: "VU",
+    statusLabel: "Vulnerable",
     location: "CAP BLANC, MAURITANIA",
     title: "Mediterranean Monk Seal",
     description:
@@ -54,8 +61,8 @@ export const WORK_PROJECTS: WorkProject[] = [
     href: "/the-work/mediterranean-monk-seal",
   },
   {
-    status: "CR",
-    statusLabel: "Critically endangered",
+    status: "EN",
+    statusLabel: "Endangered",
     location: "SUMATRA, INDONESIA",
     title: "Siamang Gibbon",
     description:
@@ -78,8 +85,8 @@ export const WORK_PROJECTS: WorkProject[] = [
     href: "/the-work/orangutan-haven",
   },
   {
-    status: "CR",
-    statusLabel: "Critically endangered",
+    status: "NT",
+    statusLabel: "Near threatened",
     location: "BARRINGTON TOPS, AUSTRALIA",
     title: "Broad-Toothed Rat",
     description:

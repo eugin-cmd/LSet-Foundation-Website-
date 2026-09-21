@@ -19,6 +19,28 @@
      --color-orange was already here and carries the row CTA. */
   --color-teal-600: #177654;
   --color-brick: #c1442f;
+
+  /* The IUCN Red List's own category colours, which are published with the
+     categories and are what a reader who knows the scale expects to see. The
+     chips wore --color-brick for all five species before, which said
+     "endangered" in the site's voice rather than saying which category, and
+     read as the same threat for a Critically Endangered heron and a Near
+     Threatened rat.
+
+     The text colour has to flip, which is why --iucn-ink is here beside them.
+     Measured against the 12px and 8px the two chips set, both of which need
+     4.5:1: white on CR is 5.11 and clears; white on the other three is 2.55,
+     1.27 and 1.45 and does not, because a yellow chip with white type is
+     unreadable. --iucn-ink on EN, VU and NT gives 4.92, 9.90 and 8.64.
+
+     Extinct, Extinct in the Wild, Least Concern and Data Deficient are not
+     here. Nothing on this site carries them, and a token nothing references is
+     a token nobody maintains. */
+  --iucn-cr: #d81e05;
+  --iucn-en: #fc7f3f;
+  --iucn-vu: #f9e814;
+  --iucn-nt: #cce226;
+  --iucn-ink: #0c3b2a;
   --color-green-200: #bae2cf;
   --color-green-300: #a9dbc4;
   /* Project detail pages, Figma node 1738:184704. `color/darkblue/default`

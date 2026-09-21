@@ -129,7 +129,7 @@ export default function ProjectHero({
               {/* Same treatment as the Our Work row this page is reached from:
                   the code is the visible chip, the phrase is what is read. */}
               {project.status && (
-                <span className={s.status}>
+                <span className={s.status} data-status={project.status}>
                   <span aria-hidden="true">{project.status}</span>
                   <span className={s.srOnly}>{project.statusLabel}</span>
                 </span>
