@@ -153,14 +153,17 @@ export type Project = {
   /** A product's own mark, above the copy in the mast, placed and timed exactly
    *  as the Foundation, Education and Antz Systems banners place theirs.
    *
+   *  A lockup rather than a file, because that is what the product marks are:
+   *  antzsystems.com sets its own as a glyph beside two stacked words, the
+   *  smaller naming the family and the larger the product. Holding the words
+   *  as words rather than baking them into artwork is what lets the other
+   *  three products take the same shape later — only `name` changes.
+   *
    *  Optional and off by default, because this banner is shared by twelve
    *  pages — five species, three education topics and four Antz products — and
-   *  only a product has a mark of its own to carry. A species page's mast opens
-   *  on its name.
-   *
-   *  Dimensions are the record's rather than the stylesheet's so the box can be
-   *  reserved before the SVG arrives, the way locationMap's are. */
-  bannerLogo?: { src: string; width: number; height: number };
+   *  only a product has a mark of its own. A species page's mast opens on its
+   *  name. */
+  bannerLogo?: { icon: string; kicker: string; name: string };
   /** A line or two under the heading in the mast, as the other four banners
    *  carry. On the Antz products this is the same sentence the accordion on
    *  /technology lists them by — and that board reads it from here, so the two

@@ -104,14 +104,25 @@ export default function ProjectHero({
               how the Foundation, Education and Antz Systems banners open.
               Measurements in .bannerLogo. */}
           {project.bannerLogo && (
-            <img
-              className={s.bannerLogo}
-              src={project.bannerLogo.src}
-              alt=""
-              aria-hidden="true"
-              width={project.bannerLogo.width}
-              height={project.bannerLogo.height}
-            />
+            <span className={s.bannerLogo} aria-hidden="true">
+              <img
+                className={s.bannerLogoMark}
+                src={project.bannerLogo.icon}
+                alt=""
+                width={62}
+                height={62}
+              />
+              {/* The two words stacked on a line-height of 1, as the source
+                  sets them: the family small above, the product large below. */}
+              <span className={s.bannerLogoWords}>
+                <span className={s.bannerLogoKicker}>
+                  {project.bannerLogo.kicker}
+                </span>
+                <span className={s.bannerLogoName}>
+                  {project.bannerLogo.name}
+                </span>
+              </span>
+            </span>
           )}
 
           <div className={s.meta}>

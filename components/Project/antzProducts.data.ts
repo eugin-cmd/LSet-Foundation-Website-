@@ -37,19 +37,25 @@ export const ANTZ_PLATFORM: Project = {
   heroVideo: "/assets/antz/platform-hero.mp4",
   heroCentred: true,
   heroLeaf: "sprig",
-  /* The ornamental "a" antzsystems.com/antz-platform carries in its own banner,
-     brought over as this page's mark.
+  bannerLogo: {
+    icon: "/assets/antz/platform-mark.svg",
+    kicker: "Antz",
+    name: "Platform",
+  },
+  /* The lockup antzsystems.com/antz-platform heads its own banner with: the
+     device glyph, then the family name small over the product name large.
 
-     Two things were changed in bringing it. It is used there as a watermark —
-     aria-hidden, absolutely positioned at the band's right edge, 380px wide and
-     only above the xl breakpoint — with `opacity: 0.5` baked into its outermost
-     group. Here it is the mast's mark, so the group's opacity is stripped and
-     it reads at full strength, as the marks on the other three banners do.
+     Rebuilt rather than ripped, because only the glyph is a file. The words are
+     live type there — Inter 500 at 16px over Inter 600 at 32px, stacked on a
+     line-height of 1, 8px to the right of a 62px mark — and this site already
+     loads Inter at 400, 500 and 600, so they are set here the same way. Baking
+     them into artwork would have cost a second file per product and made the
+     words unselectable and unsearchable for nothing.
 
-     It is the same drawing as the "a" in antz-wordmark.svg on /technology,
-     which is the whole point: the product page opens on the monogram and the
-     section page on the monogram plus the words. */
-  bannerLogo: { src: "/assets/antz/platform-wordmark.svg", width: 111, height: 121 },
+     The ornamental "a" from /platform/banner-logo.svg was tried here first and
+     is not this: that one is their watermark, 50% opacity behind the copy at
+     the band's right edge, and it is already on this site as the initial of
+     antz-wordmark.svg. */
   lede:
     "The operating system an institution runs on every day. One record per animal, from accession to outcome.",
 
