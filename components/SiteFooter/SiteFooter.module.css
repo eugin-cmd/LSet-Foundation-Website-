@@ -76,9 +76,28 @@
   border-color: var(--ink-on-dark-2);
 }
 
+/* The mark sits on the columns' left edge, and two separate offsets had to go
+   for it to.
+
+   The first is here: `place-items: center` centred a 258.068px image in
+   Figma's 270px frame, which is 5.966px of it. `center start` keeps the
+   vertical centring and drops the horizontal, since the frame is taller than
+   the art by design and wider than it only by accident.
+
+   The second is in the file, and is the larger of the two. logo-lset-footer.svg
+   declares `viewBox="0 0 258.068 97.5767"` but its artwork does not start at
+   0 — the leftmost point on the L is x 18.57, so the mark carries 18.57px of
+   empty bearing that no CSS box can see. Together they stood it 24.54px right
+   of "Foundation" below it, which is what the eye was catching.
+
+   Corrected on the image rather than in the file because the bearing belongs
+   to the image: cropping the viewBox would mean restating the width here too,
+   and the art has bearing on its other three sides that nobody is asking to
+   lose. If this logo ever has to align on the right as well, crop it properly
+   and drop this. */
 .logo {
   display: grid;
-  place-items: center;
+  place-items: center start;
   width: 270px;
   height: 97.122px;
 }
@@ -86,6 +105,7 @@
 .logo img {
   width: 258.068px;
   height: 97.577px;
+  margin-left: -18.57px;
 }
 
 .bottomBar {
