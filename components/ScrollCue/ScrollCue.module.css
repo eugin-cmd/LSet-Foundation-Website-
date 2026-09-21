@@ -19,6 +19,73 @@
   pointer-events: none;
 }
 
+/* The cue falls into the band on load, lands, bounces, and settles — then the
+   resting bounce below takes over and carries on.
+
+   On .slot rather than .cue, because the two movements would otherwise be two
+   animations fighting over one `transform` on one element, where the later
+   simply wins. Different elements compose instead: the slot does the falling
+   and the cue does the bouncing, and neither has to know about the other.
+
+   A full --banner-height of travel, which starts it above the band's top edge
+   rather than at it. Every banner sets `overflow: hidden`, so what a reader
+   sees is the cue entering at the top and falling the height of the picture.
+   Measuring the exact gap between the cue and the band's top would have been
+   the same thing arrived at more fragilely — the cue's offset is a clamp plus
+   an optional lift, and it differs per banner.
+
+   1500ms, so it leaves after the blind has finished opening — its last slat
+   lands at 11 x 55ms + 760ms = 1365ms — and falls while the icon rows are
+   still landing, rather than opening on an empty band or arriving alone after
+   everything else has stopped.
+
+   `both` holds the first frame through the delay, which is off-screen and at
+   zero opacity, so nothing sits at the foot of the band before its turn. */
+@keyframes cueDrop {
+  0% {
+    opacity: 0;
+    transform: translateY(calc(var(--banner-height) * -1));
+    animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.32);
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  /* Lands. Each keyframe carries its own easing from here, so the fall
+     accelerates like gravity while the rebounds decay — the same construction
+     as icon-drop in globals.css, which is the fall every banner icon uses. */
+  55% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.25, 0.7, 0.35, 1);
+  }
+
+  70% {
+    transform: translateY(-14px);
+    animation-timing-function: cubic-bezier(0.6, 0, 0.85, 0.35);
+  }
+
+  83% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.25, 0.7, 0.35, 1);
+  }
+
+  92% {
+    transform: translateY(-5px);
+    animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.4);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .slot {
+    animation: cueDrop 1250ms 1500ms both;
+  }
+}
+
 .cue {
   position: relative;
   display: grid;
@@ -27,7 +94,9 @@
   pointer-events: auto;
   border-radius: var(--radius-pill);
   color: var(--color-orange-bright);
-  animation: cueBounce 2.4s cubic-bezier(0.45, 0, 0.35, 1) infinite;
+  /* 2750ms is where the fall above ends: 1500 of delay and 1250 of travel. The
+     cue is still until it has landed, and bounces from there on. */
+  animation: cueBounce 2.4s cubic-bezier(0.45, 0, 0.35, 1) 2750ms infinite;
   transition: filter 220ms ease;
 }
 
@@ -56,8 +125,10 @@
   outline-offset: 4px;
 }
 
+/* The wheel waits for the landing as well. A mouse scrolling its own wheel on
+   the way down reads as two things happening rather than one thing arriving. */
 .cue :global(.scrollCueWheel) {
-  animation: cueWheel 2.4s ease-in-out infinite;
+  animation: cueWheel 2.4s ease-in-out 2750ms infinite;
 }
 
 /* A small settle-and-drop, weighted so it hangs at the top and falls away. */
@@ -112,6 +183,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .slot,
   .cue,
   .cue::after,
   .cue:hover::after,
