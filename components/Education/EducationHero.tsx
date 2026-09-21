@@ -6,7 +6,7 @@ import WaveText from "@/components/WaveText/WaveText";
 import Leaves from "@/components/icons/Leaves";
 import PawPrint from "@/components/icons/PawPrint";
 import OpenBook from "@/components/icons/OpenBook";
-import Leaf from "@/components/icons/Leaf";
+import LeafBlade from "@/components/icons/LeafBlade";
 import Globe from "@/components/icons/Globe";
 import s from "./Education.module.css";
 
@@ -71,9 +71,15 @@ export default function EducationHero() {
               working farm in Bengaluru", "international faculty".
 
               The globe is the mark the Multinational Faculty row wears further
-              down this page. The leaf is the homepage's Conservation mark and
-              the one the About banner carries, standing here for the farm the
-              institute is built on and the habitat its work is for.
+              down this page. The leaf stands for the farm the institute is
+              built on and the habitat its work is for.
+
+              It is <LeafBlade>, not the <Leaf> the homepage's Conservation row
+              and the About banner carry: that one is an almond with a single
+              diagonal rib, and at 34px in a row it reads closer to a feather.
+              The two leaves on the site are therefore drawn differently, which
+              is worth knowing and worth revisiting if the older one is ever
+              redrawn.
 
               It replaced the cupped hands, by direction. Those were the
               Hands-on Training row's own mark and tied the row more tightly to
@@ -88,7 +94,7 @@ export default function EducationHero() {
           <div className={s.heroIcons} aria-hidden="true">
             <PawPrint />
             <OpenBook />
-            <Leaf />
+            <LeafBlade />
             <Globe />
           </div>
 
