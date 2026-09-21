@@ -622,15 +622,41 @@
 
 .showcasePhoto {
   width: 100%;
-  height: min(1050px, 72.92vw);
+  /* Figma's 1050, cut to 734.7 — 70% of it — to halve the run of photograph
+     above "Hear from our best", by direction. 622.2px of it at 1440 became
+     311.1.
+
+     The photograph is what that space IS. The stage is absolutely positioned
+     and carries no padding above it, so there was nothing to trim except the
+     band it sits on; shortening the band is the only thing that moves the
+     heading up the picture.
+
+     The vw term is scaled by the same 0.6997 so the cut is the same cut at
+     every width, not only above the breakpoint where the px cap is in force. */
+  height: min(734.7px, 51.02vw);
   /* A flat 15% black over the photograph, by direction, in place of the
      shadow the title carried. A layer in this element's own background rather
      than a second element: nothing else needs to sit between the two, and
      this way there is no stacking order to keep in step with the film frame
      above it. */
+  /* 12% down rather than centred, which pushes the photograph down inside its
+     box and brings the top of it back into view — the marmoset is in the upper
+     left and its head was being cut off.
+
+     Centred, the visible window starts 157.7px into the image at 1440 while the
+     head begins at 88.2. That was true before this band was shortened and truer
+     after: the box is a constant 1.96:1 below the cap where the photograph is
+     1.371:1, so `cover` always crops the height, and at 1920 and above the box
+     stops growing while the image does not — the window started 332.6px in at
+     1920 and 566 at 2560.
+
+     12% holds at all of them: 50.4px of air above the head at 1440, 37.8 at
+     1920, 21 at 2560 and 16.8 at 480, where the crop is shallowest. A length
+     would not have; the overflow it is a percentage of changes with every one
+     of those widths. */
   background:
     linear-gradient(rgb(0 0 0 / 15%), rgb(0 0 0 / 15%)),
-    url("/assets/edu-statement-2.jpg") center / cover no-repeat;
+    url("/assets/edu-statement-2.jpg") center 12% / cover no-repeat;
 }
 
 .showcaseDeep {
@@ -660,29 +686,46 @@
    courses section's own 133px of top padding. Two thirds of a screen of dead
    near-black between the film and "our courses", by report.
 
-   65.53% puts the stack's centre at y 952 and its bottom at y 1285, which
-   overhangs the join by 235px — what 1962:18205 asked for in the first place —
-   and takes that run from 666px to 300px, by direction: 40% off, then another
-   25% off what was left. A percentage rather than a length because both the
-   band and the stack are sized in vw between roughly 480 and 1440, so the
-   ratio holds across the range — the second cut measures 24% at 1200 — and
-   because the clip below is unforgiving. `.showcase` is `overflow: clip`, so
-   the frame's bottom has to stay inside the band at every width; the tightest
-   point is around 360, where the deep block is on its 140px floor and 43px
-   are still left under the frame.
+   65.53% was that anchor while the photograph ran to 1050. It cannot stay,
+   because the band is shorter now: the same percentage of a 1136.7px band puts
+   the stack lower against a join that has moved up, and the frame would hang
+   past the band's foot and be clipped.
+
+   56.34% is the same intent recomputed. It holds the overhang at exactly the
+   235px 1962:18205 asked for, and leaves 167px of the deep block below the
+   frame at 1440. Derived from the overhang rather than chosen: the stack's
+   centre sits at the join plus 235 less half the stack, and that as a fraction
+   of the band is this number.
+
+   Still a percentage rather than a length, because the band and the stack are
+   both sized in vw between roughly 480 and 1440 and the ratio has to hold
+   across the range. Checked at 1920, 1440, 1200, 900, 700 and 480: the space
+   above the heading halves at every one, the overhang stays proportional, and
+   the frame's foot clears the band's by 167px at the top and 57 at the bottom.
+   `.showcase` is `overflow: clip` and that clearance is what the clip would
+   take.
 
    `translate` rather than a transform, so nothing here collides with a
    transform an animation may want later. */
 .showcaseStage {
   position: absolute;
-  top: 65.53%;
+  top: 56.34%;
   left: 50%;
   translate: -50% -50%;
   z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(16px, 1.94vw, 28px);
+  /* Half what it was — clamp(16px, 1.94vw, 28px) — by direction. Every term is
+     halved rather than the cap alone, so the gap closes by the same half at
+     every width instead of only above the breakpoint where the cap is the term
+     in force. The same rule the width below follows.
+
+     This is the space between "Hear from our best" and the film. The stage is
+     centred on its own midpoint, so closing it shortens the stack by up to
+     14px and lifts the heading and the frame a little towards each other
+     rather than moving the film alone. */
+  gap: clamp(8px, 0.97vw, 14px);
   /* Figma's 606.072, 75% bigger, by direction. The vw term is scaled with it
      so the film grows by the same 75% at every width rather than only where
      the px cap is the one in force. */
@@ -691,6 +734,26 @@
 
 /* No shadow of its own, by direction: the 15% black over the photograph below
    is what holds this line legible instead. */
+/* Above the heading, in the stage's own stack, so the film's gap carries it and
+   the three sit on one rhythm rather than the mark needing a margin of its own.
+
+   Sized and stroked as the banner icon rows are — the same clamp and the same
+   1.5 — so a mark on this page is the same mark whatever band it appears in. */
+.showcaseIcon {
+  display: grid;
+  place-items: center;
+  color: var(--white);
+}
+
+.showcaseIcon svg {
+  width: clamp(26px, 2.36vw, 34px);
+  height: auto;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .showcaseHeading {
   margin: 0;
   color: var(--white);

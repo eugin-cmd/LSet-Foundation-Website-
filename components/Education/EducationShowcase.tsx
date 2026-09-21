@@ -1,4 +1,5 @@
 import ShowcaseFilm from "./ShowcaseFilm";
+import People from "@/components/icons/People";
 import s from "./Education.module.css";
 
 /**
@@ -19,6 +20,13 @@ export default function EducationShowcase() {
           somewhere else in the band. The growth on scroll belongs to the frame
           alone, which is why the title holds still while the film opens. */}
       <div className={s.showcaseStage}>
+        {/* Decorative: the heading under it says whose voices these are, so the
+            mark is hidden rather than read as a loose noun above a title. The
+            same treatment the banner icon rows get. */}
+        <span className={s.showcaseIcon} aria-hidden="true">
+          <People />
+        </span>
+
         <h2 className={`${s.showcaseHeading} wf-display-l`}>
           Hear from our best
         </h2>
