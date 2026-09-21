@@ -76,11 +76,24 @@ export default function Hero() {
             >
               <WaveText text={"Conservation\u2019s Technology Partner"} />
             </h1>
+            {/* 28 words, down from 35, and four lines down to two. What went
+                was adjectives and throat-clearing rather than substance:
+                "innovative" and "practical" both assert what the sentence
+                already demonstrates, "Together with our" is three words for
+                "With", and "strengthen conservation programmes" sits between
+                two outcomes that carry it.
+
+                The three capabilities, the complex challenges, the global
+                partners, the welfare and the endangered species all stay. The
+                partners especially: the strip further down the page is theirs,
+                so the banner should name them.
+
+                It also gains a full stop, which it had been missing. */}
             <p className={`${s.lede} wf-body-l`}>
-              We combine education, conservation expertise and innovative technology to help
-              wildlife organisations solve complex challenges. Together with our global partners,
-              we develop practical solutions that improve animal welfare, strengthen conservation
-              programmes and protect endangered species
+              We combine education, conservation expertise and technology to help
+              wildlife organisations solve complex challenges. With global partners,
+              we build solutions that improve animal welfare and protect endangered
+              species.
             </p>
 
             {/* Decorative flourish under the subtext. */}

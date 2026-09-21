@@ -49,12 +49,29 @@
     linear-gradient(0deg, #01120c 0%, rgba(0, 0, 0, 0) 58.071%);
 }
 
-/* Heading and lede centred in the banner as one block, then nudged down by
-   --headline-nudge. The nudge lives here rather than on .headlineInner so it
-   never collides with the parallax transform. The scroll cue has its own slot
-   (components/ScrollCue) and is no longer part of this block. */
+/* Heading and lede centred in the banner as one block. The scroll cue has its
+   own slot (components/ScrollCue) and is no longer part of this block.
+
+   --headline-nudge is 0, where it was 25px of optical centring. The lockup
+   above added 88px to this column — its 81.895px box and the 6px under it —
+   and .banner is a fixed height rather than a floor, so the column could only
+   grow downwards into the cue. Measured at 1440: the copy's foot had 149.2px
+   of the band beneath it before the lockup and 105.3px after, against a cue
+   that occupies 72 to 119px. That is 13.7px of the mouse inside the leaf
+   flourish, which is what the screenshot showed.
+
+   The nudge goes rather than the cue moving or the band growing, following the
+   education banner, which met the same collision and resolved it the same way:
+   of the height, the cue's lift and the optical nudge, the nudge is the most
+   expendable, being the only one of the three nobody asked for. It buys back
+   exactly its 25px, and the lede's two shorter lines buy back about 60 more.
+
+   Kept as a custom property, at 0, rather than deleted: it is the knob to
+   reach for if this column ever needs seating again, and its history is here.
+   Left here rather than on .headlineInner so it can never collide with the
+   parallax transform. */
 .headline {
-  --headline-nudge: 25px;
+  --headline-nudge: 0px;
 
   position: absolute;
   inset: 0;
@@ -305,7 +322,8 @@
 
 @media (max-width: 700px) {
   .headline {
-    --headline-nudge: 0px;
+    /* The nudge was zeroed here too, back when the base was 25px and a phone
+       could not spare it. The base is 0 now, so this said nothing. */
     /* Centre the block in the space *below* the collapsed nav bar, not the
        whole banner — otherwise it rides up under the logo. */
     padding-top: 104px;
