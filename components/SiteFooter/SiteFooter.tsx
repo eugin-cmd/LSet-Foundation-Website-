@@ -41,12 +41,10 @@ const COLUMNS = [
   },
 ];
 
-const SOCIALS = [
-  { src: "/assets/social-instagram.svg", alt: "Instagram", width: 21.998, height: 21.998 },
-  { src: "/assets/social-x.svg", alt: "X", width: 22, height: 21.997 },
-  { src: "/assets/social-linkedin.svg", alt: "LinkedIn", width: 21.998, height: 21.998 },
-  { src: "/assets/social-youtube.svg", alt: "YouTube", width: 22, height: 22.996 },
-];
+/* The four social chips that closed this bar — Instagram, X, LinkedIn and
+   YouTube — are gone, by direction. Every one of them pointed at `#`; they were
+   Figma's row carried over before the accounts existed to wire it to. Their
+   SVGs are left in public/assets rather than deleted as a side effect. */
 
 export default function SiteFooter() {
   return (
@@ -87,17 +85,6 @@ export default function SiteFooter() {
 
       <div className={s.bottomBar}>
         <p className={s.copyright}>&copy; 2026 LSeT Foundation. All rights reserved.</p>
-        <div className={s.socials}>
-          {SOCIALS.map((social) => (
-            <a key={social.alt} href="#" className={s.socialChip} aria-label={social.alt}>
-              <img
-                src={social.src}
-                alt=""
-                style={{ width: `${social.width}px`, height: `${social.height}px` }}
-              />
-            </a>
-          ))}
-        </div>
       </div>
     </footer>
   );

@@ -108,6 +108,14 @@
   margin-left: -18.57px;
 }
 
+/* The copyright is all that is left in here — the social chips it sat opposite
+   have gone. `space-between` and the 20px gap stay for want of a reason to
+   disturb them: one child sits where `flex-start` would put it either way, and
+   the next thing to go in this bar will want them back.
+
+   `min-height: 36px` was the chips' own height holding the bar open. Kept, so
+   the closing band does not tighten around a 20px line of type now that the
+   tallest thing in it is gone. */
 .bottomBar {
   display: flex;
   align-items: center;
@@ -124,49 +132,19 @@
   white-space: nowrap;
 }
 
-.socials {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.socialChip {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  padding: 10px;
-  border: 1.987px solid rgba(28, 46, 74, 0.2);
-  border-radius: 18px;
-  background: var(--social-chip);
-  transition: transform 160ms ease;
-}
-
-.socialChip:hover {
-  transform: translateY(-1px);
-}
-
-
-@media (max-width: 620px) {
-  .bottomBar {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
+/* The 620px rule that stacked this bar has gone with them. It turned .bottomBar
+   into a column so the copyright and the chips did not fight for one line;
+   with one child there is nothing to stack, and the rule only stood the
+   copyright on a `flex-start` it already had. */
 
 /* --- the phone --------------------------------------------------------------
    The footer holds the site's smallest type and its densest stack of links, so
    it is where a thumb has least room. Nothing here changes the design above
    700px. */
 @media (max-width: 700px) {
-  /* 36 at the desk, 44 in the hand. These chips sit close enough together that
-     a near miss lands on the neighbour. */
-  .socialChip {
-    width: 44px;
-    height: 44px;
-    border-radius: 22px;
-  }
+  /* The chips took 44px here against their 36 at the desk, sitting close
+     enough together that a near miss landed on the neighbour. Gone with them —
+     nothing else in this bar is a target. */
 
   /* The links were 21px tall, sized by their type as they should be for a
      pointer. The padding buys the height a thumb needs; the negative margin
