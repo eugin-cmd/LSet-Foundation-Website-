@@ -193,6 +193,70 @@
   }
 }
 
+/* Under the pointer the title goes bold, takes the banner's holographic fill,
+   and is drawn round in a 1.5px outline. By direction.
+
+   The fill is the mast's, not a second one: --holo-ramp is the same
+   repeating-linear-gradient on the same 115deg axis that .wf-iridescent paints
+   the three banner headings with, and --holo-shift is the 529.62px that moves
+   it exactly one period along that tilted axis, which a flat 480px would not.
+   Both come from tokens.css, so the site keeps one holographic palette.
+
+   3s against the mast's 9s, by direction. A heading that shimmers for as long
+   as it is on screen can take its time; a hover lasts a moment and has to say
+   what it is inside that moment.
+
+   The keyframe is declared here rather than reached for in globals.css, where
+   titleIridescence lives. css-loader hashes an animation-name and the
+   @keyframes it finds in the same module together, so a local pair matches,
+   where a bare reference to a keyframe declared elsewhere compiles to a name
+   that matches nothing and silently does nothing. Only --anim-icon-drop-short
+   above gets to cross that line, because it is a var().
+
+   The outline is what makes this legible rather than merely pretty. Every stop
+   in the ramp is pale — none lower than 158 on its weakest channel — because
+   it was built for white type over dark footage, and these rows sit on a light
+   mesh. Filled alone the words would wash out. 1.5px of the title's own
+   teal-950 holds their shape and the shimmer plays inside it.
+
+   Bold wins over .wf-display-xl's own `font` shorthand on specificity: two
+   classes to its one. That is worth stating because the shorthand sets weight
+   400 along with everything else, and the file's mast note records how a tie
+   between two single-class selectors is settled by the bundler's source order
+   rather than by anything written here.
+
+   Guarded by @supports for the same reason globals.css guards .wf-iridescent:
+   -webkit-text-fill-color: transparent without background-clip support is an
+   invisible heading, so where the clip is unavailable the row keeps the solid
+   colour and the plain weight it already had. */
+@keyframes titleSheen {
+  to {
+    background-position: var(--holo-shift) 0;
+  }
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  @media (hover: hover) {
+    .item:hover .title {
+      font-weight: 700;
+      background: var(--holo-ramp);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      -webkit-text-stroke: 1.5px var(--color-teal-950);
+      animation: titleSheen 3s linear infinite;
+    }
+  }
+
+  /* The fill and the outline stay for anyone who asked for less motion — they
+     are what the hover says. Only the travel stops. */
+  @media (hover: hover) and (prefers-reduced-motion: reduce) {
+    .item:hover .title {
+      animation: none;
+    }
+  }
+}
+
 .index {
   font: 400 17.742px/1.55 var(--font-sans);
   color: currentColor;
