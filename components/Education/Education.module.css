@@ -132,24 +132,34 @@
 /* The trust's lockup, sized and timed off the Antz banner's wordmark so the
    two banners open alike.
 
-   Matched on HEIGHT, not width. The Antz mark is 231.562 x 123.924 and this one
-   is 83 x 52, which is 1.596:1 against 1.869:1 — different shapes, so the two
-   cannot share both dimensions, and two marks of unlike proportion read as the
-   same size when their heights agree.
+   The Antz mark is 231.562 x 123.924 and this one is 83 x 52 — 1.869:1 against
+   1.596:1, different shapes, so the two cannot share both dimensions and
+   something has to be chosen as the thing that matches.
 
-   Matched on the INK, not the box, which is the part that is not obvious. The
-   Antz file carries about 26px of empty bearing top and bottom: its artwork is
-   71.88px of its 123.924px box, 58% of it, where this lockup fills 99.5% of
-   its own. Giving both the same 123.924px box would have drawn this one's
-   artwork at 123.3px against the Antz mark's 71.9 — the same footprint in CSS
-   and 70% larger to the eye, which is the opposite of what matching them was
-   for. So the box is 72.255px, which is 71.88 / 0.995: the height at which the
-   ink agrees.
+   Matched on the INK, not the box, and on its AREA, not either dimension.
+
+   The box first, because that part is invisible: the Antz file carries about
+   26px of empty bearing top and bottom, so its artwork is 71.88px of its
+   123.924px box — 58% of it — where this lockup fills 99.5% of its own. Giving
+   both the same box would have drawn this one's artwork at 123.3px against the
+   Antz mark's 71.9: the same footprint in CSS and 70% larger to the eye.
+
+   Then the area, because matching the heights alone was not enough and looked
+   it. The two inks are 187.32 x 71.88 and 83 x 51.73, so at equal heights this
+   lockup ran 115px wide against 187 — 62% of the width, and it read as the
+   smaller mark however exactly the heights agreed. Equal area is what makes
+   two marks of unlike proportion carry the same weight: 13,465 square pixels
+   each, which puts this one's ink at 146.98 x 91.61 and its box at 92.085.
+
+   Tried at three sizes against the Antz mark before settling. Equal height
+   (72.255) read small; equal diagonal (106.7) and equal width (117.4) both
+   turned the lockup into the dominant one, its four lines of type outweighing
+   a wordmark of two words. Equal area is the one that reads as a peer.
 
    The width is derived rather than typed: `height` carries the match,
    `width: auto` follows the ratio, and the 46vw cap is restated as the height
    it corresponds to, scaled by the same ratio the box was — 46vw of the Antz
-   mark's width is 24.62vw of its height, and 72.255/123.924 of that is 14.35vw.
+   mark's width is 24.62vw of its height, and 92.085/123.924 of that is 18.29vw.
    The cap therefore bites at the same viewport width for both, so the two go
    on agreeing all the way down. aspect-ratio is declared for the reason it is
    declared there: without it the box collapses while the SVG loads.
@@ -161,9 +171,9 @@
    the icon fall below. */
 .heroWordmark {
   flex: none;
-  height: min(72.255px, 14.35vw);
+  height: min(92.085px, 18.29vw);
   width: auto;
-  aspect-ratio: 115.33 / 72.255;
+  aspect-ratio: 146.982 / 92.085;
 }
 
 @keyframes wordmarkRise {

@@ -61,8 +61,8 @@ export default function EducationHero() {
             src="/assets/edu-wordmark.svg"
             alt=""
             aria-hidden="true"
-            width={115}
-            height={72}
+            width={147}
+            height={92}
           />
 
           {/* Four marks, as the Antz banner carries four: animal care and
