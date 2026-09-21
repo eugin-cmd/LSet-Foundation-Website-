@@ -152,6 +152,15 @@
      so full-bleed sections never crowd the viewport edge. */
   --edge: clamp(16px, 1.67vw, 24px);
 
+  /* The gutter between the two halves of a project page's paired blocks: the
+     prev/next projects and the closing CTA beside its heading. Declared here
+     rather than twice in Project.module.css because the two have to agree —
+     the CTA's right-hand column is meant to start exactly where the Next
+     project link above it starts, and it only does so if both halves are the
+     same width and the gap between them is the same number. Two copies of a
+     clamp 200 lines apart is how that quietly stops being true. */
+  --pair-gap: clamp(16px, 2.2vw, 32px);
+
   /* Approach-section parallax. Declared here because the overhanging photo is
      a child of the pillars section and could not inherit them from .approach.
      Fluid, so the lift never exceeds the room a short section actually has. */

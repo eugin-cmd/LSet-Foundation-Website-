@@ -1372,7 +1372,10 @@
   position: relative;
   z-index: 1;
   display: flex;
-  gap: clamp(16px, 2.2vw, 32px);
+  /* Shared with .ctaInner below, from tokens.css: the closing CTA's right-hand
+     column lines up with the Next project link here, and that only holds while
+     both use the same gap. */
+  gap: var(--pair-gap);
   justify-content: space-between;
   width: min(1280px, 100%);
   /* Centred in the section flow like every other block on the page; the
@@ -1559,9 +1562,26 @@
   background: transparent;
 }
 
+/* The same two columns .neighbours splits into, so the copy and the buttons
+   begin exactly where the Next project link above them begins.
+
+   They did not before. .neighbours halves its 1280 on a clamp(16, 2.2vw, 32)
+   gutter, which put Next project at 655.8 at 1440, while this band ran a
+   560px heading against a clamp(28, 4.44vw, 64) gutter and started its column
+   at 623.9 — 32px to the left, and the two edges drifting apart as the
+   viewport widened, since they were converging on different numbers. Below
+   about 900 they happened to agree, which is why it only looked wrong on a
+   desktop.
+
+   Both now take --pair-gap, and the heading takes exactly half the row less
+   that gap, which is what .neighbour's `flex: 1 1 0` works out to. Derived
+   rather than typed, so the two cannot drift.
+
+   The heading column is therefore 623.9px at 1440 where it was 560 — 64px
+   wider, on a heading that wraps to two lines either way. */
 .ctaInner {
   display: flex;
-  gap: clamp(28px, 4.44vw, 64px);
+  gap: var(--pair-gap);
   align-items: flex-start;
   width: min(1280px, 100%);
 }
@@ -1570,7 +1590,11 @@
    and tops out at 38, so only the size is raised. */
 .ctaTitle {
   flex: none;
-  width: min(560px, 46%);
+  /* Half the row less the gutter — .neighbour's own width, arrived at from the
+     other direction. Not `flex: 1 1 0` like that one, because .ctaCol is
+     capped at 500px: a flexible heading would absorb everything that cap frees
+     and push the column it is supposed to line up with further right still. */
+  width: calc((100% - var(--pair-gap)) / 2);
   margin: 0;
   font-size: clamp(26px, 3.33vw, 48px);
   color: var(--color-teal-600);
