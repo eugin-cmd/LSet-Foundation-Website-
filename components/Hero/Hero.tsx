@@ -43,6 +43,22 @@ export default function Hero() {
             the two transforms never fight over the same property. */}
         <div className={s.headline}>
           <div className={s.headlineInner}>
+            {/* The trust's own lockup, the one the nav wears, carrying no alt
+                text — the heading carries the proposition and the nav names the
+                brand.
+
+                Placed and timed as the other two banners' marks are: above the
+                icon row, rising into the band 90ms ahead of it. Measurements in
+                .wordmark. */}
+            <img
+              className={s.wordmark}
+              src="/assets/logo-lset-nav.svg"
+              alt=""
+              aria-hidden="true"
+              width={217}
+              height={82}
+            />
+
             {/* Decorative: the copy below carries the message, so the row is
                 hidden from assistive tech rather than read as three nouns. */}
             <div className={s.techIcons} aria-hidden="true">

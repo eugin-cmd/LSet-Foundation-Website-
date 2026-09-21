@@ -82,6 +82,36 @@
   width: min(1080px, 100%);
 }
 
+/* The trust's lockup, the file the nav wears, sized off the Antz banner's
+   wordmark so all three banners open with a mark of the same weight.
+
+   Matched on the ink and on its area, which is the rule the education banner
+   established and the reasoning is written out there in full. In short: the
+   Antz file carries ~26px of empty bearing, so equal boxes do not mean equal
+   marks; and these three lockups are all different proportions — 2.606:1 for
+   Antz's ink, 2.827:1 for this one — so no single dimension can be the thing
+   that matches. Equal ink area can. 13,465 square pixels each puts this one's
+   ink at 195.11 x 69.01 and its box at 216.594 x 81.895.
+
+   The cap is scaled the same way. The Antz mark caps at 46vw of its width,
+   which is 24.618vw of its height; this box is 0.66085 of that height, so
+   16.27vw — and stated as a width, which is what this rule sets, 43.03vw. Both
+   therefore stop growing at 503px of viewport, the same crossover, so the two
+   marks go on agreeing below it as well as above. Checked at 1440, 1024, 800,
+   640, 503 and 390: the ink areas agree to three decimals at every one.
+
+   `width` carries the size here rather than `height` as it does on the
+   education banner, because this lockup is the widest of the three and its
+   width is what the 1080px block has to hold. aspect-ratio keeps the box from
+   collapsing while the SVG loads. */
+.wordmark {
+  flex: none;
+  width: min(216.594px, 43.03vw);
+  height: auto;
+  aspect-ratio: 216.594 / 81.895;
+  margin-bottom: 6px;
+}
+
 /* Outlined tech marks above the heading — drone, field sensor, acoustic
    recorder. Stroked rather than filled, taking their colour from the block. */
 .techIcons {
@@ -108,21 +138,59 @@
   animation-fill-mode: both;
 }
 
-/* Staggered so they land one after another rather than as a block. */
+/* The mark rises into the band and the row falls in behind it, 90ms apart the
+   whole way down — one cascade of five, as the education and Antz banners
+   open.
+
+   The keyframes are local to this module and hashed with the local
+   animation-name, which is what makes the pair match; only a reference to a
+   keyframe declared in globals.css has to go through a var(), which is why the
+   icon fall above does. */
+@keyframes wordmarkRise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .wordmark {
+    animation-name: wordmarkRise;
+    animation-duration: 940ms;
+    animation-delay: 1230ms;
+    animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+    animation-fill-mode: both;
+  }
+}
+
+/* Staggered so they land one after another rather than as a block.
+
+   1320 to 1590, where this row used to run 220 to 490. The old delays put the
+   whole cascade behind the blind: its last slat does not land until
+   11 x 55ms + 760ms = 1365ms, so a row that had finished falling by 1430 was
+   playing most of itself behind a closing blind and arriving already at rest.
+   The education and Antz banners were both given these delays for that reason;
+   this one was missed, and is corrected here rather than left as the odd one
+   of three. */
 .techIcons svg:nth-child(1) {
-  animation-delay: 220ms;
+  animation-delay: 1320ms;
 }
 
 .techIcons svg:nth-child(2) {
-  animation-delay: 310ms;
+  animation-delay: 1410ms;
 }
 
 .techIcons svg:nth-child(3) {
-  animation-delay: 400ms;
+  animation-delay: 1500ms;
 }
 
 .techIcons svg:nth-child(4) {
-  animation-delay: 490ms;
+  animation-delay: 1590ms;
 }
 
 /* Per-keyframe easing: the fall accelerates like gravity, then each rebound
