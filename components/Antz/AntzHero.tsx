@@ -56,7 +56,11 @@ export default function AntzHero() {
       <div className={s.heroTitle}>
         <div className={s.heroInner}>
           {/* The product's own wordmark, so it carries no alt text of its own —
-              the heading and the nav chip both name it. */}
+              the heading and the nav chip both name it.
+
+              It rises into the band as the blind finishes opening, 90ms ahead
+              of the icon row below, so the two read as one cascade of five.
+              The measurements are in .heroWordmark. */}
           <img
             className={s.heroWordmark}
             src="/assets/antz-wordmark.svg"

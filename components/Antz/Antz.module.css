@@ -93,6 +93,54 @@
   aspect-ratio: 231.563 / 123.924;
 }
 
+/* The mark rises into the banner as the blind finishes opening.
+
+   It leads the four icons below it rather than joining them: 1230ms against
+   their 1320, which is the same 90ms step they hold between themselves, so the
+   wordmark and the row read as one cascade of five rather than a logo and then
+   a row. The brand arrives first and the products follow it, which is also the
+   order they sit in down the column.
+
+   940ms, the icons' own duration, so the two movements are the same length and
+   nothing looks hurried beside anything else.
+
+   It rises rather than falling, where the icons fall — a wordmark settling up
+   into place carries the weight the banner wants at its top, and the drop
+   belongs to the small marks. 28px of travel, which is icon-drop-short's own
+   distance: enough to read as movement on an object this size without the mark
+   appearing to arrive from off-band.
+
+   `both` holds the first frame through the delay, so it does not sit in place
+   before its turn, and the keyframes are declared in this module rather than
+   taken from globals.css — css-loader hashes a local animation-name and the
+   local @keyframes together, so the pair matches. Only a reference to a
+   keyframe declared elsewhere has to go through a var(), which is why the icon
+   fall above does. */
+@keyframes wordmarkRise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .heroWordmark {
+    animation-name: wordmarkRise;
+    animation-duration: 940ms;
+    animation-delay: 1230ms;
+    /* Eased out, and hard out: the mark decelerates into its resting place and
+       stops there, which is what makes it settle rather than coast. The same
+       curve the panels and the leaf rise use. */
+    animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+    animation-fill-mode: both;
+  }
+}
+
 /* .wf-display-xl carries the size and tracking; .wf-iridescent the fill. The
    white here is the fallback under that fill, for the same reason the other two
    headings keep one — see the note beside .wf-iridescent in globals.css. */
