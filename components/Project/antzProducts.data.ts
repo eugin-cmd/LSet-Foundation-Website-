@@ -37,6 +37,19 @@ export const ANTZ_PLATFORM: Project = {
   heroVideo: "/assets/antz/platform-hero.mp4",
   heroCentred: true,
   heroLeaf: "sprig",
+  /* The ornamental "a" antzsystems.com/antz-platform carries in its own banner,
+     brought over as this page's mark.
+
+     Two things were changed in bringing it. It is used there as a watermark —
+     aria-hidden, absolutely positioned at the band's right edge, 380px wide and
+     only above the xl breakpoint — with `opacity: 0.5` baked into its outermost
+     group. Here it is the mast's mark, so the group's opacity is stripped and
+     it reads at full strength, as the marks on the other three banners do.
+
+     It is the same drawing as the "a" in antz-wordmark.svg on /technology,
+     which is the whole point: the product page opens on the monogram and the
+     section page on the monogram plus the words. */
+  bannerLogo: { src: "/assets/antz/platform-wordmark.svg", width: 111, height: 121 },
   lede:
     "The operating system an institution runs on every day. One record per animal, from accession to outcome.",
 

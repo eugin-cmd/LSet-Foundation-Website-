@@ -95,6 +95,25 @@ export default function ProjectHero({
         </Link>
 
         <div className={s.heroCopy}>
+          {/* The product's own mark, where a record carries one — only the Antz
+              pages do. Decorative: the heading below names the product and the
+              nav names the brand, so this is kept out of the accessibility tree
+              rather than read as a stray letter.
+
+              Above the copy and rising into the band 90ms ahead of it, which is
+              how the Foundation, Education and Antz Systems banners open.
+              Measurements in .bannerLogo. */}
+          {project.bannerLogo && (
+            <img
+              className={s.bannerLogo}
+              src={project.bannerLogo.src}
+              alt=""
+              aria-hidden="true"
+              width={project.bannerLogo.width}
+              height={project.bannerLogo.height}
+            />
+          )}
+
           <div className={s.meta}>
             {/* Same treatment as the Our Work row this page is reached from:
                 the code is the visible chip, the phrase is what is read. */}

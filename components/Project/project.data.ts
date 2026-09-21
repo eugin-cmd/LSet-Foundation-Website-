@@ -150,6 +150,17 @@ export type Project = {
    *  pages' blue-green ramp. The two travel together because they are one
    *  treatment, not two choices. */
   heroCentred?: boolean;
+  /** A product's own mark, above the copy in the mast, placed and timed exactly
+   *  as the Foundation, Education and Antz Systems banners place theirs.
+   *
+   *  Optional and off by default, because this banner is shared by twelve
+   *  pages — five species, three education topics and four Antz products — and
+   *  only a product has a mark of its own to carry. A species page's mast opens
+   *  on its name.
+   *
+   *  Dimensions are the record's rather than the stylesheet's so the box can be
+   *  reserved before the SVG arrives, the way locationMap's are. */
+  bannerLogo?: { src: string; width: number; height: number };
   /** A line or two under the heading in the mast, as the other four banners
    *  carry. On the Antz products this is the same sentence the accordion on
    *  /technology lists them by — and that board reads it from here, so the two
