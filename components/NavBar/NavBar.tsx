@@ -121,6 +121,22 @@ export default function NavBar() {
             type="checkbox"
             id={BURGER_ID}
             className={s.toggle}
+            /* On a phone the drawer is opened from inside this panel, and it
+               used to outlive it: closing the burger left the drawer checked,
+               so the page came back with a panel still open over it and the
+               only way out was the scrim. Toggling the burger now clears the
+               drawer either way — opening the menu with a drawer already open
+               is the same fault seen from the other side.
+
+               Phones only, because that is where the drawer sits inside this
+               panel; above 700px the two are separate controls and closing one
+               should not reach into the other. Script-dependent, unlike every
+               other control on this bar — the close button inside the drawer
+               is the answer where scripts are stripped. */
+            onChange={() => {
+              if (!window.matchMedia("(max-width: 700px)").matches) return;
+              if (drawerRef.current) drawerRef.current.checked = false;
+            }}
           />
           <label htmlFor={BURGER_ID} className={s.burger}>
             <span className="sr-only">Menu</span>
@@ -248,7 +264,11 @@ export default function NavBar() {
         </header>
 
         <div ref={meshRef} className={`${s.drawer} wf-mesh`}>
-          <NavDrawer id={DRAWER_PANEL_ID} onNavigate={closeMenus} />
+          <NavDrawer
+            id={DRAWER_PANEL_ID}
+            toggleId={DRAWER_ID}
+            onNavigate={closeMenus}
+          />
         </div>
       </div>
     </div>

@@ -8,6 +8,16 @@
   width: 100%;
 }
 
+/* The close control is a phone affordance and is switched on at that width
+   only. Hidden rather than merely unstyled: the label renders at every width,
+   and left to its own devices it is a flex item in this row — a zero-width one,
+   but one that still takes a slot and, with the 56px gap above, 56px of the
+   drawer's width. Measured on a desktop before this rule: display block, 0x20.
+   Above 700px the drawer's controls are the pill and the scrim, as they were. */
+.close {
+  display: none;
+}
+
 /* --- col-label, 1959:12498 --- */
 .label {
   display: flex;
@@ -261,5 +271,62 @@
 
   .rowDesc {
     grid-area: 3 / 1;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Phones: the drawer scrolls itself, and closes from its own corner.
+
+   The panel is taller than the screen here — measured at 390x844 it stood
+   904px in an 844px viewport, starting 107px down, so its last 167px sat below
+   the fold with no way to reach them. Scrolling did reach them, but it scrolled
+   the *page*: the panel is anchored to the sticky bar, so the document moved
+   underneath and carried the drawer off the top while it stayed open.
+
+   The scroll goes here rather than on .drawer because that panel cannot have
+   it. Its 4px ring and its mesh are a ::before resolving `inset: 0` against the
+   panel's padding box, and `overflow: hidden` is what keeps them there; make
+   the panel itself scroll and the mesh scrolls away from the ring. The panel
+   caps the height, this scrolls inside it, and the ring and the wash stay put.
+
+   `overscroll-behavior: contain` is the other half. Without it, reaching either
+   end of this list hands the gesture to the document and the page starts moving
+   behind the open panel again — which is the same fault, only harder to see.
+   --------------------------------------------------------------------------- */
+@media (max-width: 700px) {
+  .inner {
+    /* A flex item will not shrink below its content without this, so the
+       max-height above it would never bite and nothing would scroll. */
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  /* Sticky rather than absolute: this sits inside the element that scrolls, so
+     anchoring it to the panel would send it up and out with the first swipe.
+     Sticky keeps it in the corner for the whole of the list. */
+  .close {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: grid;
+    flex: none;
+    place-items: center;
+    align-self: flex-end;
+    width: 44px;
+    height: 44px;
+    /* The column's own 28px gap would push the label a long way down from a
+       control that is meant to sit in the corner above it. */
+    margin-bottom: -28px;
+    border-radius: 50%;
+    /* The token the drawer's own titles wear, not one invented for this. */
+    color: var(--brand-forest-800);
+    cursor: pointer;
+  }
+
+  .close svg {
+    width: 20px;
+    height: 20px;
   }
 }

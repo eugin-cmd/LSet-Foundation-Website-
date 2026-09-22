@@ -1012,3 +1012,30 @@ video {
     animation: holoWashEdge 7s linear infinite;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Phones: the page holds still while the What-we-do drawer is open.
+
+   The drawer is anchored to the sticky bar, so a scroll behind it does not
+   merely move the page — it carries the open panel off the top of the screen.
+   Measured before this rule: with the drawer open, one 600px scroll left the
+   drawer checked and the panel gone.
+
+   Written here rather than in a module because it keys off the checkbox's real
+   id, and css-loader rewrites those inside a *.module.css. The id is the one
+   NavBar gives its drawer toggle.
+
+   `:has()` rather than a class toggled by script, because the whole disclosure
+   is CSS — the menu is built to work with every script stripped, and a scroll
+   lock that needed JS would come apart in exactly the case the checkbox exists
+   for. Where `:has()` is not supported the page simply scrolls as it did.
+
+   Both elements, because iOS Safari will scroll the document through an
+   `overflow: hidden` on <body> alone.
+   --------------------------------------------------------------------------- */
+@media (max-width: 700px) {
+  html:has(#nav-drawer:checked),
+  body:has(#nav-drawer:checked) {
+    overflow: hidden;
+  }
+}

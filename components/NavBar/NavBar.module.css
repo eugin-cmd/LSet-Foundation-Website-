@@ -819,3 +819,29 @@
     transition: transform 320ms ease-in;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Phones: the panel is capped to the screen, and becomes the frame its content
+   scrolls inside.
+
+   It opened at 904px against an 844px viewport from a top edge 107px down, so
+   167px of it had nowhere to go. The cap leaves ~17px under the panel at that
+   size; the scrolling itself is on .inner in NavDrawer.module.css, and the note
+   there says why it cannot be here — `overflow: hidden` on this element is load
+   bearing for the ring and the mesh.
+
+   `display: flex` is what makes the cap reach the child: .inner is `flex: 1`
+   with `min-height: 0`, so it takes the height this panel is allowed and
+   scrolls the remainder rather than growing the panel past it.
+
+   `svh`, not `vh`: on an iPhone `vh` is the height with the browser chrome
+   retracted, which is not the height the panel has while the toolbar is still
+   showing — the cap would be too tall at exactly the moment it is needed.
+   --------------------------------------------------------------------------- */
+@media (max-width: 700px) {
+  .drawer {
+    display: flex;
+    /* 107px of top offset plus a little air beneath. */
+    max-height: calc(100svh - 124px);
+  }
+}

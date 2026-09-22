@@ -24,14 +24,39 @@ const ICONS: Record<Destination["key"], React.ComponentType> = {
 
 export default function NavDrawer({
   id,
+  toggleId,
   onNavigate,
 }: {
   id: string;
+  /** The drawer checkbox's id, so the close control can be its label. */
+  toggleId: string;
   /** Closes the panel; every link inside it navigates, so every link calls it. */
   onNavigate?: () => void;
 }) {
   return (
     <div className={s.inner} id={id}>
+      {/* Phones only, shown by the stylesheet at that width.
+
+          A <label> for the drawer's own checkbox rather than a button with a
+          handler: the whole disclosure is CSS, so this closes it with scripts
+          stripped exactly as the pill opens it. It is also the no-JS answer to
+          dismissing from the burger, which does need a script.
+
+          aria-hidden with the label carried in sr-only text: the glyph is two
+          crossed lines and means nothing read aloud. */}
+      <label htmlFor={toggleId} className={s.close}>
+        <span className="sr-only">Close menu</span>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+          <path
+            d="M6 6l12 12M18 6L6 18"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            vectorEffect="non-scaling-stroke"
+            strokeLinecap="round"
+          />
+        </svg>
+      </label>
+
       <div className={s.label}>
         <p className={`${s.labelHead} wf-label`}>What we do</p>
         <p className={`${s.labelBody} wf-small`}>
