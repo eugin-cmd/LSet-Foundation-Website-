@@ -846,55 +846,39 @@ video {
    --------------------------------------------------------------------------- */
 @media (max-width: 700px) {
   /* --- the animation budget ---------------------------------------------
-     Measured before this rule: the homepage ran 17 infinite animations on a
-     390px phone, 13 of them gradients clipped to text. That is the most
-     expensive kind of animation there is — a text-clipped gradient cannot be
-     handed to the compositor, so every frame re-rasterises the glyphs. The
-     identical count ran on the phone as on a 1440px desktop; nothing had ever
-     been scaled back.
+     This block used to freeze the holographic sheen here, and by direction it
+     no longer does. The history is kept because the measurements in it are
+     real and the next person should have them before switching it back.
 
-     The banner heading used to be carved out of this and keep its sheen — it
-     is the page's signature, and at 390px it still renders 11 distinct hue
-     families against the desktop's 16. It is carved out no longer, because on
-     iOS the exemption was not buying a moving sheen, it was costing the
-     heading entirely.
+     What was measured: the homepage ran 17 infinite animations on a 390px
+     phone, 13 of them gradients clipped to text. That is the most expensive
+     kind of animation there is — a text-clipped gradient cannot be handed to
+     the compositor, so every frame re-rasterises the glyphs — and the identical
+     count ran on the phone as on a 1440px desktop. Nothing had ever been scaled
+     back.
 
-     On iOS WebKit an animated gradient clipped to text does not paint. The
-     glyphs stay transparent and nothing is drawn behind them, so the mast is
-     not dim or mis-coloured, it is absent: on an iPhone the homepage showed
-     its icons, its lede and its scroll cue with a blank band where the title
-     belongs, in Safari and in Chrome alike — both are WebKit there. Every one
-     of the seven heroes puts .wf-iridescent on its h1, so every banner on the
-     site lost its title. The reason it was only the h1 is this very rule: the
-     `:not(h1)` exemption meant the h1 was the single element left animating a
-     text-clipped gradient on a phone, and it was the single element missing.
+     The rule that followed, `.wf-iridescent { animation: none !important }`,
+     is gone. Two things about it are worth keeping straight.
 
-     Freezing it is the fix and it costs little. The static ramp still paints
-     the full holographic palette — it is exactly what the other thirteen have
-     shown here all along, and what anyone with reduced motion has always
-     seen. It also finishes the thought this block already had: a text-clipped
-     gradient cannot be handed to the compositor, and this was the last and
-     largest one still re-rasterising its glyphs every frame on the slowest
-     screen the site meets. */
-  /* CORRECTION. The four paragraphs above are wrong about the cause, and the
-     rule they justify is not what brought the titles back.
+     It was never a rendering fix, though it was once cited as one. The
+     paragraphs that stood here blamed this animation for the banner titles
+     going blank in WebKit, and that was wrong: measured in WebKit on the real
+     homepage h1, an animated gradient over plain text paints at 81,529 bright
+     px, and freezing it with the heading's descendants untouched still paints
+     nothing. The cause was `position: relative` on WaveText's per-character
+     spans, and the fix lives in WaveText.module.css.
 
-     The h1s were not blanked by animating a text-clipped gradient. Measured in
-     WebKit on the real homepage h1: an animated gradient over plain text
-     paints (81,529 bright px), and freezing this animation with the heading's
-     own descendants left as they were still paints nothing (0 px). The cause
-     was `position: relative` on WaveText's per-character spans, and the fix
-     lives in WaveText.module.css.
+     It was a real performance measure, and dropping it has a real cost. It is
+     the titles alone — every other holographic animation on the site already
+     ran at this width, measured on the page: the drawer's iridescence, the
+     drawer mesh, MeshField's swirl and the project chips' 22s sweep all run on
+     a phone today. What this brings back is `titleIridescence`, which is 9
+     instances on the homepage and 1 on a project page.
 
-     The `:not(h1)` exemption this block once carried is still correctly gone,
-     but for the reason the block opens with rather than the one it concludes
-     with: a text-clipped gradient cannot be composited, so freezing it on a
-     phone buys real fill rate. That is why the rule stays. It is a performance
-     measure, not a rendering fix, and it should not be cited as one. */
-  .wf-iridescent {
-    animation: none !important;
-  }
-
+     So the phone now carries the same sheen the desktop does, which is what was
+     asked for, at the cost of those text-clipped gradients re-rasterising on
+     the slowest screens the site meets. `prefers-reduced-motion` still turns
+     the lot off, as it always did. */
   /* --- tap targets -------------------------------------------------------
      WCAG 2.5.8 asks for 24px and Apple's guidance for 44. The site's links
      were coming in at 18 to 21px tall because they are sized by their type,
