@@ -87,10 +87,43 @@
    rather than being capped at one size. Both dimensions are set: a lone width
    with `height: auto` would collapse to zero while the SVG loads. */
 .heroWordmark {
+  /* One source for the width: the optical shift below is a fraction of it. */
+  --antz-wordmark-w: min(231.563px, 46vw);
+
   flex: none;
-  width: min(231.563px, 46vw);
+  width: var(--antz-wordmark-w);
   height: auto;
   aspect-ratio: 231.563 / 123.924;
+  /* Optical centring, by direction, and it is worth being clear that this puts
+     the lockup's box off centre on purpose.
+
+     The box was already right: measured on the page with the banner blanked so
+     only the lockup had ink in frame, the artwork's centre sat 0.33px from the
+     banner's at 390 and 0.50px at 1440. The file is square too — 95 of padding
+     on the left against 97 on the right of a 1000px render.
+
+     What reads as off is the composition. The lockup is an ornate mark and then
+     the words, and the eye takes "antz systems" as the logo with the mark as a
+     prefix. Splitting the ink by its gaps at a 1000px render: the mark occupies
+     95..374 and the words 411..902, so the words' own centre is 656.5 against
+     the box's 499.5 — 157px, or 15.7% of the width, to the right.
+
+     Shifted left by HALF of that, 7.85%, which is a deliberate compromise
+     rather than either centre.
+
+     The full 15.7% was tried and measured: it puts the words exactly on the
+     centre line and the whole lockup 28px left of it at 390, 37px at 1440. That
+     reads left-heavy, because the box then disagrees with the icon row and the
+     mast below — both of which are centred, and that relationship is the more
+     visible one. Half leaves the words about 14px right of centre and the
+     lockup about 14px left of it: neither reading satisfied, neither visibly
+     wrong, which is the usual answer for a mark-and-wordmark lockup.
+
+     Margin, not transform: .heroWordmark's rise animates `transform` with
+     `fill-mode: both`, and a translateX here would be overwritten by its
+     resting frame. A centred column moves an item half its margin, so the
+     margin is twice the shift. */
+  margin-right: calc(var(--antz-wordmark-w) * 0.157);
 }
 
 /* The mark rises into the banner as the blind finishes opening.
