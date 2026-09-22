@@ -374,3 +374,53 @@
     transform: none;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Phones: the backdrop drifts far enough to be seen.
+
+   The drift was already running here — it is not new — but it was running at
+   40% of the desktop distance. `--approach-overscan` is
+   clamp(48px, 8.33vw, 120px), and 8.33vw does not reach 120px until a 1440px
+   viewport while it drops onto the 48px floor below 576px. The footage
+   therefore had 48px of travel on a phone against 120px on a desktop:
+   measured over a 500px scroll, 18px of movement against 33px.
+
+   90px, set on the section so it reaches `.bg` through --bg-slack and the
+   keyframes alike. The footage grows with it — `.bg` is inset by --bg-slack and
+   is 2x that taller — so the extra travel is bought with about 14% more
+   compositing area, which is the honest cost of this on the slowest screens the
+   site meets. .bgArea still clips it.
+
+   The range tightens too, to the one the education statement's copy already
+   uses. Its note there is the argument: holding the last 15% at each end packs
+   the same travel into 70% of the pass, so the plane moves at roughly twice the
+   rate against scroll and reads as parallax rather than as drift, while sitting
+   still as the band enters and leaves. Both bands now use it at this width, so
+   the two move alike.
+
+   Phones only. Above 700px the token, the travel and the range are the ones
+   the desktop composition was tuned with.
+   --------------------------------------------------------------------------- */
+@media (max-width: 700px) {
+  .approach {
+    --approach-overscan: 90px;
+  }
+
+  /* --bg-slack is overscan + bleed, and only the overscan is travelled, so the
+     bleed is the margin between the two. It was zeroed when the backdrop became
+     footage — it had been hiding a blurred layer's faded edge — and it earns its
+     keep again here: without it the footage's top edge lands exactly on the
+     band's at the end of the range, leaving nothing for a rounding difference.
+     Measured across the pass at 390px before this, the worst overhang was 4px. */
+  .bg {
+    --bg-bleed: 12px;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) and (max-width: 700px) {
+    .bg {
+      animation-range: cover 15% cover 85%;
+    }
+  }
+}
