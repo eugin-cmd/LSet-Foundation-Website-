@@ -101,11 +101,76 @@
   transform: scaleX(-1);
 }
 
-/* Below the width where the banner copy fills the band, the discs would sit on
-   top of the species name. The wall itself is one tap away in the nav. */
+/* Below 860px the arrows leave the margins and pair up in the bottom-right
+   corner, as glass discs.
+
+   They were hidden outright here, and the reason given was sound: at the
+   margins, vertically centred, the discs sat on top of the species name once
+   the copy filled the band. But hiding them left a phone with no way between
+   sibling pages at all — the dots go at this width too, so below 860px the
+   whole control was gone and "one tap away in the nav" was the only route.
+
+   Moving them is what the margins could not do. The bottom-right corner is
+   free: the copy holds the bottom left and the cue holds the centre, which is
+   the reasoning the dots already follow, and these inherit the dots' exact
+   offset — the cue's own, `--cue-lift` included — so the corner reads as one
+   line of furniture rather than two arbitrary heights.
+
+   Clearance measured against the cue: at 390px the pair spans x 266-374 to the
+   cue's 181-209, and at 320px, 196-304 to 146-174.
+
+   Glass rather than the bare chevron the margins use. Out at the edge a
+   drop-shadow was enough to hold a white glyph against a pale frame of
+   footage; two discs sitting together over the middle of a photograph need a
+   surface of their own, and `blur(14px) saturate(115%)` is the site's own —
+   the nav bar's, and the contact panel's at 130%.
+
+   48px, over the 44px touch floor, and a little under the 52-64px the margins
+   run: these sit over the picture rather than outside it.
+
+   The mirror on the forward arrow is on `.pagerNext svg`, not on the button,
+   so nothing here carries a transform — an element's own transform and its
+   backdrop-filter do not reliably agree about where the backdrop is. */
 @media (max-width: 860px) {
   .pager {
-    display: none;
+    top: auto;
+    /* The dots' own inset, so the two controls share an edge. */
+    right: max(var(--edge), calc((100% - 1280px) / 2));
+    bottom: calc(clamp(36px, 5vw, 72px) + var(--cue-lift, 0px));
+    left: auto;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-inline: 0;
+    transform: none;
+  }
+
+  .pagerBtn {
+    width: 48px;
+    height: 48px;
+    border: 1px solid rgb(255 255 255 / 28%);
+    background: rgb(255 255 255 / 14%);
+    /* Prefixed as well: iOS Safari has only ever shipped the prefixed form,
+       and this control's whole purpose is to be reachable on a phone. */
+    -webkit-backdrop-filter: blur(14px) saturate(115%);
+    backdrop-filter: blur(14px) saturate(115%);
+    color: rgb(255 255 255 / 92%);
+    /* The margins' drop-shadow is dropped: `filter` on an element is a hazard
+       next to its own backdrop-filter, and the disc no longer needs a shadow to
+       separate a glyph from the footage — it has a surface. A box-shadow does
+       the lift instead, and does not touch the filter chain. */
+    box-shadow: 0 2px 10px rgb(1 18 12 / 28%);
+    filter: none;
+  }
+
+  /* Where the backdrop cannot be blurred the glass would be a 14% white wash
+     over whatever frame the video is on, which is not a surface. The same
+     answer the contact panel gives: take the fill up until it stands on its
+     own. */
+  @supports not ((backdrop-filter: blur(1px)) or
+    (-webkit-backdrop-filter: blur(1px))) {
+    .pagerBtn {
+      background: rgb(8 24 18 / 62%);
+    }
   }
 }
 
