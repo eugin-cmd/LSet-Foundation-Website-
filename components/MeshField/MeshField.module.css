@@ -88,3 +88,72 @@
     --mesh-swirl: 360deg;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Touch: the field roils on its own.
+
+   Everything that moved this mesh needed a hand. The cursor is the primary
+   driver and usePointerMesh returns early on a coarse pointer — deliberately,
+   since every "move" there is the start of a tap and would yank the blobs to
+   the finger. That left the scroll swirl as the only motion, and `view()` is a
+   position on a range rather than a clock: stop scrolling and the field stops.
+   On a phone the mesh was therefore still unless the reader moved it.
+
+   This drives the pointer's own channel from a clock instead. --mesh-mx and
+   --mesh-my are the displacement every blob already reads, and they read it
+   with a different multiplier and a different sign each — +42% and +32% on the
+   first, -30% and +23% on the second, +38% and -29% on the third. Sweeping the
+   two therefore does not slide the field about as a block: each blob travels
+   its own distance in its own direction, which is the roil rather than a pan.
+
+   Two periods that do not divide into each other, 31s and 43s, so the pair
+   comes back into phase once every 22 minutes and the field never visibly
+   repeats. Slow on purpose: this is a surface behind reading matter, and
+   anything quicker competes with the text on top of it.
+
+   +/-0.55 and +/-0.5 rather than the full +/-1 the cursor can reach. The
+   extremes are what the pointer hits at the very corners of the field, and
+   parked there for seconds at a time they push blobs far enough out to thin
+   the wash at an edge.
+
+   `ease-in-out` at the turns, so the drift slows and gathers rather than
+   reversing at a constant rate, which is what stops it reading as a loop.
+
+   Gated on the pointer rather than on a width, because that is the actual
+   condition: this is for the devices where the cursor script does not run, and
+   it is precisely the test that script makes. A desktop, which has hover and a
+   fine pointer, never enters here.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  @media (hover: none), (pointer: coarse) {
+    .field {
+      animation: meshDriftX 31s ease-in-out infinite,
+        meshDriftY 43s ease-in-out infinite;
+      /* The cursor transition is meaningless here and would fight the keyframes
+         for the same two properties. */
+      transition: none;
+    }
+  }
+}
+
+@keyframes meshDriftX {
+  from,
+  to {
+    --mesh-mx: -0.55;
+  }
+
+  50% {
+    --mesh-mx: 0.55;
+  }
+}
+
+@keyframes meshDriftY {
+  from,
+  to {
+    --mesh-my: 0.5;
+  }
+
+  50% {
+    --mesh-my: -0.5;
+  }
+}
