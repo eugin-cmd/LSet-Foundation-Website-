@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Lightbox from "@/components/Lightbox/Lightbox";
 import type { ProjectPhoto } from "./project.data";
 import s from "./Project.module.css";
 
@@ -35,6 +36,14 @@ const RESUME_AFTER_MS = 8000;
 const SLIDE_MS = 620;
 /** Horizontal travel before a drag counts as a swipe. */
 const DRAG_THRESHOLD = 45;
+
+/** The viewer is a phone affordance: on a device with a real pointer a slide
+ *  behaves exactly as it always has. This is the same test usePointerMesh
+ *  makes, from the other side. */
+const isTouch = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(hover: none), (pointer: coarse)").matches;
+
 
 export default function ProjectCarousel({
   photos,
@@ -80,6 +89,9 @@ export default function ProjectCarousel({
 
   const [index, setIndex] = useState(0);
   const [animate, setAnimate] = useState(true);
+  /* Which photograph the viewer is showing, or null for closed. Indexes the
+     real set, not the doubled rail. */
+  const [viewing, setViewing] = useState<number | null>(null);
   const pendingPrev = useRef(false);
   const regionRef = useRef<HTMLDivElement>(null);
 
@@ -289,6 +301,13 @@ export default function ProjectCarousel({
                   alt={photo.alt}
                   data-fit={photo.fit ?? "cover"}
                   draggable={false}
+                  /* `dragged` is the rail's own flag, already used to stop a
+                     swipe ending as a click on the arrows. The rail is the set
+                     twice over, so the index is taken back into the real one. */
+                  onClick={() => {
+                    if (dragged.current || !isTouch()) return;
+                    setViewing(i % count);
+                  }}
                   width={1238}
                   height={712}
                   loading={i === 0 ? "eager" : "lazy"}
@@ -331,6 +350,15 @@ export default function ProjectCarousel({
           ? `${photos[shown].title}, ${shown + 1} of ${count}`
           : `${Item} ${shown + 1} of ${count}`}
       </p>
+
+      {viewing !== null && variant !== "cards" && (
+        <Lightbox
+          slides={photos.map((ph) => ({ src: ph.src, alt: ph.alt }))}
+          startIndex={viewing}
+          label={label}
+          onClose={() => setViewing(null)}
+        />
+      )}
     </div>
   );
 }

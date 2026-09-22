@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Lightbox from "@/components/Lightbox/Lightbox";
 import s from "./Antz.module.css";
 
 /**
@@ -27,6 +28,12 @@ import s from "./Antz.module.css";
  */
 
 export type Slide = { id: string; label: string; image: string };
+
+/** The viewer is a phone affordance: with a real pointer a slide behaves as it
+ *  always has. The same test usePointerMesh makes, from the other side. */
+const isTouch = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(hover: none), (pointer: coarse)").matches;
 
 const BASE = "/assets/antz-carousel";
 const SLIDES: Slide[] = [
@@ -65,6 +72,8 @@ export default function AntzCarousel({
   noun?: string;
 } = {}) {
   const count = slides.length;
+  /* Which module the viewer is showing, or null for closed. */
+  const [viewing, setViewing] = useState<number | null>(null);
   const [active, setActive] = useState(0);
   const regionRef = useRef<HTMLDivElement>(null);
 
@@ -196,7 +205,11 @@ export default function AntzCarousel({
               style={{ "--dir": Math.sign(o), zIndex: 10 - abs } as React.CSSProperties}
               /* A peeking neighbour is a shortcut to itself. */
               onClick={() => {
-                if (!dragged.current && state === "side") handleDot(i);
+                if (dragged.current) return;
+                /* A peeking neighbour is still a shortcut to itself; the one in
+                   front is the one worth opening. */
+                if (state === "side") handleDot(i);
+                else if (isTouch()) setViewing(i);
               }}
             >
               <img
@@ -238,6 +251,15 @@ export default function AntzCarousel({
           />
         ))}
       </div>
+
+      {viewing !== null && (
+        <Lightbox
+          slides={slides.map((sl) => ({ src: sl.image, alt: sl.label }))}
+          startIndex={viewing}
+          label={label}
+          onClose={() => setViewing(null)}
+        />
+      )}
     </div>
   );
 }
