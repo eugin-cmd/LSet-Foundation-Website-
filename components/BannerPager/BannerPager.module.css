@@ -147,13 +147,19 @@
   .pagerBtn {
     width: 48px;
     height: 48px;
-    /* Thinner than the 28% / 14% these opened at. At those values the blur was
-       reading as a grey plate over dark footage rather than as glass, which is
-       the wrong end of the effect: the blur should be what you notice, not the
-       fill. The rim carries most of the shape now and the fill only lifts the
-       disc off the picture. */
-    border: 1px solid rgb(255 255 255 / 16%);
-    background: rgb(255 255 255 / 7%);
+    /* 28%/14% at first, then 16%/7%, now 10%/4%. At the opening values the
+       blur read as a grey plate over dark footage rather than as glass, which
+       is the wrong end of the effect: the blur should be what you notice, not
+       the fill.
+
+       At 4% the fill has almost stopped being a surface and the disc is
+       described by the blur itself — a circle of softened photograph, with the
+       rim only closing its edge. That is as far as this can go while staying a
+       disc: take the rim off too and there is no shape, just a blurred patch
+       with a chevron in it. The glyph's own shadow below is what makes the
+       thinness affordable. */
+    border: 1px solid rgb(255 255 255 / 10%);
+    background: rgb(255 255 255 / 4%);
     /* Prefixed as well: iOS Safari has only ever shipped the prefixed form,
        and this control's whole purpose is to be reachable on a phone. */
     -webkit-backdrop-filter: blur(14px) saturate(115%);
@@ -163,7 +169,7 @@
        next to its own backdrop-filter, and the disc no longer needs a shadow to
        separate a glyph from the footage — it has a surface. A box-shadow does
        the lift instead, and does not touch the filter chain. */
-    box-shadow: 0 1px 6px rgb(1 18 12 / 18%);
+    box-shadow: 0 1px 5px rgb(1 18 12 / 12%);
     filter: none;
   }
 
@@ -187,7 +193,7 @@
   @supports not ((backdrop-filter: blur(1px)) or
     (-webkit-backdrop-filter: blur(1px))) {
     .pagerBtn {
-      background: rgb(8 24 18 / 48%);
+      background: rgb(8 24 18 / 38%);
     }
   }
 }
