@@ -147,8 +147,13 @@
   .pagerBtn {
     width: 48px;
     height: 48px;
-    border: 1px solid rgb(255 255 255 / 28%);
-    background: rgb(255 255 255 / 14%);
+    /* Thinner than the 28% / 14% these opened at. At those values the blur was
+       reading as a grey plate over dark footage rather than as glass, which is
+       the wrong end of the effect: the blur should be what you notice, not the
+       fill. The rim carries most of the shape now and the fill only lifts the
+       disc off the picture. */
+    border: 1px solid rgb(255 255 255 / 16%);
+    background: rgb(255 255 255 / 7%);
     /* Prefixed as well: iOS Safari has only ever shipped the prefixed form,
        and this control's whole purpose is to be reachable on a phone. */
     -webkit-backdrop-filter: blur(14px) saturate(115%);
@@ -158,8 +163,21 @@
        next to its own backdrop-filter, and the disc no longer needs a shadow to
        separate a glyph from the footage — it has a surface. A box-shadow does
        the lift instead, and does not touch the filter chain. */
-    box-shadow: 0 2px 10px rgb(1 18 12 / 28%);
+    box-shadow: 0 1px 6px rgb(1 18 12 / 18%);
     filter: none;
+  }
+
+  /* The glyph takes over the legibility the fill used to do.
+
+     A 7% disc is transparent enough that over a pale frame there is nothing
+     behind the chevron, and the margins' own note says why that matters: a
+     bare white chevron disappears wherever the photograph behind it happens to
+     be pale. The shadow goes on the svg rather than on the button, because a
+     `filter` on the button is the one thing that cannot sit next to its own
+     backdrop-filter — which is why the button's own drop-shadow was dropped
+     when these became glass. On the child it is free. */
+  .pagerBtn svg {
+    filter: drop-shadow(0 1px 3px rgb(1 18 12 / 55%));
   }
 
   /* Where the backdrop cannot be blurred the glass would be a 14% white wash
@@ -169,7 +187,7 @@
   @supports not ((backdrop-filter: blur(1px)) or
     (-webkit-backdrop-filter: blur(1px))) {
     .pagerBtn {
-      background: rgb(8 24 18 / 62%);
+      background: rgb(8 24 18 / 48%);
     }
   }
 }
