@@ -8,16 +8,6 @@
   width: 100%;
 }
 
-/* The close control is a phone affordance and is switched on at that width
-   only. Hidden rather than merely unstyled: the label renders at every width,
-   and left to its own devices it is a flex item in this row — a zero-width one,
-   but one that still takes a slot and, with the 56px gap above, 56px of the
-   drawer's width. Measured on a desktop before this rule: display block, 0x20.
-   Above 700px the drawer's controls are the pill and the scrim, as they were. */
-.close {
-  display: none;
-}
-
 /* --- col-label, 1959:12498 --- */
 .label {
   display: flex;
@@ -303,30 +293,4 @@
     overscroll-behavior: contain;
   }
 
-  /* Sticky rather than absolute: this sits inside the element that scrolls, so
-     anchoring it to the panel would send it up and out with the first swipe.
-     Sticky keeps it in the corner for the whole of the list. */
-  .close {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    display: grid;
-    flex: none;
-    place-items: center;
-    align-self: flex-end;
-    width: 44px;
-    height: 44px;
-    /* The column's own 28px gap would push the label a long way down from a
-       control that is meant to sit in the corner above it. */
-    margin-bottom: -28px;
-    border-radius: 50%;
-    /* The token the drawer's own titles wear, not one invented for this. */
-    color: var(--brand-forest-800);
-    cursor: pointer;
-  }
-
-  .close svg {
-    width: 20px;
-    height: 20px;
-  }
 }

@@ -263,12 +263,35 @@ export default function NavBar() {
           </div>
         </header>
 
-        <div ref={meshRef} className={`${s.drawer} wf-mesh`}>
-          <NavDrawer
-            id={DRAWER_PANEL_ID}
-            toggleId={DRAWER_ID}
-            onNavigate={closeMenus}
-          />
+        {/* The wrapper exists for the close control alone. .drawer clips —
+            `overflow: hidden` is what holds its 4px ring and its mesh in place —
+            so a button meant to sit half outside the panel's corner cannot be a
+            child of it. This box does not clip, and on a phone it is what the
+            control is positioned against.
+
+            `display: contents` above 700px, so on every width the drawer was
+            designed at this element is not in the layout at all. */}
+        <div className={s.drawerWrap}>
+          <div ref={meshRef} className={`${s.drawer} wf-mesh`}>
+            <NavDrawer id={DRAWER_PANEL_ID} onNavigate={closeMenus} />
+          </div>
+
+          {/* Phones only, shown by the stylesheet at that width. A <label> for
+              the drawer's own checkbox, so it closes the panel with scripts
+              stripped exactly as the pill opens it — and it is the no-JS answer
+              to dismissing from the burger, which does need one. */}
+          <label htmlFor={DRAWER_ID} className={s.drawerClose}>
+            <span className="sr-only">Close menu</span>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+              <path
+                d="M6 6l12 12M18 6L6 18"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                vectorEffect="non-scaling-stroke"
+                strokeLinecap="round"
+              />
+            </svg>
+          </label>
         </div>
       </div>
     </div>

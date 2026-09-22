@@ -845,3 +845,86 @@
     max-height: calc(100svh - 124px);
   }
 }
+
+/* ---------------------------------------------------------------------------
+   The drawer's close control, and the box that lets it overhang.
+
+   `display: contents` is the whole trick above 700px: the wrapper is not a box
+   at all there, so .drawer remains a direct flex child of .stack and every
+   width the drawer was designed at is untouched. On a phone the wrapper becomes
+   a real box, takes the drawer's own width, and is what the disc is positioned
+   against — .drawer itself cannot host it, because `overflow: hidden` there is
+   load bearing for its 4px ring and its mesh and would cut the disc in half.
+   --------------------------------------------------------------------------- */
+.drawerWrap {
+  display: contents;
+}
+
+.drawerClose {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .drawerWrap {
+    position: relative;
+    display: block;
+    width: var(--plate-w);
+    /* .drawer's own constraint, moved up a level: with the wrapper carrying it,
+       the panel below can simply fill the wrapper. Left on both, the panel would
+       subtract the edge twice and come out narrower than it is today. */
+    max-width: calc(100% - var(--edge) * 2);
+  }
+
+  .drawerWrap .drawer {
+    width: 100%;
+    max-width: none;
+  }
+
+  /* Half out of the corner: a 44px disc offset by 16px on each axis sits with
+     roughly a third of itself beyond the panel, which is what reads as clipped
+     to the corner rather than as floating beside it. 44px is the touch floor,
+     and the disc is the whole target. */
+  .drawerClose {
+    position: absolute;
+    top: -16px;
+    right: -16px;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--white);
+    /* The panel behind it is a pale mesh, so the disc needs its own edge to
+       separate from it rather than relying on the white alone. */
+    box-shadow: 0 2px 10px rgb(1 18 12 / 28%);
+    color: var(--brand-forest-800);
+    cursor: pointer;
+    /* Hidden with the panel, and out of the tab order and the hit testing with
+       it — an invisible disc over the banner's top-right corner would otherwise
+       swallow taps meant for the page. */
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .drawerClose svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Revealed with the panel. The panel opens on a clip-path circle, which a
+     disc sitting outside it cannot share, so this fades instead — 160ms against
+     the panel's own reveal so it arrives with it rather than after it. */
+  .drawerToggle:checked ~ .stack .drawerClose {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .drawerClose {
+      transition: opacity 160ms ease, visibility 160ms;
+    }
+  }
+}
