@@ -122,10 +122,38 @@
    width is what the 1080px block has to hold. aspect-ratio keeps the box from
    collapsing while the SVG loads. */
 .wordmark {
+  /* One source for the width, because the optical correction below has to be
+     a fraction of it and two copies of this expression would drift. */
+  --wordmark-w: min(216.594px, 43.03vw);
+
   flex: none;
-  width: min(216.594px, 43.03vw);
+  width: var(--wordmark-w);
   height: auto;
   aspect-ratio: 216.594 / 81.895;
+  /* The artwork is not centred inside its own file, so centring the box leaves
+     the lockup visibly right of the icon row, the mast and the lede — all three
+     of which measure dead centre.
+
+     logo-lset-nav.svg has a 132.857 viewBox holding ink from 9.56 to 129.246:
+     9.56 of padding on the left against 3.61 on the right. Its ink centre is
+     therefore 2.9745 to the right of its box centre, which is 2.239% of the
+     width — about 4.9px at the 216.594px desktop size and 3.8px on a phone.
+     Confirmed against rendered pixels as well as the file's own numbers: drawn
+     at 1000px the ink sat 72 from the left and 27 from the right, off centre by
+     22.5px, or 2.25%.
+
+     A margin rather than a transform, and that is forced: .wordmark's rise
+     animates `transform` with `fill-mode: both`, so a translateX here would be
+     overwritten by the animation's own resting frame. In a centred column an
+     item's margin moves it half its value, so the shift is twice the error.
+
+     The other two brand banners are left alone: measured the same way,
+     antz-wordmark.svg is off by -0.10% and edu-wordmark.svg by 0.00%. What
+     reads as off-centre on the Antz banner is the lockup's own composition —
+     the mark sits left and heavy, and "systems" is ranged right under "antz" —
+     which is how the logo is drawn, and correcting it would push a centred box
+     off centre. */
+  margin-right: calc(var(--wordmark-w) * 0.044778);
   margin-bottom: 6px;
 }
 
