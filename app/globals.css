@@ -876,6 +876,21 @@ video {
      gradient cannot be handed to the compositor, and this was the last and
      largest one still re-rasterising its glyphs every frame on the slowest
      screen the site meets. */
+  /* CORRECTION. The four paragraphs above are wrong about the cause, and the
+     rule they justify is not what brought the titles back.
+
+     The h1s were not blanked by animating a text-clipped gradient. Measured in
+     WebKit on the real homepage h1: an animated gradient over plain text
+     paints (81,529 bright px), and freezing this animation with the heading's
+     own descendants left as they were still paints nothing (0 px). The cause
+     was `position: relative` on WaveText's per-character spans, and the fix
+     lives in WaveText.module.css.
+
+     The `:not(h1)` exemption this block once carried is still correctly gone,
+     but for the reason the block opens with rather than the one it concludes
+     with: a text-clipped gradient cannot be composited, so freezing it on a
+     phone buys real fill rate. That is why the rule stays. It is a performance
+     measure, not a rendering fix, and it should not be cited as one. */
   .wf-iridescent {
     animation: none !important;
   }

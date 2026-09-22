@@ -13,6 +13,12 @@
    pixels to 546, i.e. it vanished. `transform: translateY` and the newer
    `translate` property both do it; `position: relative` + `top` and
    `margin-block-start` both leave the clip intact.
+
+   That last sentence holds in Blink and Gecko ONLY. In WebKit `position:
+   relative` breaks the clip exactly as a transform does, which blanked every
+   banner title on the site in Safari until the @supports block at the foot of
+   this file. Read that block before changing anything here, and do not verify
+   a change to this file in Chrome alone — Chrome cannot show the failure.
    =========================================================================== */
 .wave,
 .line {
@@ -53,5 +59,57 @@
   }
   100% {
     top: 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   WebKit: the characters stop being positioned, and the heading comes back.
+
+   The block above claims `position: relative` + `top` "leave the clip intact".
+   That is true in Blink and Gecko and false in WebKit, and the difference cost
+   this site every banner title it has.
+
+   WebKit lifts a *positioned* descendant out of an ancestor's
+   `background-clip: text` exactly as it lifts a transformed one. It does not
+   need the position to be animated, or even to change: `position: relative`
+   alone is enough. The glyphs then render with a transparent fill and nothing
+   painted behind them, so the mast is not dim or mis-coloured — it is absent.
+   All seven heroes wrap their h1 in this component, so on an iPhone, an iPad
+   and Safari on macOS alike, every banner on the site was headless.
+
+   Measured on the real homepage h1 at 390x844, bright pixels:
+
+     engine     as shipped   descendant animation off   position: static
+     WebKit              0                          0             69,299
+     Chromium       69,659                     69,659             69,659
+
+   The middle column is why two earlier attempts failed. Both blamed the
+   animation — the second shipped `.wf-iridescent { animation: none }` into the
+   phone layer — and the animation is innocent: killing it changes nothing,
+   because the position was never doing the damage by moving.
+
+   Every one of those attempts was verified in Chrome, and the right-hand
+   column is what Chrome shows: no failure, under any variant, ever. The engine
+   that breaks is the one that was never run.
+
+   `position: static` is the whole fix, and it takes the ripple with it — `top`
+   has nothing to act on once the box is unpositioned, so the animation is
+   dropped here rather than left to animate a property with no effect. That is
+   a real trade and it only binds WebKit: per-character motion needs
+   per-character boxes, and those boxes are precisely what breaks the clip, so
+   in this engine the heading can ripple or it can be visible.
+
+   It keeps the sheen, which is the part that carries the brand — and it is
+   what reduced motion has always shown, so this is a path the design already
+   had rather than a new one invented for Safari.
+
+   `-webkit-hyphens` is the guard because it is WebKit's alone: verified
+   matching in WebKit and not matching in Chromium or Firefox. Blink and Gecko
+   never enter this block, so the ripple on every other engine is untouched.
+   --------------------------------------------------------------------------- */
+@supports (-webkit-hyphens: none) {
+  .char {
+    position: static;
+    animation: none;
   }
 }
