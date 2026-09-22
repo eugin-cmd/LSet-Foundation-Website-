@@ -86,44 +86,28 @@
 /* Figma's 231.563 x 123.924, kept as a ratio so it can shrink with the band
    rather than being capped at one size. Both dimensions are set: a lone width
    with `height: auto` would collapse to zero while the SVG loads. */
-.heroWordmark {
-  /* One source for the width: the optical shift below is a fraction of it. */
-  --antz-wordmark-w: min(231.563px, 46vw);
+/* Centred on the banner, and left that way.
 
+   An optical nudge to the left was tried here and reverted: the lockup is an
+   ornate mark then the words, and taking "antz systems" as the logo puts its
+   centre 15.7% of the width right of the box's. Shifting by that, and by half
+   of it, both read as the whole lockup leaning left — the box then disagrees
+   with the icon row and the mast below, which are centred, and that is the more
+   visible relationship. Measured, the lockup sat 14px left of centre at half
+   and 28px at full, on a 390px screen.
+
+   So no correction. Measured on the page with the banner blanked so only the
+   lockup had ink in frame, the artwork's centre is 0.33px from the banner's at
+   390 and 0.50px at 1440, and the file is square to begin with: 95 of padding
+   on the left against 97 on the right of a 1000px render.
+
+   If this is revisited, the thing to change is the composition or the artwork,
+   not the placement — the placement is already exact. */
+.heroWordmark {
   flex: none;
-  width: var(--antz-wordmark-w);
+  width: min(231.563px, 46vw);
   height: auto;
   aspect-ratio: 231.563 / 123.924;
-  /* Optical centring, by direction, and it is worth being clear that this puts
-     the lockup's box off centre on purpose.
-
-     The box was already right: measured on the page with the banner blanked so
-     only the lockup had ink in frame, the artwork's centre sat 0.33px from the
-     banner's at 390 and 0.50px at 1440. The file is square too — 95 of padding
-     on the left against 97 on the right of a 1000px render.
-
-     What reads as off is the composition. The lockup is an ornate mark and then
-     the words, and the eye takes "antz systems" as the logo with the mark as a
-     prefix. Splitting the ink by its gaps at a 1000px render: the mark occupies
-     95..374 and the words 411..902, so the words' own centre is 656.5 against
-     the box's 499.5 — 157px, or 15.7% of the width, to the right.
-
-     Shifted left by HALF of that, 7.85%, which is a deliberate compromise
-     rather than either centre.
-
-     The full 15.7% was tried and measured: it puts the words exactly on the
-     centre line and the whole lockup 28px left of it at 390, 37px at 1440. That
-     reads left-heavy, because the box then disagrees with the icon row and the
-     mast below — both of which are centred, and that relationship is the more
-     visible one. Half leaves the words about 14px right of centre and the
-     lockup about 14px left of it: neither reading satisfied, neither visibly
-     wrong, which is the usual answer for a mark-and-wordmark lockup.
-
-     Margin, not transform: .heroWordmark's rise animates `transform` with
-     `fill-mode: both`, and a translateX here would be overwritten by its
-     resting frame. A centred column moves an item half its margin, so the
-     margin is twice the shift. */
-  margin-right: calc(var(--antz-wordmark-w) * 0.157);
 }
 
 /* The mark rises into the banner as the blind finishes opening.
