@@ -317,3 +317,60 @@
   }
 }
 
+
+/* ---------------------------------------------------------------------------
+   Phones: the band takes its height from the copy, instead of the copy being
+   centred over a band too short to hold it.
+
+   .bgArea is `clamp(340px, 65.28vw, 940px)`, and below a 521px viewport that
+   clamp sits on its 340px floor. The copy does not: it grows as the line
+   length shrinks. Measured, content height against the 340px band:
+
+     viewport   copy    over
+       320px    442px   +102     the paw cleared the band's top edge by 51px
+       360px    388px    +48                                          by 24px
+       375px    388px    +48                                          by 24px
+       390px    388px    +48                                          by 24px
+       412px    356px    +16                                           by 8px
+       430px    334px      —                                            fits
+
+   .heading is `top: 50%` with `translate(-50%, -50%)`, so the surplus splits
+   evenly and half of it leaves through the top of the section. .approach does
+   not clip, so what left was visible: the paw print landed in the stats band
+   above, which is the bug as reported.
+
+   Raising the floor to some larger number would have fixed this size of copy.
+   340px was itself a considered number, so the band is made to follow the copy
+   instead: .bgArea goes absolute and fills whatever the section becomes, and
+   .heading returns to flow and sets the height. No width or copy length can
+   put the mark outside the band again.
+
+   `position: relative` rather than `static`, for two reasons. The z-index: an
+   absolutely positioned .bgArea paints over a static sibling, so the footage
+   would cover the copy. And `top`/`left` are still 50% from the base rule —
+   under `relative` those stop being a position and become an offset, which
+   would push the block down and right by half the section. Both are cleared.
+
+   Phones only, and the floor it corrects only ever bound below 521px, so no
+   viewport that was laid out correctly is touched.
+   --------------------------------------------------------------------------- */
+@media (max-width: 700px) {
+  .bgArea {
+    position: absolute;
+    inset: 0;
+    height: auto;
+  }
+
+  .heading {
+    position: relative;
+    z-index: 1;
+    top: auto;
+    left: auto;
+    width: min(1078px, 100% - var(--edge) * 2);
+    margin-inline: auto;
+    /* The air the 340px band never had. Even top and bottom, so the block
+       still reads as centred in its own band — it simply is the band now. */
+    padding-block: 56px;
+    transform: none;
+  }
+}

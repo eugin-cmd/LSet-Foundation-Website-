@@ -1440,3 +1440,61 @@
     translate: -50% 0;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Phones: the statement band takes its height from the copy.
+
+   The same fault as the homepage's approach band, which this section's
+   measurement was copied from — both run `clamp(340px, 65.28vw, 940px)` and
+   both centre their copy over it absolutely. Below a 521px viewport the clamp
+   sits on 340px while the copy grows past it:
+
+     viewport   copy    over
+       320px    410px    +70
+       360px    379px    +39
+       375px    356px    +16
+       390px    356px    +16
+       412px    356px    +16
+       430px    356px    +16
+
+   Here it did not show as a mark escaping, because .statement clips. It showed
+   as the last line of the copy being cut off — "Three months to a year, re…"
+   was losing 48px on an iPhone 14 and 75px at 320px, on every phone, silently.
+   The homepage lost an icon out of the top; this page lost text out of the
+   bottom. One cause.
+
+   So the same fix: .statementPhoto fills the section absolutely and
+   .statementCopy returns to flow and sets the height.
+
+   The parallax goes with it on phones. Its keyframes carry the `-50%`
+   themselves — the comment on .statementCopy says so — and that offset is
+   meaningless once the block is in flow; left running it would drag the copy
+   half its own height off the band. Dropping it here is also the cheaper
+   reading: this block already freezes a good deal of motion at this width for
+   fill rate, and a scroll-driven transform on a full-width band is not the
+   cheapest thing on the page.
+
+   `position: relative`, not `static`, and `top` cleared: the base rule sets
+   `top: 50%`, which under `relative` would become an offset and push the copy
+   half a section down. Desktop keeps the centring, the band and the parallax
+   exactly as they are — the floor this corrects only bound below 521px.
+   --------------------------------------------------------------------------- */
+@media (max-width: 700px) {
+  .statementPhoto {
+    position: absolute;
+    inset: 0;
+    height: auto;
+  }
+
+  .statementCopy {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+    padding-block: 56px;
+    transform: none;
+    /* Longhand, matching the rule that sets it: the shorthand would also reset
+       animation-timeline, and this only needs the name gone. */
+    animation-name: none;
+  }
+}
