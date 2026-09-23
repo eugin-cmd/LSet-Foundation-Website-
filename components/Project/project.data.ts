@@ -205,6 +205,8 @@ export type Project = {
     /** Names the film for anyone who cannot see it. */
     label: string;
     caption: string;
+    /** A mark beside the heading. Decorative — the heading says the name. */
+    icon?: { src: string; w: number; h: number };
   };
   /** An outbound link, closing the prose column. Only the Antz product pages
    *  carry one — each points at its own page on antzsystems.com, which holds
@@ -450,6 +452,11 @@ export const MEDITERRANEAN_MONK_SEAL: Project = {
     frameSize: { w: 1752, h: 1240 },
     screen: { left: "2.74%", top: "2.42%", width: "94.52%", height: "82.26%" },
     label: "Antz Edge device running behavioural observation",
+    /* The product's own mark, from the Antz Systems nav, recoloured from its
+       mid grey to this column's --color-darkblue so it sits with the heading.
+       Not lockup-edge.svg, which carries the words "Antz Edge" and would set
+       the name twice beside a heading that already says it. */
+    icon: { src: "/assets/antz/edge-icon.svg", w: 58, h: 58 },
     /* Describes what the film shows rather than where it was shot. The footage
        carries "Cueva 1" and a June 2025 timestamp and is plainly this model at
        work on seals, but the record should not assert it is Cap Blanc without

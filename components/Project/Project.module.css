@@ -2016,9 +2016,29 @@
   /* The product's own name, so it sits as a name rather than as another of the
      column's kickers: the same face and weight, without the 0.4em tracking and
      the uppercasing that mark .blockKicker as a label. */
+  display: flex;
+  gap: 10px;
+  align-items: center;
   margin: 0;
   font: 500 clamp(17px, 1.53vw, 22px) / 1.3 var(--font-flex);
   color: var(--color-darkblue);
+}
+
+/* The mark is sized off its ink, not its box. Measured at a 300px render, the
+   drawing fills 76.3% of the square's width but only 47.3% of its height — it
+   is a wide mark in a square frame — so a box set to the heading's own size
+   would draw a bear half the height of the words beside it. At 46px the ink
+   stands 21.8px, which is the 22px the heading tops out at.
+
+   It also sits low in its square: 88 above against 70 below at that render, so
+   3% of the height. Centred by the flex row it would read as sagging beside
+   the text, and it is lifted by exactly that. `translate` rather than a margin
+   because this must not move the text next to it. */
+.filmHeadIcon {
+  flex: none;
+  width: clamp(36px, 3.2vw, 46px);
+  height: auto;
+  translate: 0 -3%;
 }
 
 .film {

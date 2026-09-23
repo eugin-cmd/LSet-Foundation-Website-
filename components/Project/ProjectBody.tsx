@@ -180,7 +180,19 @@ export default function ProjectBody({ project }: { project: Project }) {
               loads. */}
           {project.techFilm && (
             <section className={s.block}>
-              <h3 className={s.filmHead}>{project.techFilm.heading}</h3>
+              <h3 className={s.filmHead}>
+                {project.techFilm.icon && (
+                  <img
+                    className={s.filmHeadIcon}
+                    src={project.techFilm.icon.src}
+                    alt=""
+                    aria-hidden="true"
+                    width={project.techFilm.icon.w}
+                    height={project.techFilm.icon.h}
+                  />
+                )}
+                {project.techFilm.heading}
+              </h3>
               <figure className={s.film}>
                 <div
                   className={s.filmFrame}
