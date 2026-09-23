@@ -169,6 +169,70 @@ export default function ProjectBody({ project }: { project: Project }) {
           </section>
           )}
 
+          {/* The device the chips describe, running. Under them rather than
+              inside that section, so the enumeration stays an enumeration and
+              the film is its own thing with its own heading.
+
+              Muted, looped and playsInline, as every other video on this site
+              is: an autoplay that asks to be unmuted is blocked, and one that
+              goes fullscreen on an iPhone when it starts is not a figure. The
+              poster means the frame is never empty while the first frame
+              loads. */}
+          {project.techFilm && (
+            <section className={s.block}>
+              <h3 className={s.filmHead}>{project.techFilm.heading}</h3>
+              <figure className={s.film}>
+                <div
+                  className={s.filmFrame}
+                  style={
+                    {
+                      aspectRatio: `${project.techFilm.frameSize.w} / ${project.techFilm.frameSize.h}`,
+                    } as React.CSSProperties
+                  }
+                >
+                  {/* The frame is the picture of a box; the film is what the
+                      box is showing. Hidden from assistive tech, because the
+                      video below carries the description for both. */}
+                  <img
+                    className={s.filmShell}
+                    src={project.techFilm.frame}
+                    alt=""
+                    aria-hidden="true"
+                    width={project.techFilm.frameSize.w}
+                    height={project.techFilm.frameSize.h}
+                  />
+                  <video
+                    className={s.filmVideo}
+                    style={
+                      {
+                        left: project.techFilm.screen.left,
+                        top: project.techFilm.screen.top,
+                        width: project.techFilm.screen.width,
+                        height: project.techFilm.screen.height,
+                      } as React.CSSProperties
+                    }
+                    poster={project.techFilm.poster}
+                    aria-label={project.techFilm.label}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    tabIndex={-1}
+                  >
+                    {project.techFilm.webm && (
+                      <source src={project.techFilm.webm} type="video/webm" />
+                    )}
+                    <source src={project.techFilm.mp4} type="video/mp4" />
+                  </video>
+                </div>
+                <figcaption className={`${s.filmCaption} wf-small`}>
+                  {project.techFilm.caption}
+                </figcaption>
+              </figure>
+            </section>
+          )}
+
           {/* Out to the product's own page. `rel="noreferrer"` alongside
               noopener because this leaves the site: the target has no reason
               to be told where its visitor came from. */}

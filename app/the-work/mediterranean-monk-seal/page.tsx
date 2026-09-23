@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import MeshField from "@/components/MeshField/MeshField";
 import ProjectHero from "@/components/Project/ProjectHero";
 import ProjectBody from "@/components/Project/ProjectBody";
-import ProjectGallery from "@/components/Project/ProjectGallery";
 import ProjectNeighbours from "@/components/Project/ProjectNeighbours";
 import ProjectCta from "@/components/Project/ProjectCta";
 import { MEDITERRANEAN_MONK_SEAL } from "@/components/Project/project.data";
@@ -28,7 +27,9 @@ export default function MediterraneanMonkSealPage() {
         <ProjectHero project={MEDITERRANEAN_MONK_SEAL} />
         <MeshField>
           <ProjectBody project={MEDITERRANEAN_MONK_SEAL} />
-          <ProjectGallery project={MEDITERRANEAN_MONK_SEAL} />
+          {/* No <ProjectGallery> here, by direction. The record's photographs
+              are left in place in project.data.ts — nothing else reads them,
+              and deleting them would throw away the captions with the files. */}
           <ProjectNeighbours project={MEDITERRANEAN_MONK_SEAL} />
           <ProjectCta />
         </MeshField>

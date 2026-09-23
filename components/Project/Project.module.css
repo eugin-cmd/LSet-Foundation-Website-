@@ -2002,3 +2002,68 @@
     font-size: 12.5px;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   The device film under the Tech Deployed chips.
+
+   A picture of a box with the footage playing in its screen. The frame image
+   holds the aspect — set inline from the asset's own pixel size, so a different
+   frame needs no rule here — and the film is placed over it by the percentages
+   the aperture is expressed in. The two scale together and there is no second
+   set of numbers for a narrow screen.
+   --------------------------------------------------------------------------- */
+.filmHead {
+  /* The product's own name, so it sits as a name rather than as another of the
+     column's kickers: the same face and weight, without the 0.4em tracking and
+     the uppercasing that mark .blockKicker as a label. */
+  margin: 0;
+  font: 500 clamp(17px, 1.53vw, 22px) / 1.3 var(--font-flex);
+  color: var(--color-darkblue);
+}
+
+.film {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1.11vw, 16px);
+  width: 100%;
+  margin: 0;
+}
+
+.filmFrame {
+  position: relative;
+  width: 100%;
+  /* aspect-ratio is set inline from the frame's own dimensions. */
+}
+
+.filmShell {
+  position: relative;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+.filmVideo {
+  position: absolute;
+  /* left / top / width / height come from the record: they are the aperture in
+     the frame, in percent of it. */
+  /* Over the frame, not under it. The frame's screen is not a hole: measured,
+     its centre is a fully opaque rgb(4 201 189) and only the 12.5% outside the
+     device is transparent. Behind it the film is simply invisible, which is
+     what a flat teal panel on this page turned out to be. That also explains
+     the radius below — with the film on top, the frame's rounded screen
+     corners are covered, so the film has to round its own. */
+  z-index: 1;
+  object-fit: cover;
+  /* The source's 14px at its own size, taken as a fraction of the width so the
+     corner keeps its proportion when the frame is drawn smaller. clamp, because
+     below about 380px a proportional radius rounds away to nothing. */
+  border-radius: clamp(5px, 1.6%, 14px);
+}
+
+.filmCaption {
+  max-width: 62ch;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}

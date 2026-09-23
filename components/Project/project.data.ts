@@ -187,6 +187,25 @@ export type Project = {
   facts: ProjectFact[];
   sections: ProjectSection[];
   tech: ProjectTech[];
+  /** A film under the chips, shown inside a device frame.
+   *
+   *  The video is absolutely placed over the frame image by percentages, which
+   *  is how the frame's own screen aperture is expressed — the two scale
+   *  together at any width without a second set of numbers per breakpoint. */
+  techFilm?: {
+    heading: string;
+    mp4: string;
+    webm?: string;
+    poster: string;
+    frame: string;
+    /** The frame image's own pixel size, for the aspect ratio it holds. */
+    frameSize: { w: number; h: number };
+    /** The screen aperture within the frame, in percent of the frame. */
+    screen: { left: string; top: string; width: string; height: string };
+    /** Names the film for anyone who cannot see it. */
+    label: string;
+    caption: string;
+  };
   /** An outbound link, closing the prose column. Only the Antz product pages
    *  carry one — each points at its own page on antzsystems.com, which holds
    *  the full version of what this page condenses. */
@@ -412,6 +431,32 @@ export const MEDITERRANEAN_MONK_SEAL: Project = {
     { label: "Individual re-identification AI", icon: "ai" },
     { label: "Camera monitoring", icon: "camera" },
   ],
+
+  /* The device the chips above describe, shown running. The film and its frame
+     are Antz Systems' own, from the product's section on antzsystems.com, so
+     the box on this page and the box on that one are the same object rather
+     than two renderings of it.
+
+     The screen rectangle is the frame's own aperture as percentages — 2.74%
+     from the left, 2.42% down, 94.52% by 82.26% — which is how the source
+     places it, and it means the film stays in its screen at any width without
+     a number per breakpoint. */
+  techFilm: {
+    heading: "Antz Edge",
+    mp4: "/assets/antz/edge-device.mp4",
+    webm: "/assets/antz/edge-device.webm",
+    poster: "/assets/antz/edge-device-poster.webp",
+    frame: "/assets/antz/edge-device-frame.webp",
+    frameSize: { w: 1752, h: 1240 },
+    screen: { left: "2.74%", top: "2.42%", width: "94.52%", height: "82.26%" },
+    label: "Antz Edge device running behavioural observation",
+    /* Describes what the film shows rather than where it was shot. The footage
+       carries "Cueva 1" and a June 2025 timestamp and is plainly this model at
+       work on seals, but the record should not assert it is Cap Blanc without
+       that being confirmed. */
+    caption:
+      "Antz Edge running the identification model on site: each seal picked out of the frame and held as an individual, continuously, with no keeper present.",
+  },
 
   gallery: [
     {
